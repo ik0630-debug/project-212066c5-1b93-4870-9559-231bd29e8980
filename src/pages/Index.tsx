@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, LogIn, Shield } from "lucide-react";
+import { Calendar, MapPin, Users, LogIn, Shield, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileNavigation from "@/components/MobileNavigation";
@@ -9,15 +9,17 @@ import heroImage from "@/assets/hero-image.jpg";
 const Index = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    checkAdminStatus();
+    checkUserStatus();
   }, []);
 
-  const checkAdminStatus = async () => {
+  const checkUserStatus = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     
     if (session?.user) {
+      setIsLoggedIn(true);
       const { data } = await supabase
         .from("user_roles")
         .select("role")
@@ -45,15 +47,27 @@ const Index = () => {
               관리자
             </Button>
           )}
-          <Button
-            onClick={() => navigate("/auth")}
-            size="sm"
-            variant="secondary"
-            className="shadow-lg"
-          >
-            <LogIn className="w-4 h-4 mr-2" />
-            로그인
-          </Button>
+          {isLoggedIn ? (
+            <Button
+              onClick={() => navigate("/profile")}
+              size="sm"
+              variant="secondary"
+              className="shadow-lg"
+            >
+              <User className="w-4 h-4 mr-2" />
+              내 정보
+            </Button>
+          ) : (
+            <Button
+              onClick={() => navigate("/auth")}
+              size="sm"
+              variant="secondary"
+              className="shadow-lg"
+            >
+              <LogIn className="w-4 h-4 mr-2" />
+              로그인
+            </Button>
+          )}
         </div>
         <div className="absolute inset-0 bg-gradient-hero opacity-95" />
         <img
