@@ -378,6 +378,114 @@ const Admin = () => {
     loadSettings();
   };
 
+  const handleAddInfoCard = async () => {
+    const cardCount = settings.filter(
+      (s) => s.category === "home" && s.key.startsWith("info_card_")
+    ).length;
+
+    const cardData = {
+      icon: "Calendar",
+      title: "새 카드",
+      content: "내용을 입력하세요",
+      order: cardCount,
+    };
+
+    const { error } = await supabase.from("site_settings").insert({
+      category: "home",
+      key: `info_card_${Date.now()}`,
+      value: JSON.stringify(cardData),
+      description: "정보 카드",
+    });
+
+    if (error) {
+      toast({
+        title: "오류",
+        description: "카드 추가 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "추가 완료",
+      description: "새 카드가 추가되었습니다.",
+    });
+
+    loadSettings();
+  };
+
+  const handleUpdateInfoCard = async (id: string, cardData: any) => {
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ value: JSON.stringify(cardData) })
+      .eq("id", id);
+
+    if (error) {
+      toast({
+        title: "오류",
+        description: "카드 업데이트 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    loadSettings();
+  };
+
+  const handleAddBottomButton = async () => {
+    const buttonCount = settings.filter(
+      (s) => s.category === "home" && s.key.startsWith("bottom_button_")
+    ).length;
+
+    const buttonData = {
+      text: "새 버튼",
+      link: "/",
+      variant: "outline",
+      order: buttonCount,
+    };
+
+    const { error } = await supabase.from("site_settings").insert({
+      category: "home",
+      key: `bottom_button_${Date.now()}`,
+      value: JSON.stringify(buttonData),
+      description: "하단 버튼",
+    });
+
+    if (error) {
+      toast({
+        title: "오류",
+        description: "버튼 추가 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "추가 완료",
+      description: "새 버튼이 추가되었습니다.",
+    });
+
+    loadSettings();
+  };
+
+  const handleUpdateBottomButton = async (id: string, buttonData: any) => {
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ value: JSON.stringify(buttonData) })
+      .eq("id", id);
+
+    if (error) {
+      toast({
+        title: "오류",
+        description: "버튼 업데이트 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    loadSettings();
+  };
+
   const handleAddProgramCard = async () => {
     const cardCount = settings.filter(
       (s) => s.category === "program" && s.key.startsWith("program_card_")
@@ -738,13 +846,326 @@ const Admin = () => {
 
             {/* Home Settings Tab */}
             {settingsTab === 'home' && (
-              <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
-                <h2 className="text-xl font-bold text-card-foreground mb-4">
-                  홈 화면 설정
-                </h2>
-                <p className="text-muted-foreground">
-                  홈 화면 설정 기능은 추후 구현 예정입니다.
-                </p>
+              <div className="space-y-6">
+                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
+                  <h2 className="text-xl font-bold text-card-foreground mb-4">
+                    히어로 섹션
+                  </h2>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>배지 텍스트</Label>
+                      <Input
+                        value={
+                          settings.find(
+                            (s) => s.category === "home" && s.key === "hero_badge"
+                          )?.value || ""
+                        }
+                        onChange={(e) =>
+                          handleQuickUpdate("home", "hero_badge", e.target.value)
+                        }
+                        placeholder="초대합니다"
+                      />
+                    </div>
+                    <div>
+                      <Label>메인 제목 (줄바꿈 가능)</Label>
+                      <Textarea
+                        value={
+                          settings.find(
+                            (s) => s.category === "home" && s.key === "hero_title"
+                          )?.value || ""
+                        }
+                        onChange={(e) =>
+                          handleQuickUpdate("home", "hero_title", e.target.value)
+                        }
+                        placeholder="2024 비즈니스&#10;컨퍼런스"
+                        rows={2}
+                      />
+                    </div>
+                    <div>
+                      <Label>부제목 (줄바꿈 가능)</Label>
+                      <Textarea
+                        value={
+                          settings.find(
+                            (s) => s.category === "home" && s.key === "hero_subtitle"
+                          )?.value || ""
+                        }
+                        onChange={(e) =>
+                          handleQuickUpdate("home", "hero_subtitle", e.target.value)
+                        }
+                        placeholder="미래를 함께 만들어갈&#10;여러분을 초대합니다"
+                        rows={2}
+                      />
+                    </div>
+                    <div>
+                      <Label>버튼 텍스트</Label>
+                      <Input
+                        value={
+                          settings.find(
+                            (s) => s.category === "home" && s.key === "hero_button_text"
+                          )?.value || ""
+                        }
+                        onChange={(e) =>
+                          handleQuickUpdate("home", "hero_button_text", e.target.value)
+                        }
+                        placeholder="참가 신청하기"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold text-card-foreground">
+                      정보 카드
+                    </h2>
+                    <Button onClick={handleAddInfoCard} size="sm" variant="outline">
+                      <Plus className="w-4 h-4 mr-2" />
+                      카드 추가
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {settings
+                      .filter(
+                        (s) => s.category === "home" && s.key.startsWith("info_card_")
+                      )
+                      .sort((a, b) => {
+                        const aData = JSON.parse(a.value);
+                        const bData = JSON.parse(b.value);
+                        return (aData.order || 0) - (bData.order || 0);
+                      })
+                      .map((card) => {
+                        const cardData = JSON.parse(card.value);
+                        return (
+                          <div
+                            key={card.id}
+                            className="border-2 border-border rounded-lg p-4 space-y-4"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-medium text-lg">
+                                {cardData.title || "제목 없음"}
+                              </h4>
+                              <Button
+                                onClick={() => handleDeleteSetting(card.id)}
+                                size="sm"
+                                variant="destructive"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+
+                            <div>
+                              <Label>아이콘 (Lucide 아이콘 이름)</Label>
+                              <Input
+                                value={cardData.icon || ""}
+                                onChange={(e) =>
+                                  handleUpdateInfoCard(card.id, {
+                                    ...cardData,
+                                    icon: e.target.value,
+                                  })
+                                }
+                                placeholder="Calendar, MapPin, Users 등"
+                              />
+                              <p className="text-xs text-muted-foreground mt-1">
+                                lucide-react 아이콘 이름 (예: Calendar, MapPin, Users)
+                              </p>
+                            </div>
+
+                            <div>
+                              <Label>제목</Label>
+                              <Input
+                                value={cardData.title || ""}
+                                onChange={(e) =>
+                                  handleUpdateInfoCard(card.id, {
+                                    ...cardData,
+                                    title: e.target.value,
+                                  })
+                                }
+                                placeholder="일시"
+                              />
+                            </div>
+
+                            <div>
+                              <Label>내용 (줄바꿈 가능)</Label>
+                              <Textarea
+                                value={cardData.content || ""}
+                                onChange={(e) =>
+                                  handleUpdateInfoCard(card.id, {
+                                    ...cardData,
+                                    content: e.target.value,
+                                  })
+                                }
+                                placeholder="2024년 12월 15일 (금)&#10;오전 9:00 - 오후 6:00"
+                                rows={3}
+                              />
+                            </div>
+
+                            <div>
+                              <Label>순서</Label>
+                              <Input
+                                type="number"
+                                value={cardData.order || 0}
+                                onChange={(e) =>
+                                  handleUpdateInfoCard(card.id, {
+                                    ...cardData,
+                                    order: parseInt(e.target.value),
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
+                  <h2 className="text-xl font-bold text-card-foreground mb-4">
+                    행사 소개
+                  </h2>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>제목</Label>
+                      <Input
+                        value={
+                          settings.find(
+                            (s) => s.category === "home" && s.key === "description_title"
+                          )?.value || ""
+                        }
+                        onChange={(e) =>
+                          handleQuickUpdate("home", "description_title", e.target.value)
+                        }
+                        placeholder="행사 소개"
+                      />
+                    </div>
+                    <div>
+                      <Label>설명 (줄바꿈 가능)</Label>
+                      <Textarea
+                        value={
+                          settings.find(
+                            (s) => s.category === "home" && s.key === "description_content"
+                          )?.value || ""
+                        }
+                        onChange={(e) =>
+                          handleQuickUpdate("home", "description_content", e.target.value)
+                        }
+                        placeholder="행사에 대한 설명을 입력하세요"
+                        rows={4}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold text-card-foreground">
+                      하단 버튼
+                    </h2>
+                    <Button onClick={handleAddBottomButton} size="sm" variant="outline">
+                      <Plus className="w-4 h-4 mr-2" />
+                      버튼 추가
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {settings
+                      .filter(
+                        (s) => s.category === "home" && s.key.startsWith("bottom_button_")
+                      )
+                      .sort((a, b) => {
+                        const aData = JSON.parse(a.value);
+                        const bData = JSON.parse(b.value);
+                        return (aData.order || 0) - (bData.order || 0);
+                      })
+                      .map((button) => {
+                        const buttonData = JSON.parse(button.value);
+                        return (
+                          <div
+                            key={button.id}
+                            className="border-2 border-border rounded-lg p-4 space-y-4"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-medium text-lg">
+                                {buttonData.text || "텍스트 없음"}
+                              </h4>
+                              <Button
+                                onClick={() => handleDeleteSetting(button.id)}
+                                size="sm"
+                                variant="destructive"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+
+                            <div>
+                              <Label>버튼 텍스트</Label>
+                              <Input
+                                value={buttonData.text || ""}
+                                onChange={(e) =>
+                                  handleUpdateBottomButton(button.id, {
+                                    ...buttonData,
+                                    text: e.target.value,
+                                  })
+                                }
+                                placeholder="프로그램 보기"
+                              />
+                            </div>
+
+                            <div>
+                              <Label>버튼 링크 (경로)</Label>
+                              <Input
+                                value={buttonData.link || ""}
+                                onChange={(e) =>
+                                  handleUpdateBottomButton(button.id, {
+                                    ...buttonData,
+                                    link: e.target.value,
+                                  })
+                                }
+                                placeholder="/program"
+                              />
+                            </div>
+
+                            <div>
+                              <Label>버튼 스타일</Label>
+                              <Select
+                                value={buttonData.variant || "outline"}
+                                onValueChange={(value) =>
+                                  handleUpdateBottomButton(button.id, {
+                                    ...buttonData,
+                                    variant: value,
+                                  })
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover z-50">
+                                  <SelectItem value="default">기본</SelectItem>
+                                  <SelectItem value="outline">아웃라인</SelectItem>
+                                  <SelectItem value="secondary">보조</SelectItem>
+                                  <SelectItem value="ghost">고스트</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div>
+                              <Label>순서</Label>
+                              <Input
+                                type="number"
+                                value={buttonData.order || 0}
+                                onChange={(e) =>
+                                  handleUpdateBottomButton(button.id, {
+                                    ...buttonData,
+                                    order: parseInt(e.target.value),
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
               </div>
             )}
 
