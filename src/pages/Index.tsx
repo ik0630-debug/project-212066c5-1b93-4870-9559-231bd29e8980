@@ -1,16 +1,60 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, MapPin, Users, LogIn, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import MobileNavigation from "@/components/MobileNavigation";
 import heroImage from "@/assets/hero-image.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, []);
+
+  const checkAdminStatus = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session?.user) {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .eq("role", "admin")
+        .single();
+      
+      setIsAdmin(!!data);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Hero Section */}
       <header className="relative overflow-hidden">
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          {isAdmin && (
+            <Button
+              onClick={() => navigate("/admin")}
+              size="sm"
+              variant="secondary"
+              className="shadow-lg"
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              관리자
+            </Button>
+          )}
+          <Button
+            onClick={() => navigate("/auth")}
+            size="sm"
+            variant="secondary"
+            className="shadow-lg"
+          >
+            <LogIn className="w-4 h-4 mr-2" />
+            로그인
+          </Button>
+        </div>
         <div className="absolute inset-0 bg-gradient-hero opacity-95" />
         <img
           src={heroImage}
