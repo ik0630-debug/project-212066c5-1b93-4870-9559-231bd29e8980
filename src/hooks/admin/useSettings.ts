@@ -34,19 +34,17 @@ export const useSettings = () => {
   const [registrationSettings, setRegistrationSettings] = useState({
     registration_page_title: "참가 신청",
     registration_page_description: "아래 양식을 작성해주세요",
-    registration_field_name_label: "성함",
-    registration_field_name_placeholder: "홍길동",
-    registration_field_email_label: "이메일",
-    registration_field_email_placeholder: "example@company.com",
-    registration_field_phone_label: "연락처",
-    registration_field_phone_placeholder: "010-0000-0000",
-    registration_field_company_label: "소속 회사",
-    registration_field_company_placeholder: "회사명",
-    registration_field_message_label: "특이사항",
-    registration_field_message_placeholder: "특별히 전달하실 말씀이 있으시면 작성해주세요",
     registration_success_title: "신청이 완료되었습니다!",
     registration_success_description: "참가 확인 메일을 발송해드렸습니다.",
   });
+
+  const [registrationFields, setRegistrationFields] = useState([
+    { id: "name", label: "성함", placeholder: "홍길동", type: "text", required: true },
+    { id: "email", label: "이메일", placeholder: "example@company.com", type: "email", required: true },
+    { id: "phone", label: "연락처", placeholder: "010-0000-0000", type: "tel", required: true },
+    { id: "company", label: "소속 회사", placeholder: "회사명", type: "text", required: false },
+    { id: "message", label: "특이사항", placeholder: "특별히 전달하실 말씀이 있으시면 작성해주세요", type: "textarea", required: false },
+  ]);
 
   const loadSettings = async () => {
     const { data } = await supabase.from("site_settings").select("*");
@@ -108,7 +106,15 @@ export const useSettings = () => {
           }
           break;
         case "registration":
-          registrationSettingsData[key] = value;
+          if (key === "registration_fields") {
+            try {
+              setRegistrationFields(JSON.parse(value));
+            } catch (e) {
+              console.error("Failed to parse registration fields", e);
+            }
+          } else {
+            registrationSettingsData[key] = value;
+          }
           break;
         default:
           settingsMap[key] = value;
@@ -146,6 +152,11 @@ export const useSettings = () => {
           key,
           value: value.toString(),
         })),
+        {
+          category: "registration",
+          key: "registration_fields",
+          value: JSON.stringify(registrationFields),
+        },
       ];
 
       await supabase.from("site_settings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
@@ -187,6 +198,7 @@ export const useSettings = () => {
     // State
     settings,
     registrationSettings,
+    registrationFields,
     infoCards,
     bottomButtons,
     programCards,
@@ -196,6 +208,7 @@ export const useSettings = () => {
     // Setters
     setSettings,
     setRegistrationSettings,
+    setRegistrationFields,
     setInfoCards,
     setBottomButtons,
     setProgramCards,
