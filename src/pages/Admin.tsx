@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { User, Session } from "@supabase/supabase-js";
-import { ArrowLeft, LogOut, Trash2, Shield, ShieldOff, Plus, Settings, Users, FileText, MapPin, Home } from "lucide-react";
+import { User } from "@supabase/supabase-js";
+import { ArrowLeft, LogOut, Trash2, Shield, ShieldOff, Plus, Settings, Users, FileText, MapPin, Home, ArrowUp, ArrowDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,60 +17,25 @@ import SortableBottomButton from "@/components/SortableBottomButton";
 import SortableTransportCard from "@/components/SortableTransportCard";
 import { toast } from "sonner";
 
-interface Registration {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  company: string | null;
-  message: string | null;
-  status: string;
-  created_at: string;
-}
-
-interface UserProfile {
-  id: string;
-  user_id: string;
-  name: string;
-  email: string;
-  organization: string;
-  department: string | null;
-  position: string;
-  mobile_phone: string;
-  created_at: string;
-  is_admin: boolean;
-}
-
-interface SiteSetting {
-  id: string;
-  category: string;
-  key: string;
-  value: string;
-  description: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 const Admin = () => {
   const navigate = useNavigate();
   const { toast: toastHook } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [registrations, setRegistrations] = useState<Registration[]>([]);
-  const [users, setUsers] = useState<UserProfile[]>([]);
-  const [settings, setSettings] = useState<SiteSetting[]>([]);
+  const [registrations, setRegistrations] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'settings'>('registrations');
   const [activeSettingsTab, setActiveSettingsTab] = useState('home');
   const [infoCards, setInfoCards] = useState<any[]>([]);
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [programCards, setProgramCards] = useState<any[]>([]);
   const [transportCards, setTransportCards] = useState<any[]>([]);
+  const [sectionOrder, setSectionOrder] = useState<string[]>(['info_cards', 'description', 'bottom_buttons']);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
   useEffect(() => {
@@ -135,6 +100,17 @@ const Admin = () => {
     setBottomButtons(parseCards('home', 'bottom_button_'));
     setProgramCards(parseCards('program', 'program_card_'));
     setTransportCards(parseCards('location', 'transport_card_'));
+    
+    // Load section order
+    const orderSetting = data?.find(s => s.category === 'home' && s.key === 'section_order');
+    if (orderSetting) {
+      try {
+        const order = JSON.parse(orderSetting.value);
+        setSectionOrder(order);
+      } catch {
+        setSectionOrder(['info_cards', 'description', 'bottom_buttons']);
+      }
+    }
   };
 
   const handleQuickUpdate = async (category: string, key: string, value: string, desc: string) => {
@@ -276,6 +252,128 @@ const Admin = () => {
     toast.success('프로그램이 수정되었습니다');
   };
 
+  const handleMoveSectionUp = async (index: number) => {
+    if (index === 0) return;
+    const newOrder = [...sectionOrder];
+    [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+    setSectionOrder(newOrder);
+    await saveSectionOrder(newOrder);
+  };
+
+  const handleMoveSectionDown = async (index: number) => {
+    if (index === sectionOrder.length - 1) return;
+    const newOrder = [...sectionOrder];
+    [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+    setSectionOrder(newOrder);
+    await saveSectionOrder(newOrder);
+  };
+
+  const saveSectionOrder = async (order: string[]) => {
+    const existing = settings.find(s => s.category === 'home' && s.key === 'section_order');
+    const value = JSON.stringify(order);
+    
+    if (existing) {
+      await supabase.from('site_settings').update({ value }).eq('id', existing.id);
+    } else {
+      await supabase.from('site_settings').insert({ category: 'home', key: 'section_order', value, description: '섹션 순서' });
+    }
+    toast.success('섹션 순서가 변경되었습니다');
+    loadSettings();
+  };
+
+  const getSectionTitle = (sectionKey: string) => {
+    const titles: Record<string, string> = {
+      info_cards: '정보 카드',
+      description: '행사 소개',
+      bottom_buttons: '하단 버튼'
+    };
+    return titles[sectionKey] || sectionKey;
+  };
+
+  const SectionControls = ({ sectionKey, index }: { sectionKey: string; index: number }) => (
+    <div className="flex items-center gap-2">
+      <h3 className="text-lg font-semibold">{getSectionTitle(sectionKey)}</h3>
+      <div className="flex gap-1">
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          onClick={() => handleMoveSectionUp(index)}
+          disabled={index === 0}
+          className="h-6 w-6"
+        >
+          <ArrowUp className="w-4 h-4" />
+        </Button>
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          onClick={() => handleMoveSectionDown(index)}
+          disabled={index === sectionOrder.length - 1}
+          className="h-6 w-6"
+        >
+          <ArrowDown className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderSection = (sectionKey: string, index: number) => {
+    if (sectionKey === 'info_cards') {
+      return (
+        <div key={sectionKey} className="space-y-4">
+          <div className="flex items-center justify-between">
+            <SectionControls sectionKey={sectionKey} index={index} />
+            <Button onClick={handleAddInfoCard} size="sm"><Plus className="w-4 h-4 mr-2" />카드 추가</Button>
+          </div>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndInfoCards}>
+            <SortableContext items={infoCards.map(c => c.id)} strategy={verticalListSortingStrategy}>
+              <div className="space-y-3">
+                {infoCards.map((card) => <SortableInfoCard key={card.id} id={card.id} card={card} cardData={card} onUpdate={handleUpdateInfoCard} onDelete={() => handleDeleteSetting(card.id)} />)}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
+      );
+    }
+    
+    if (sectionKey === 'description') {
+      return (
+        <div key={sectionKey} className="space-y-4">
+          <SectionControls sectionKey={sectionKey} index={index} />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>제목</Label>
+              <Input placeholder="행사 소개" defaultValue={settings.find(s => s.key === 'description_title')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'description_title', e.target.value, '설명 제목')} />
+            </div>
+            <div className="space-y-2">
+              <Label>내용</Label>
+              <Textarea placeholder="행사 설명" defaultValue={settings.find(s => s.key === 'description_content')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'description_content', e.target.value, '설명 내용')} className="min-h-[120px]" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    if (sectionKey === 'bottom_buttons') {
+      return (
+        <div key={sectionKey} className="space-y-4">
+          <div className="flex items-center justify-between">
+            <SectionControls sectionKey={sectionKey} index={index} />
+            <Button onClick={handleAddBottomButton} size="sm"><Plus className="w-4 h-4 mr-2" />버튼 추가</Button>
+          </div>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndBottomButtons}>
+            <SortableContext items={bottomButtons.map(b => b.id)} strategy={verticalListSortingStrategy}>
+              <div className="space-y-3">
+                {bottomButtons.map((button) => <SortableBottomButton key={button.id} id={button.id} button={button} buttonData={button} onUpdate={handleUpdateBottomButton} onDelete={() => handleDeleteSetting(button.id)} />)}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
+      );
+    }
+    
+    return null;
+  };
+
   if (loading) return <div className="flex items-center justify-center min-h-screen">로딩 중...</div>;
 
   return (
@@ -402,47 +500,7 @@ const Admin = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold">정보 카드</h3>
-                      <Button onClick={handleAddInfoCard} size="sm"><Plus className="w-4 h-4 mr-2" />카드 추가</Button>
-                    </div>
-                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndInfoCards}>
-                      <SortableContext items={infoCards.map(c => c.id)} strategy={verticalListSortingStrategy}>
-                        <div className="space-y-3">
-                          {infoCards.map((card) => <SortableInfoCard key={card.id} id={card.id} card={card} cardData={card} onUpdate={handleUpdateInfoCard} onDelete={() => handleDeleteSetting(card.id)} />)}
-                        </div>
-                      </SortableContext>
-                    </DndContext>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">설명 섹션</h3>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label>제목</Label>
-                        <Input placeholder="행사 소개" defaultValue={settings.find(s => s.key === 'description_title')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'description_title', e.target.value, '설명 제목')} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>내용</Label>
-                        <Textarea placeholder="행사 설명" defaultValue={settings.find(s => s.key === 'description_content')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'description_content', e.target.value, '설명 내용')} className="min-h-[120px]" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold">하단 버튼</h3>
-                      <Button onClick={handleAddBottomButton} size="sm"><Plus className="w-4 h-4 mr-2" />버튼 추가</Button>
-                    </div>
-                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndBottomButtons}>
-                      <SortableContext items={bottomButtons.map(b => b.id)} strategy={verticalListSortingStrategy}>
-                        <div className="space-y-3">
-                          {bottomButtons.map((button) => <SortableBottomButton key={button.id} id={button.id} button={button} buttonData={button} onUpdate={handleUpdateBottomButton} onDelete={() => handleDeleteSetting(button.id)} />)}
-                        </div>
-                      </SortableContext>
-                    </DndContext>
-                  </div>
+                  {sectionOrder.map((sectionKey, index) => renderSection(sectionKey, index))}
                 </TabsContent>
 
                 <TabsContent value="program" className="space-y-6">

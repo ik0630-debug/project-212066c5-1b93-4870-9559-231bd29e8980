@@ -38,6 +38,7 @@ const Index = () => {
     "2024 비즈니스 컨퍼런스는 업계 리더들과 함께 미래 비즈니스 트렌드를 논의하고 네트워킹할 수 있는 특별한 기회입니다.\n\n최고의 연사진과 함께하는 심도 있는 세션, 실무 중심의 워크샵, 그리고 다양한 네트워킹 기회를 통해 비즈니스 인사이트를 얻어가세요."
   );
   const [bottomButtons, setBottomButtons] = useState<BottomButton[]>([]);
+  const [sectionOrder, setSectionOrder] = useState<string[]>(['info_cards', 'description', 'bottom_buttons']);
 
   useEffect(() => {
     checkUserStatus();
@@ -118,6 +119,17 @@ const Index = () => {
           .sort((a, b) => (a.order || 0) - (b.order || 0));
 
         setBottomButtons(buttons);
+        
+        // Load section order
+        const orderSetting = settings.find((s) => s.key === "section_order");
+        if (orderSetting) {
+          try {
+            const order = JSON.parse(orderSetting.value);
+            setSectionOrder(order);
+          } catch {
+            setSectionOrder(['info_cards', 'description', 'bottom_buttons']);
+          }
+        }
       }
     } catch (error) {
       console.error("Error in loadHomeSettings:", error);
@@ -246,56 +258,69 @@ const Index = () => {
       {/* Event Info */}
       <main className="px-6 py-8">
         <div className="space-y-6">
-          {/* Info Cards */}
-          <div className="grid gap-4">
-            {displayCards.map((card) => {
-              const IconComponent = getIconComponent(card.icon);
+          {sectionOrder.map((sectionKey) => {
+            if (sectionKey === 'info_cards') {
               return (
-                <div
-                  key={card.id}
-                  className="bg-card rounded-lg p-5 shadow-elegant border border-border"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <IconComponent className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-card-foreground mb-1">
-                        {card.title}
-                      </h3>
-                      <p className="text-muted-foreground whitespace-pre-line">
-                        {card.content}
-                      </p>
-                    </div>
-                  </div>
+                <div key={sectionKey} className="grid gap-4">
+                  {displayCards.map((card) => {
+                    const IconComponent = getIconComponent(card.icon);
+                    return (
+                      <div
+                        key={card.id}
+                        className="bg-card rounded-lg p-5 shadow-elegant border border-border"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                            <IconComponent className="w-6 h-6 text-primary" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-card-foreground mb-1">
+                              {card.title}
+                            </h3>
+                            <p className="text-muted-foreground whitespace-pre-line">
+                              {card.content}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               );
-            })}
-          </div>
-
-          {/* Event Description */}
-          <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
-            <h2 className="text-2xl font-bold text-card-foreground mb-4">
-              {descriptionTitle}
-            </h2>
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-              {descriptionContent}
-            </p>
-          </div>
-
-          {/* Bottom Buttons */}
-          <div className="grid grid-cols-2 gap-4">
-            {displayButtons.map((button) => (
-              <Button
-                key={button.id}
-                onClick={() => navigate(button.link)}
-                variant={button.variant as any}
-                className="w-full"
-              >
-                {button.text}
-              </Button>
-            ))}
-          </div>
+            }
+            
+            if (sectionKey === 'description') {
+              return (
+                <div key={sectionKey} className="bg-card rounded-lg p-6 shadow-elegant border border-border">
+                  <h2 className="text-2xl font-bold text-card-foreground mb-4">
+                    {descriptionTitle}
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {descriptionContent}
+                  </p>
+                </div>
+              );
+            }
+            
+            if (sectionKey === 'bottom_buttons') {
+              return (
+                <div key={sectionKey} className="grid grid-cols-2 gap-4">
+                  {displayButtons.map((button) => (
+                    <Button
+                      key={button.id}
+                      onClick={() => navigate(button.link)}
+                      variant={button.variant as any}
+                      className="w-full"
+                    >
+                      {button.text}
+                    </Button>
+                  ))}
+                </div>
+              );
+            }
+            
+            return null;
+          })}
         </div>
       </main>
 
