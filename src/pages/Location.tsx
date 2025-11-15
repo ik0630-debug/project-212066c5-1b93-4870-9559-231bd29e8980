@@ -1,0 +1,122 @@
+import MobileNavigation from "@/components/MobileNavigation";
+import { MapPin, Train, Bus, Car, Navigation } from "lucide-react";
+
+const Location = () => {
+  const transportations = [
+    {
+      icon: Train,
+      title: "지하철",
+      description: "2호선 강남역 5번 출구에서 도보 5분",
+    },
+    {
+      icon: Bus,
+      title: "버스",
+      description: "146, 360, 440, 1100번 - 강남역 하차",
+    },
+    {
+      icon: Car,
+      title: "자가용",
+      description: "건물 지하 1~3층 주차 가능 (3시간 무료)",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      <header className="bg-gradient-primary text-primary-foreground py-8 px-6">
+        <h1 className="text-3xl font-bold text-center mb-2">오시는 길</h1>
+        <p className="text-center text-primary-foreground/80">
+          행사 장소 안내
+        </p>
+      </header>
+
+      <main className="px-6 py-8 space-y-8">
+        {/* Map placeholder */}
+        <div className="bg-muted rounded-lg overflow-hidden shadow-elegant">
+          <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+            <div className="text-center">
+              <MapPin className="w-16 h-16 text-primary mx-auto mb-3" />
+              <p className="text-muted-foreground font-medium">지도 영역</p>
+              <p className="text-sm text-muted-foreground/70">
+                실제 구현 시 카카오맵 등 연동
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Address */}
+        <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <MapPin className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-card-foreground mb-2">
+                서울 컨벤션 센터
+              </h3>
+              <p className="text-muted-foreground text-sm mb-3">
+                서울특별시 강남구 테헤란로 123 (역삼동)
+              </p>
+              <a
+                href="https://map.kakao.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+              >
+                <Navigation className="w-4 h-4" />
+                지도 앱에서 열기
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Transportation */}
+        <div>
+          <h2 className="text-xl font-bold text-foreground mb-4">
+            교통 안내
+          </h2>
+          <div className="space-y-4">
+            {transportations.map(({ icon: Icon, title, description }, index) => (
+              <div
+                key={index}
+                className="bg-card rounded-lg p-5 shadow-elegant border border-border"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                    <Icon className="w-6 h-6 text-accent" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-card-foreground mb-1">
+                      {title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Contact */}
+        <div className="bg-primary/5 rounded-lg p-6 border border-primary/10">
+          <h3 className="text-lg font-bold text-foreground mb-3">
+            문의사항
+          </h3>
+          <div className="space-y-2 text-sm">
+            <p className="text-muted-foreground">
+              전화: 02-1234-5678
+            </p>
+            <p className="text-muted-foreground">
+              이메일: contact@conference.com
+            </p>
+          </div>
+        </div>
+      </main>
+
+      <MobileNavigation />
+    </div>
+  );
+};
+
+export default Location;
