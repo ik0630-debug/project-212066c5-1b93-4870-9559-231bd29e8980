@@ -164,13 +164,13 @@ const Admin = () => {
     }
   };
 
-  const handleUpdateInfoCard = async (id: string, field: string, value: string) => {
+  const handleUpdateInfoCard = async (id: string, data: any) => {
     const card = infoCards.find(c => c.id === id);
     if (!card) return;
-    const updated = { ...card, [field]: value };
+    const updated = { ...data };
     delete updated.id;
     await supabase.from('site_settings').update({ value: JSON.stringify(updated) }).eq('id', id);
-    setInfoCards(infoCards.map(c => c.id === id ? { ...c, [field]: value } : c));
+    setInfoCards(infoCards.map(c => c.id === id ? { id: c.id, ...data } : c));
     toast.success('정보 카드가 수정되었습니다');
   };
 
@@ -198,13 +198,13 @@ const Admin = () => {
     }
   };
 
-  const handleUpdateBottomButton = async (id: string, field: string, value: string) => {
+  const handleUpdateBottomButton = async (id: string, data: any) => {
     const button = bottomButtons.find(b => b.id === id);
     if (!button) return;
-    const updated = { ...button, [field]: value };
+    const updated = { ...data };
     delete updated.id;
     await supabase.from('site_settings').update({ value: JSON.stringify(updated) }).eq('id', id);
-    setBottomButtons(bottomButtons.map(b => b.id === id ? { ...b, [field]: value } : b));
+    setBottomButtons(bottomButtons.map(b => b.id === id ? { id: b.id, ...data } : b));
     toast.success('버튼이 수정되었습니다');
   };
 
@@ -410,7 +410,7 @@ const Admin = () => {
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndInfoCards}>
                       <SortableContext items={infoCards.map(c => c.id)} strategy={verticalListSortingStrategy}>
                         <div className="space-y-3">
-                          {infoCards.map((card) => <SortableInfoCard key={card.id} card={card} onUpdate={handleUpdateInfoCard} onDelete={() => handleDeleteSetting(card.id)} />)}
+                          {infoCards.map((card) => <SortableInfoCard key={card.id} id={card.id} card={card} cardData={card} onUpdate={handleUpdateInfoCard} onDelete={() => handleDeleteSetting(card.id)} />)}
                         </div>
                       </SortableContext>
                     </DndContext>
@@ -438,7 +438,7 @@ const Admin = () => {
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndBottomButtons}>
                       <SortableContext items={bottomButtons.map(b => b.id)} strategy={verticalListSortingStrategy}>
                         <div className="space-y-3">
-                          {bottomButtons.map((button) => <SortableBottomButton key={button.id} button={button} onUpdate={handleUpdateBottomButton} onDelete={() => handleDeleteSetting(button.id)} />)}
+                          {bottomButtons.map((button) => <SortableBottomButton key={button.id} id={button.id} button={button} buttonData={button} onUpdate={handleUpdateBottomButton} onDelete={() => handleDeleteSetting(button.id)} />)}
                         </div>
                       </SortableContext>
                     </DndContext>
