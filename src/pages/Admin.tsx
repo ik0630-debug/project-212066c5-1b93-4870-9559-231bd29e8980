@@ -69,6 +69,7 @@ const Admin = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [settings, setSettings] = useState<SiteSetting[]>([]);
   const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'settings'>('registrations');
+  const [settingsTab, setSettingsTab] = useState('home');
   const [editingSetting, setEditingSetting] = useState<SiteSetting | null>(null);
   const [newSetting, setNewSetting] = useState({
     category: '',
@@ -332,6 +333,101 @@ const Admin = () => {
       title: "설정 삭제 완료",
       description: "설정이 삭제되었습니다.",
     });
+
+    loadSettings();
+  };
+
+  const handleQuickUpdate = async (
+    category: string,
+    key: string,
+    value: string
+  ) => {
+    const existing = settings.find(
+      (s) => s.category === category && s.key === key
+    );
+
+    if (existing) {
+      const { error } = await supabase
+        .from("site_settings")
+        .update({ value })
+        .eq("id", existing.id);
+
+      if (error) {
+        toast({
+          title: "오류",
+          description: "설정 업데이트 중 오류가 발생했습니다.",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else {
+      const { error } = await supabase
+        .from("site_settings")
+        .insert({ category, key, value });
+
+      if (error) {
+        toast({
+          title: "오류",
+          description: "설정 생성 중 오류가 발생했습니다.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    loadSettings();
+  };
+
+  const handleAddProgramCard = async () => {
+    const cardCount = settings.filter(
+      (s) => s.category === "program" && s.key.startsWith("program_card_")
+    ).length;
+
+    const cardData = {
+      time: "09:00",
+      title: "새 프로그램",
+      description: "내용을 입력하세요",
+      order: cardCount,
+    };
+
+    const { error } = await supabase.from("site_settings").insert({
+      category: "program",
+      key: `program_card_${Date.now()}`,
+      value: JSON.stringify(cardData),
+      description: "프로그램 카드",
+    });
+
+    if (error) {
+      toast({
+        title: "오류",
+        description: "프로그램 카드 추가 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "추가 완료",
+      description: "새 프로그램 카드가 추가되었습니다.",
+    });
+
+    loadSettings();
+  };
+
+  const handleUpdateProgramCard = async (id: string, cardData: any) => {
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ value: JSON.stringify(cardData) })
+      .eq("id", id);
+
+    if (error) {
+      toast({
+        title: "오류",
+        description: "프로그램 카드 업데이트 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     loadSettings();
   };
@@ -609,11 +705,222 @@ const Admin = () => {
 
         {activeTab === 'settings' && (
           <div className="space-y-6">
-            {/* Add New Setting Form */}
-            <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
-              <h2 className="text-xl font-bold text-card-foreground mb-4">
-                새 설정 추가
-              </h2>
+            {/* Settings Sub-tabs */}
+            <div className="flex gap-2 border-b border-border pb-2">
+              <Button
+                variant={settingsTab === 'home' ? 'default' : 'ghost'}
+                onClick={() => setSettingsTab('home')}
+                size="sm"
+              >
+                홈 화면
+              </Button>
+              <Button
+                variant={settingsTab === 'program' ? 'default' : 'ghost'}
+                onClick={() => setSettingsTab('program')}
+                size="sm"
+              >
+                프로그램
+              </Button>
+              <Button
+                variant={settingsTab === 'location' ? 'default' : 'ghost'}
+                onClick={() => setSettingsTab('location')}
+                size="sm"
+              >
+                장소
+              </Button>
+              <Button
+                variant={settingsTab === 'other' ? 'default' : 'ghost'}
+                onClick={() => setSettingsTab('other')}
+                size="sm">
+                기타
+              </Button>
+            </div>
+
+            {/* Home Settings Tab */}
+            {settingsTab === 'home' && (
+              <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
+                <h2 className="text-xl font-bold text-card-foreground mb-4">
+                  홈 화면 설정
+                </h2>
+                <p className="text-muted-foreground">
+                  홈 화면 설정 기능은 추후 구현 예정입니다.
+                </p>
+              </div>
+            )}
+
+            {/* Program Settings Tab */}
+            {settingsTab === 'program' && (
+              <div className="space-y-6">
+                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
+                  <h2 className="text-xl font-bold text-card-foreground mb-4">
+                    프로그램 페이지 설정
+                  </h2>
+                  
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <Label htmlFor="program_title">페이지 제목</Label>
+                      <Input
+                        id="program_title"
+                        value={
+                          settings.find(
+                            (s) =>
+                              s.category === "program" && s.key === "page_title"
+                          )?.value || ""
+                        }
+                        onChange={(e) =>
+                          handleQuickUpdate("program", "page_title", e.target.value)
+                        }
+                        placeholder="프로그램"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="program_description">페이지 설명</Label>
+                      <Textarea
+                        id="program_description"
+                        value={
+                          settings.find(
+                            (s) =>
+                              s.category === "program" && s.key === "page_description"
+                          )?.value || ""
+                        }
+                        onChange={(e) =>
+                          handleQuickUpdate("program", "page_description", e.target.value)
+                        }
+                        placeholder="행사 프로그램을 안내합니다"
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">프로그램 일정</h3>
+                    <Button
+                      onClick={handleAddProgramCard}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      프로그램 추가
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {settings
+                      .filter(
+                        (s) =>
+                          s.category === "program" &&
+                          s.key.startsWith("program_card_")
+                      )
+                      .sort((a, b) => {
+                        const aData = JSON.parse(a.value);
+                        const bData = JSON.parse(b.value);
+                        return (aData.order || 0) - (bData.order || 0);
+                      })
+                      .map((card) => {
+                        const cardData = JSON.parse(card.value);
+                        return (
+                          <div
+                            key={card.id}
+                            className="border-2 border-border rounded-lg p-4 space-y-4"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-medium text-lg">
+                                {cardData.time} - {cardData.title || "제목 없음"}
+                              </h4>
+                              <Button
+                                onClick={() => handleDeleteSetting(card.id)}
+                                size="sm"
+                                variant="destructive"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                              <div>
+                                <Label>시간</Label>
+                                <Input
+                                  type="time"
+                                  value={cardData.time || "09:00"}
+                                  onChange={(e) =>
+                                    handleUpdateProgramCard(card.id, {
+                                      ...cardData,
+                                      time: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <Label>제목</Label>
+                                <Input
+                                  value={cardData.title || ""}
+                                  onChange={(e) =>
+                                    handleUpdateProgramCard(card.id, {
+                                      ...cardData,
+                                      title: e.target.value,
+                                    })
+                                  }
+                                  placeholder="프로그램 제목"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <Label>설명 (줄바꿈 가능)</Label>
+                              <Textarea
+                                value={cardData.description || ""}
+                                onChange={(e) =>
+                                  handleUpdateProgramCard(card.id, {
+                                    ...cardData,
+                                    description: e.target.value,
+                                  })
+                                }
+                                placeholder="프로그램에 대한 상세 설명을 입력하세요"
+                                rows={3}
+                              />
+                            </div>
+
+                            <div>
+                              <Label>순서</Label>
+                              <Input
+                                type="number"
+                                value={cardData.order || 0}
+                                onChange={(e) =>
+                                  handleUpdateProgramCard(card.id, {
+                                    ...cardData,
+                                    order: parseInt(e.target.value),
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Location Settings Tab */}
+            {settingsTab === 'location' && (
+              <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
+                <h2 className="text-xl font-bold text-card-foreground mb-4">
+                  장소 페이지 설정
+                </h2>
+                <p className="text-muted-foreground">
+                  장소 페이지 설정 기능은 추후 구현 예정입니다.
+                </p>
+              </div>
+            )}
+
+            {/* Other Settings Tab - Original content */}
+            {settingsTab === 'other' && (
+              <div className="space-y-6">
+                {/* Add New Setting Form */}
+                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
+                  <h2 className="text-xl font-bold text-card-foreground mb-4">
+                    새 설정 추가
+                  </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="category">카테고리 *</Label>
@@ -767,12 +1074,14 @@ const Admin = () => {
                 </Table>
               </div>
 
-              {settings.length === 0 && (
+              {settings.filter((s) => !["home", "program", "location"].includes(s.category)).length === 0 && (
                 <div className="p-12 text-center text-muted-foreground">
-                  아직 설정이 없습니다. 새 설정을 추가해주세요.
+                  아직 기타 설정이 없습니다.
                 </div>
               )}
             </div>
+              </div>
+            )}
           </div>
         )}
       </main>
