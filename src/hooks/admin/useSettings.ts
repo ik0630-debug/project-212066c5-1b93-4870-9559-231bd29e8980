@@ -10,6 +10,7 @@ export const useSettings = () => {
   const [programCards, setProgramCards] = useState<any[]>([]);
   const [transportCards, setTransportCards] = useState<any[]>([]);
   const [sectionOrder, setSectionOrder] = useState<string[]>([
+    "hero_section",
     "info_cards",
     "description",
     "bottom_buttons",
@@ -18,6 +19,11 @@ export const useSettings = () => {
   const [settings, setSettings] = useState<any>({
     hero_title: "",
     hero_subtitle: "",
+    hero_button_text: "",
+    hero_button_url: "",
+    hero_button_bg_color: "",
+    hero_button_text_color: "",
+    hero_button_text_size: "",
     description_title: "",
     description_content: "",
     program_title: "",
