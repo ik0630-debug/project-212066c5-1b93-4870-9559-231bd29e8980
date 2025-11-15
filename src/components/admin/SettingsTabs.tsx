@@ -11,6 +11,7 @@ interface SettingsTabsProps {
   onTabChange: (tab: number) => void;
   settings: any;
   registrationSettings: any;
+  registrationFields: any[];
   infoCards: any[];
   bottomButtons: any[];
   programCards: any[];
@@ -18,6 +19,7 @@ interface SettingsTabsProps {
   sectionOrder: string[];
   onSettingChange: (key: string, value: string) => void;
   onRegistrationSettingsChange: (settings: any) => void;
+  onRegistrationFieldsChange: (fields: any[]) => void;
   onInfoCardsChange: (cards: any[]) => void;
   onBottomButtonsChange: (buttons: any[]) => void;
   onProgramCardsChange: (cards: any[]) => void;
@@ -32,6 +34,7 @@ const SettingsTabs = ({
   onTabChange,
   settings,
   registrationSettings,
+  registrationFields,
   infoCards,
   bottomButtons,
   programCards,
@@ -39,6 +42,7 @@ const SettingsTabs = ({
   sectionOrder,
   onSettingChange,
   onRegistrationSettingsChange,
+  onRegistrationFieldsChange,
   onInfoCardsChange,
   onBottomButtonsChange,
   onProgramCardsChange,
@@ -92,7 +96,9 @@ const SettingsTabs = ({
         return (
           <RegistrationSettings
             registrationSettings={registrationSettings}
+            registrationFields={registrationFields}
             onRegistrationSettingsChange={onRegistrationSettingsChange}
+            onRegistrationFieldsChange={onRegistrationFieldsChange}
           />
         );
       default:

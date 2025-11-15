@@ -13,29 +13,20 @@ const Registration = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [headerImage, setHeaderImage] = useState<string>("");
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState<Record<string, string>>({});
   const [pageSettings, setPageSettings] = useState({
     pageTitle: "참가 신청",
     pageDescription: "아래 양식을 작성해주세요",
-    nameLabel: "성함",
-    namePlaceholder: "홍길동",
-    emailLabel: "이메일",
-    emailPlaceholder: "example@company.com",
-    phoneLabel: "연락처",
-    phonePlaceholder: "010-0000-0000",
-    companyLabel: "소속 회사",
-    companyPlaceholder: "회사명",
-    messageLabel: "특이사항",
-    messagePlaceholder: "특별히 전달하실 말씀이 있으시면 작성해주세요",
     successTitle: "신청이 완료되었습니다!",
     successDescription: "참가 확인 메일을 발송해드렸습니다.",
   });
+  const [fields, setFields] = useState([
+    { id: "name", label: "성함", placeholder: "홍길동", type: "text", required: true },
+    { id: "email", label: "이메일", placeholder: "example@company.com", type: "email", required: true },
+    { id: "phone", label: "연락처", placeholder: "010-0000-0000", type: "tel", required: true },
+    { id: "company", label: "소속 회사", placeholder: "회사명", type: "text", required: false },
+    { id: "message", label: "특이사항", placeholder: "특별히 전달하실 말씀이 있으시면 작성해주세요", type: "textarea", required: false },
+  ]);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -47,49 +38,26 @@ const Registration = () => {
       if (data) {
         const newSettings = { ...pageSettings };
         data.forEach(({ key, value }) => {
-          switch (key) {
-            case "registration_page_title":
-              newSettings.pageTitle = value;
-              break;
-            case "registration_page_description":
-              newSettings.pageDescription = value;
-              break;
-            case "registration_field_name_label":
-              newSettings.nameLabel = value;
-              break;
-            case "registration_field_name_placeholder":
-              newSettings.namePlaceholder = value;
-              break;
-            case "registration_field_email_label":
-              newSettings.emailLabel = value;
-              break;
-            case "registration_field_email_placeholder":
-              newSettings.emailPlaceholder = value;
-              break;
-            case "registration_field_phone_label":
-              newSettings.phoneLabel = value;
-              break;
-            case "registration_field_phone_placeholder":
-              newSettings.phonePlaceholder = value;
-              break;
-            case "registration_field_company_label":
-              newSettings.companyLabel = value;
-              break;
-            case "registration_field_company_placeholder":
-              newSettings.companyPlaceholder = value;
-              break;
-            case "registration_field_message_label":
-              newSettings.messageLabel = value;
-              break;
-            case "registration_field_message_placeholder":
-              newSettings.messagePlaceholder = value;
-              break;
-            case "registration_success_title":
-              newSettings.successTitle = value;
-              break;
-            case "registration_success_description":
-              newSettings.successDescription = value;
-              break;
+          if (key === "registration_fields") {
+            try {
+              const parsedFields = JSON.parse(value);
+              setFields(parsedFields);
+              const initialFormData: Record<string, string> = {};
+              parsedFields.forEach((field: any) => {
+                initialFormData[field.id] = "";
+              });
+              setFormData(initialFormData);
+            } catch (e) {
+              console.error("Failed to parse registration fields", e);
+            }
+          } else if (key === "registration_page_title") {
+            newSettings.pageTitle = value;
+          } else if (key === "registration_page_description") {
+            newSettings.pageDescription = value;
+          } else if (key === "registration_success_title") {
+            newSettings.successTitle = value;
+          } else if (key === "registration_success_description") {
+            newSettings.successDescription = value;
           }
         });
         setPageSettings(newSettings);
@@ -101,18 +69,28 @@ const Registration = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate required fields
+    for (const field of fields) {
+      if (field.required && !formData[field.id]) {
+        toast({
+          title: "필수 항목을 입력해주세요",
+          description: `${field.label}은(는) 필수 항목입니다.`,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     try {
+      // Build the insert object with proper typing
+      const insertData: any = {};
+      fields.forEach(field => {
+        insertData[field.id] = formData[field.id] || null;
+      });
+
       const { error } = await supabase
         .from("registrations")
-        .insert([
-          {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            company: formData.company || null,
-            message: formData.message || null,
-          },
-        ]);
+        .insert([insertData]);
 
       if (error) throw error;
 
@@ -201,83 +179,40 @@ const Registration = () => {
 
       <main className="px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="name" className="flex items-center gap-2">
-              <User className="w-4 h-4 text-primary" />
-              {pageSettings.nameLabel} *
-            </Label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder={pageSettings.namePlaceholder}
-              required
-              className="h-12"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email" className="flex items-center gap-2">
-              <Mail className="w-4 h-4 text-primary" />
-              {pageSettings.emailLabel} *
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder={pageSettings.emailPlaceholder}
-              required
-              className="h-12"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone" className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-primary" />
-              {pageSettings.phoneLabel} *
-            </Label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder={pageSettings.phonePlaceholder}
-              required
-              className="h-12"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="company" className="flex items-center gap-2">
-              <Building className="w-4 h-4 text-primary" />
-              {pageSettings.companyLabel}
-            </Label>
-            <Input
-              id="company"
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              placeholder={pageSettings.companyPlaceholder}
-              className="h-12"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="message">{pageSettings.messageLabel}</Label>
-            <Textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              placeholder={pageSettings.messagePlaceholder}
-              rows={4}
-              className="resize-none"
-            />
-          </div>
+          {fields.map((field) => (
+            <div key={field.id} className="space-y-2">
+              <Label htmlFor={field.id} className="flex items-center gap-2">
+                {field.type === "text" && field.id === "name" && <User className="w-4 h-4 text-primary" />}
+                {field.type === "email" && <Mail className="w-4 h-4 text-primary" />}
+                {field.type === "tel" && <Phone className="w-4 h-4 text-primary" />}
+                {field.id === "company" && <Building className="w-4 h-4 text-primary" />}
+                {field.label} {field.required && "*"}
+              </Label>
+              {field.type === "textarea" ? (
+                <Textarea
+                  id={field.id}
+                  name={field.id}
+                  value={formData[field.id] || ""}
+                  onChange={handleChange}
+                  placeholder={field.placeholder}
+                  required={field.required}
+                  rows={4}
+                  className="resize-none"
+                />
+              ) : (
+                <Input
+                  id={field.id}
+                  name={field.id}
+                  type={field.type}
+                  value={formData[field.id] || ""}
+                  onChange={handleChange}
+                  placeholder={field.placeholder}
+                  required={field.required}
+                  className="h-12"
+                />
+              )}
+            </div>
+          ))}
 
           <Button
             type="submit"
