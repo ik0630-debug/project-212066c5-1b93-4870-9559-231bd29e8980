@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileNavigation from "@/components/MobileNavigation";
@@ -20,6 +20,83 @@ const Registration = () => {
     company: "",
     message: "",
   });
+  const [pageSettings, setPageSettings] = useState({
+    pageTitle: "참가 신청",
+    pageDescription: "아래 양식을 작성해주세요",
+    nameLabel: "성함",
+    namePlaceholder: "홍길동",
+    emailLabel: "이메일",
+    emailPlaceholder: "example@company.com",
+    phoneLabel: "연락처",
+    phonePlaceholder: "010-0000-0000",
+    companyLabel: "소속 회사",
+    companyPlaceholder: "회사명",
+    messageLabel: "특이사항",
+    messagePlaceholder: "특별히 전달하실 말씀이 있으시면 작성해주세요",
+    successTitle: "신청이 완료되었습니다!",
+    successDescription: "참가 확인 메일을 발송해드렸습니다.",
+  });
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("category", "registration");
+
+      if (data) {
+        const newSettings = { ...pageSettings };
+        data.forEach(({ key, value }) => {
+          switch (key) {
+            case "registration_page_title":
+              newSettings.pageTitle = value;
+              break;
+            case "registration_page_description":
+              newSettings.pageDescription = value;
+              break;
+            case "registration_field_name_label":
+              newSettings.nameLabel = value;
+              break;
+            case "registration_field_name_placeholder":
+              newSettings.namePlaceholder = value;
+              break;
+            case "registration_field_email_label":
+              newSettings.emailLabel = value;
+              break;
+            case "registration_field_email_placeholder":
+              newSettings.emailPlaceholder = value;
+              break;
+            case "registration_field_phone_label":
+              newSettings.phoneLabel = value;
+              break;
+            case "registration_field_phone_placeholder":
+              newSettings.phonePlaceholder = value;
+              break;
+            case "registration_field_company_label":
+              newSettings.companyLabel = value;
+              break;
+            case "registration_field_company_placeholder":
+              newSettings.companyPlaceholder = value;
+              break;
+            case "registration_field_message_label":
+              newSettings.messageLabel = value;
+              break;
+            case "registration_field_message_placeholder":
+              newSettings.messagePlaceholder = value;
+              break;
+            case "registration_success_title":
+              newSettings.successTitle = value;
+              break;
+            case "registration_success_description":
+              newSettings.successDescription = value;
+              break;
+          }
+        });
+        setPageSettings(newSettings);
+      }
+    };
+    loadSettings();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,8 +117,8 @@ const Registration = () => {
       if (error) throw error;
 
       toast({
-        title: "신청이 완료되었습니다!",
-        description: "참가 확인 메일을 발송해드렸습니다.",
+        title: pageSettings.successTitle,
+        description: pageSettings.successDescription,
       });
 
       setFormData({
@@ -115,9 +192,9 @@ const Registration = () => {
               className="hidden"
             />
           </label>
-          <h1 className="text-3xl font-bold text-center mb-2">참가 신청</h1>
+          <h1 className="text-3xl font-bold text-center mb-2">{pageSettings.pageTitle}</h1>
           <p className="text-center text-primary-foreground/80">
-            아래 양식을 작성해주세요
+            {pageSettings.pageDescription}
           </p>
         </div>
       </header>
@@ -127,14 +204,14 @@ const Registration = () => {
           <div className="space-y-2">
             <Label htmlFor="name" className="flex items-center gap-2">
               <User className="w-4 h-4 text-primary" />
-              성함 *
+              {pageSettings.nameLabel} *
             </Label>
             <Input
               id="name"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="홍길동"
+              placeholder={pageSettings.namePlaceholder}
               required
               className="h-12"
             />
@@ -143,7 +220,7 @@ const Registration = () => {
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2">
               <Mail className="w-4 h-4 text-primary" />
-              이메일 *
+              {pageSettings.emailLabel} *
             </Label>
             <Input
               id="email"
@@ -151,7 +228,7 @@ const Registration = () => {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="example@company.com"
+              placeholder={pageSettings.emailPlaceholder}
               required
               className="h-12"
             />
@@ -160,7 +237,7 @@ const Registration = () => {
           <div className="space-y-2">
             <Label htmlFor="phone" className="flex items-center gap-2">
               <Phone className="w-4 h-4 text-primary" />
-              연락처 *
+              {pageSettings.phoneLabel} *
             </Label>
             <Input
               id="phone"
@@ -168,7 +245,7 @@ const Registration = () => {
               type="tel"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="010-0000-0000"
+              placeholder={pageSettings.phonePlaceholder}
               required
               className="h-12"
             />
@@ -177,26 +254,26 @@ const Registration = () => {
           <div className="space-y-2">
             <Label htmlFor="company" className="flex items-center gap-2">
               <Building className="w-4 h-4 text-primary" />
-              소속 회사
+              {pageSettings.companyLabel}
             </Label>
             <Input
               id="company"
               name="company"
               value={formData.company}
               onChange={handleChange}
-              placeholder="회사명"
+              placeholder={pageSettings.companyPlaceholder}
               className="h-12"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="message">특이사항</Label>
+            <Label htmlFor="message">{pageSettings.messageLabel}</Label>
             <Textarea
               id="message"
               name="message"
               value={formData.message}
               onChange={handleChange}
-              placeholder="특별히 전달하실 말씀이 있으시면 작성해주세요"
+              placeholder={pageSettings.messagePlaceholder}
               rows={4}
               className="resize-none"
             />
