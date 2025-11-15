@@ -16,6 +16,14 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  
+  // Additional signup fields
+  const [name, setName] = useState("");
+  const [organization, setOrganization] = useState("");
+  const [department, setDepartment] = useState("");
+  const [position, setPosition] = useState("");
+  const [officePhone, setOfficePhone] = useState("");
+  const [mobilePhone, setMobilePhone] = useState("");
 
   useEffect(() => {
     // Set up auth state listener
@@ -61,7 +69,7 @@ const Auth = () => {
           description: "환영합니다.",
         });
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data: authData, error: authError } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -69,7 +77,27 @@ const Auth = () => {
           },
         });
 
-        if (error) throw error;
+        if (authError) throw authError;
+
+        // Create profile with additional information
+        if (authData.user) {
+          const { error: profileError } = await supabase
+            .from("profiles")
+            .insert([
+              {
+                user_id: authData.user.id,
+                name,
+                organization,
+                department: department || null,
+                position,
+                office_phone: officePhone || null,
+                mobile_phone: mobilePhone,
+                email,
+              },
+            ]);
+
+          if (profileError) throw profileError;
+        }
 
         toast({
           title: "회원가입 성공!",
@@ -96,8 +124,88 @@ const Auth = () => {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="name">이름 *</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="홍길동"
+                    required
+                    className="h-12"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="organization">소속 *</Label>
+                  <Input
+                    id="organization"
+                    type="text"
+                    value={organization}
+                    onChange={(e) => setOrganization(e.target.value)}
+                    placeholder="회사명"
+                    required
+                    className="h-12"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="department">부서</Label>
+                  <Input
+                    id="department"
+                    type="text"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    placeholder="영업부"
+                    className="h-12"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="position">직함 *</Label>
+                  <Input
+                    id="position"
+                    type="text"
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
+                    placeholder="대리"
+                    required
+                    className="h-12"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="officePhone">유선전화</Label>
+                  <Input
+                    id="officePhone"
+                    type="tel"
+                    value={officePhone}
+                    onChange={(e) => setOfficePhone(e.target.value)}
+                    placeholder="02-0000-0000"
+                    className="h-12"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="mobilePhone">휴대전화 *</Label>
+                  <Input
+                    id="mobilePhone"
+                    type="tel"
+                    value={mobilePhone}
+                    onChange={(e) => setMobilePhone(e.target.value)}
+                    placeholder="010-0000-0000"
+                    required
+                    className="h-12"
+                  />
+                </div>
+              </>
+            )}
+
             <div className="space-y-2">
-              <Label htmlFor="email">이메일</Label>
+              <Label htmlFor="email">이메일 *</Label>
               <Input
                 id="email"
                 type="email"
@@ -110,7 +218,7 @@ const Auth = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">비밀번호</Label>
+              <Label htmlFor="password">비밀번호 *</Label>
               <Input
                 id="password"
                 type="password"
