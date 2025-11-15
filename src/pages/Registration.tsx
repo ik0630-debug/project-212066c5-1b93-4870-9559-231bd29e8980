@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import MobileNavigation from "@/components/MobileNavigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,19 +21,43 @@ const Registration = () => {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "신청이 완료되었습니다!",
-      description: "참가 확인 메일을 발송해드렸습니다.",
-    });
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      company: "",
-      message: "",
-    });
+
+    try {
+      const { error } = await supabase
+        .from("registrations")
+        .insert([
+          {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            company: formData.company || null,
+            message: formData.message || null,
+          },
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "신청이 완료되었습니다!",
+        description: "참가 확인 메일을 발송해드렸습니다.",
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        message: "",
+      });
+    } catch (error: any) {
+      toast({
+        title: "신청 실패",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleChange = (
