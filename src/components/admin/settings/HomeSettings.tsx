@@ -105,6 +105,8 @@ const HomeSettings = ({
 
   const getSectionTitle = (sectionId: string): string => {
     switch (sectionId) {
+      case "hero_section":
+        return "히어로 섹션";
       case "info_cards":
         return "정보 카드";
       case "description":
@@ -142,6 +144,77 @@ const HomeSettings = ({
 
   const renderSection = (sectionId: string, index: number) => {
     switch (sectionId) {
+      case "hero_section":
+        return (
+          <div key={sectionId} className="space-y-4">
+            <SectionControls title="히어로 섹션" index={index} />
+            <div className="grid gap-4">
+              <div>
+                <Label htmlFor="hero_title">메인 제목</Label>
+                <Input
+                  id="hero_title"
+                  value={settings.hero_title || ""}
+                  onChange={(e) => onSettingChange("hero_title", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_subtitle">부제목</Label>
+                <Input
+                  id="hero_subtitle"
+                  value={settings.hero_subtitle || ""}
+                  onChange={(e) => onSettingChange("hero_subtitle", e.target.value)}
+                />
+              </div>
+              <Separator />
+              <h4 className="font-medium">히어로 버튼 설정</h4>
+              <div>
+                <Label htmlFor="hero_button_text">버튼 텍스트</Label>
+                <Input
+                  id="hero_button_text"
+                  value={settings.hero_button_text || ""}
+                  onChange={(e) => onSettingChange("hero_button_text", e.target.value)}
+                  placeholder="참가 신청하기"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_button_url">버튼 URL</Label>
+                <Input
+                  id="hero_button_url"
+                  value={settings.hero_button_url || ""}
+                  onChange={(e) => onSettingChange("hero_button_url", e.target.value)}
+                  placeholder="/registration 또는 https://example.com"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_button_bg_color">배경 색상 (HSL)</Label>
+                <Input
+                  id="hero_button_bg_color"
+                  value={settings.hero_button_bg_color || ""}
+                  onChange={(e) => onSettingChange("hero_button_bg_color", e.target.value)}
+                  placeholder="280 100% 70%"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_button_text_color">텍스트 색상 (HSL)</Label>
+                <Input
+                  id="hero_button_text_color"
+                  value={settings.hero_button_text_color || ""}
+                  onChange={(e) => onSettingChange("hero_button_text_color", e.target.value)}
+                  placeholder="0 0% 100%"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_button_text_size">텍스트 크기</Label>
+                <Input
+                  id="hero_button_text_size"
+                  value={settings.hero_button_text_size || ""}
+                  onChange={(e) => onSettingChange("hero_button_text_size", e.target.value)}
+                  placeholder="lg (sm, base, lg, xl 등)"
+                />
+              </div>
+            </div>
+          </div>
+        );
       case "info_cards":
         return (
           <div key={sectionId} className="space-y-4">
@@ -248,28 +321,11 @@ const HomeSettings = ({
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">히어로 섹션 (고정)</h3>
-        <div className="grid gap-4">
-          <div>
-            <Label htmlFor="hero_title">제목</Label>
-            <Input
-              id="hero_title"
-              value={settings.hero_title}
-              onChange={(e) => onSettingChange("hero_title", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="hero_subtitle">부제목</Label>
-            <Input
-              id="hero_subtitle"
-              value={settings.hero_subtitle}
-              onChange={(e) => onSettingChange("hero_subtitle", e.target.value)}
-            />
-          </div>
-        </div>
+        <h3 className="text-lg font-semibold">홈 화면 섹션 설정</h3>
+        <p className="text-sm text-muted-foreground">
+          섹션 순서를 변경하려면 화살표 버튼을 사용하세요
+        </p>
       </div>
-
-      <Separator />
 
       {sectionOrder.map((sectionId, index) => (
         <div key={sectionId}>
