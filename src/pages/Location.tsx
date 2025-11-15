@@ -1,12 +1,91 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
-import { MapPin, Train, Bus, Car, Navigation, ArrowLeft, Upload } from "lucide-react";
+import { MapPin, Train, Bus, Car, Navigation, ArrowLeft, Upload, Plane, Ship } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Location = () => {
   const navigate = useNavigate();
   const [headerImage, setHeaderImage] = useState<string>("");
+  const [pageTitle, setPageTitle] = useState("오시는 길");
+  const [pageDescription, setPageDescription] = useState("행사 장소 안내");
+  const [locationName, setLocationName] = useState("서울 컨벤션 센터");
+  const [locationAddress, setLocationAddress] = useState("서울특별시 강남구 테헤란로 123 (역삼동)");
+  const [locationMapUrl, setLocationMapUrl] = useState("https://map.kakao.com");
+  const [locationPhone, setLocationPhone] = useState("02-1234-5678");
+  const [locationEmail, setLocationEmail] = useState("contact@conference.com");
+  const [transportations, setTransportations] = useState<any[]>([]);
+
+  useEffect(() => {
+    loadLocationSettings();
+  }, []);
+
+  const loadLocationSettings = async () => {
+    const { data: settings } = await supabase
+      .from('site_settings')
+      .select('*')
+      .eq('category', 'location');
+
+    if (!settings) return;
+
+    settings.forEach(setting => {
+      switch (setting.key) {
+        case 'location_page_title':
+          setPageTitle(setting.value);
+          break;
+        case 'location_page_description':
+          setPageDescription(setting.value);
+          break;
+        case 'location_name':
+          setLocationName(setting.value);
+          break;
+        case 'location_address':
+          setLocationAddress(setting.value);
+          break;
+        case 'location_map_url':
+          setLocationMapUrl(setting.value);
+          break;
+        case 'location_phone':
+          setLocationPhone(setting.value);
+          break;
+        case 'location_email':
+          setLocationEmail(setting.value);
+          break;
+      }
+    });
+
+    const transportCardsSettings = settings.filter(s => s.key.startsWith('transport_card_'));
+    const cards = transportCardsSettings.map(s => {
+      try {
+        return { ...JSON.parse(s.value), order: parseInt(s.description || '0') };
+      } catch {
+        return null;
+      }
+    }).filter(Boolean).sort((a: any, b: any) => a.order - b.order);
+
+    if (cards.length > 0) {
+      setTransportations(cards);
+    } else {
+      setTransportations([
+        {
+          icon: "Train",
+          title: "지하철",
+          description: "2호선 강남역 5번 출구에서 도보 5분",
+        },
+        {
+          icon: "Bus",
+          title: "버스",
+          description: "146, 360, 440, 1100번 - 강남역 하차",
+        },
+        {
+          icon: "Car",
+          title: "자가용",
+          description: "건물 지하 1~3층 주차 가능 (3시간 무료)",
+        },
+      ]);
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -19,23 +98,10 @@ const Location = () => {
     }
   };
 
-  const transportations = [
-    {
-      icon: Train,
-      title: "지하철",
-      description: "2호선 강남역 5번 출구에서 도보 5분",
-    },
-    {
-      icon: Bus,
-      title: "버스",
-      description: "146, 360, 440, 1100번 - 강남역 하차",
-    },
-    {
-      icon: Car,
-      title: "자가용",
-      description: "건물 지하 1~3층 주차 가능 (3시간 무료)",
-    },
-  ];
+  const getIconComponent = (iconName: string) => {
+    const icons: Record<string, any> = { Train, Bus, Car, Plane, Ship };
+    return icons[iconName] || MapPin;
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -72,9 +138,9 @@ const Location = () => {
               className="hidden"
             />
           </label>
-          <h1 className="text-3xl font-bold text-center mb-2">오시는 길</h1>
+          <h1 className="text-3xl font-bold text-center mb-2">{pageTitle}</h1>
           <p className="text-center text-primary-foreground/80">
-            행사 장소 안내
+            {pageDescription}
           </p>
         </div>
       </header>
@@ -101,13 +167,13 @@ const Location = () => {
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-card-foreground mb-2">
-                서울 컨벤션 센터
+                {locationName}
               </h3>
               <p className="text-muted-foreground text-sm mb-3">
-                서울특별시 강남구 테헤란로 123 (역삼동)
+                {locationAddress}
               </p>
               <a
-                href="https://map.kakao.com"
+                href={locationMapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
@@ -125,26 +191,29 @@ const Location = () => {
             교통 안내
           </h2>
           <div className="space-y-4">
-            {transportations.map(({ icon: Icon, title, description }, index) => (
-              <div
-                key={index}
-                className="bg-card rounded-lg p-5 shadow-elegant border border-border"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-accent" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-card-foreground mb-1">
-                      {title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {description}
-                    </p>
+            {transportations.map(({ icon, title, description }, index) => {
+              const Icon = getIconComponent(icon);
+              return (
+                <div
+                  key={index}
+                  className="bg-card rounded-lg p-5 shadow-elegant border border-border"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                      <Icon className="w-6 h-6 text-accent" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-card-foreground mb-1">
+                        {title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {description}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -155,10 +224,10 @@ const Location = () => {
           </h3>
           <div className="space-y-2 text-sm">
             <p className="text-muted-foreground">
-              전화: 02-1234-5678
+              전화: {locationPhone}
             </p>
             <p className="text-muted-foreground">
-              이메일: contact@conference.com
+              이메일: {locationEmail}
             </p>
           </div>
         </div>

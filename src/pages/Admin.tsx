@@ -4,45 +4,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from "@supabase/supabase-js";
-import { ArrowLeft, LogOut, Trash2, Shield, ShieldOff, Plus, Pencil, GripVertical } from "lucide-react";
+import { ArrowLeft, LogOut, Trash2, Shield, ShieldOff, Plus, Settings, Users, FileText, MapPin, Home } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import IconPicker from "@/components/IconPicker";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableInfoCard from "@/components/SortableInfoCard";
 import SortableBottomButton from "@/components/SortableBottomButton";
+import SortableTransportCard from "@/components/SortableTransportCard";
+import { toast } from "sonner";
 
 interface Registration {
   id: string;
@@ -80,25 +53,19 @@ interface SiteSetting {
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { toast: toastHook } = useToast();
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [settings, setSettings] = useState<SiteSetting[]>([]);
   const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'settings'>('registrations');
-  const [settingsTab, setSettingsTab] = useState('home');
-  const [editingSetting, setEditingSetting] = useState<SiteSetting | null>(null);
-  const [newSetting, setNewSetting] = useState({
-    category: '',
-    key: '',
-    value: '',
-    description: ''
-  });
+  const [activeSettingsTab, setActiveSettingsTab] = useState('home');
+  const [infoCards, setInfoCards] = useState<any[]>([]);
+  const [bottomButtons, setBottomButtons] = useState<any[]>([]);
+  const [programCards, setProgramCards] = useState<any[]>([]);
+  const [transportCards, setTransportCards] = useState<any[]>([]);
 
-  // Sensors for drag and drop
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -113,39 +80,20 @@ const Admin = () => {
   const checkAuth = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session?.user) {
         navigate("/auth");
         return;
       }
-
-      setSession(session);
       setUser(session.user);
-
-      // Check if user is admin
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", session.user.id)
-        .eq("role", "admin")
-        .single();
-
+      const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", session.user.id).eq("role", "admin").single();
       if (!roleData) {
-        toast({
-          title: "접근 권한 없음",
-          description: "관리자만 접근할 수 있습니다.",
-          variant: "destructive",
-        });
         navigate("/");
         return;
       }
-
-      setIsAdmin(true);
       loadRegistrations();
       loadUsers();
       loadSettings();
     } catch (error) {
-      console.error("Auth check error:", error);
       navigate("/auth");
     } finally {
       setLoading(false);
@@ -153,787 +101,265 @@ const Admin = () => {
   };
 
   const loadRegistrations = async () => {
-    const { data, error } = await supabase
-      .from("registrations")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      toast({
-        title: "데이터 로드 실패",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
+    const { data } = await supabase.from("registrations").select("*").order("created_at", { ascending: false });
     setRegistrations(data || []);
   };
 
   const loadUsers = async () => {
-    const { data: profilesData, error: profilesError } = await supabase
-      .from("profiles")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (profilesError) {
-      toast({
-        title: "회원 목록 로드 실패",
-        description: profilesError.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check admin status for each user
-    const usersWithRoles = await Promise.all(
-      (profilesData || []).map(async (profile) => {
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", profile.user_id)
-          .eq("role", "admin")
-          .maybeSingle();
-
-        return {
-          ...profile,
-          is_admin: !!roleData,
-        };
-      })
-    );
-
+    const { data: profilesData } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+    const usersWithRoles = await Promise.all((profilesData || []).map(async (profile) => {
+      const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", profile.user_id).eq("role", "admin").maybeSingle();
+      return { ...profile, is_admin: !!roleData };
+    }));
     setUsers(usersWithRoles);
   };
 
-  const handleGrantAdmin = async (userId: string) => {
-    const { error } = await supabase
-      .from("user_roles")
-      .insert({ user_id: userId, role: "admin" });
-
-    if (error) {
-      toast({
-        title: "권한 부여 실패",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "관리자 권한 부여 완료",
-      description: "사용자에게 관리자 권한이 부여되었습니다.",
-    });
-
-    loadUsers();
-  };
-
-  const handleRevokeAdmin = async (userId: string) => {
-    if (!confirm("관리자 권한을 제거하시겠습니까?")) return;
-
-    const { error } = await supabase
-      .from("user_roles")
-      .delete()
-      .eq("user_id", userId)
-      .eq("role", "admin");
-
-    if (error) {
-      toast({
-        title: "권한 제거 실패",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "관리자 권한 제거 완료",
-      description: "사용자의 관리자 권한이 제거되었습니다.",
-    });
-
-    loadUsers();
-  };
-
   const loadSettings = async () => {
-    const { data, error } = await supabase
-      .from("site_settings")
-      .select("*")
-      .order("category", { ascending: true })
-      .order("key", { ascending: true });
-
-    if (error) {
-      toast({
-        title: "설정 로드 실패",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
+    const { data } = await supabase.from("site_settings").select("*");
     setSettings(data || []);
+    
+    const parseCards = (category: string, prefix: string) => {
+      return (data?.filter(s => s.category === category && s.key.startsWith(prefix)) || [])
+        .map(s => {
+          try {
+            return { id: s.id, ...JSON.parse(s.value), order: parseInt(s.description || '0') };
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean)
+        .sort((a: any, b: any) => a.order - b.order);
+    };
+
+    setInfoCards(parseCards('home', 'info_card_'));
+    setBottomButtons(parseCards('home', 'bottom_button_'));
+    setProgramCards(parseCards('program', 'program_card_'));
+    setTransportCards(parseCards('location', 'transport_card_'));
   };
 
-  const handleAddSetting = async () => {
-    if (!newSetting.category || !newSetting.key || !newSetting.value) {
-      toast({
-        title: "입력 오류",
-        description: "카테고리, 키, 값은 필수 항목입니다.",
-        variant: "destructive",
-      });
-      return;
+  const handleQuickUpdate = async (category: string, key: string, value: string, desc: string) => {
+    const existing = settings.find(s => s.category === category && s.key === key);
+    if (existing) {
+      await supabase.from('site_settings').update({ value }).eq('id', existing.id);
+    } else {
+      await supabase.from('site_settings').insert({ category, key, value, description: desc });
     }
-
-    const { error } = await supabase
-      .from("site_settings")
-      .insert({
-        category: newSetting.category,
-        key: newSetting.key,
-        value: newSetting.value,
-        description: newSetting.description || null,
-      });
-
-    if (error) {
-      toast({
-        title: "설정 추가 실패",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "설정 추가 완료",
-      description: "새로운 설정이 추가되었습니다.",
-    });
-
-    setNewSetting({ category: '', key: '', value: '', description: '' });
-    loadSettings();
-  };
-
-  const handleUpdateSetting = async () => {
-    if (!editingSetting) return;
-
-    const { error } = await supabase
-      .from("site_settings")
-      .update({
-        category: editingSetting.category,
-        key: editingSetting.key,
-        value: editingSetting.value,
-        description: editingSetting.description,
-      })
-      .eq("id", editingSetting.id);
-
-    if (error) {
-      toast({
-        title: "설정 수정 실패",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "설정 수정 완료",
-      description: "설정이 업데이트되었습니다.",
-    });
-
-    setEditingSetting(null);
+    toast.success(`${desc}이(가) 저장되었습니다`);
     loadSettings();
   };
 
   const handleDeleteSetting = async (id: string) => {
     if (!confirm("정말 삭제하시겠습니까?")) return;
-
-    const { error } = await supabase
-      .from("site_settings")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      toast({
-        title: "설정 삭제 실패",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "설정 삭제 완료",
-      description: "설정이 삭제되었습니다.",
-    });
-
-    loadSettings();
-  };
-
-  const handleQuickUpdate = async (
-    category: string,
-    key: string,
-    value: string
-  ) => {
-    const existing = settings.find(
-      (s) => s.category === category && s.key === key
-    );
-
-    if (existing) {
-      const { error } = await supabase
-        .from("site_settings")
-        .update({ value })
-        .eq("id", existing.id);
-
-      if (error) {
-        toast({
-          title: "오류",
-          description: "설정 업데이트 중 오류가 발생했습니다.",
-          variant: "destructive",
-        });
-        return;
-      }
-    } else {
-      const { error } = await supabase
-        .from("site_settings")
-        .insert({ category, key, value });
-
-      if (error) {
-        toast({
-          title: "오류",
-          description: "설정 생성 중 오류가 발생했습니다.",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-
+    await supabase.from("site_settings").delete().eq("id", id);
+    toast.success("삭제 완료");
     loadSettings();
   };
 
   const handleAddInfoCard = async () => {
-    const cardCount = settings.filter(
-      (s) => s.category === "home" && s.key.startsWith("info_card_")
-    ).length;
-
-    const cardData = {
-      icon: "Calendar",
-      title: "새 카드",
-      content: "내용을 입력하세요",
-      order: cardCount,
-    };
-
-    const { error } = await supabase.from("site_settings").insert({
-      category: "home",
-      key: `info_card_${Date.now()}`,
-      value: JSON.stringify(cardData),
-      description: "정보 카드",
-    });
-
-    if (error) {
-      toast({
-        title: "오류",
-        description: "카드 추가 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-      return;
+    const newCard = { icon: 'Star', title: '새 정보', content: '내용을 입력하세요', order: infoCards.length };
+    const { data } = await supabase.from('site_settings').insert({ category: 'home', key: `info_card_${Date.now()}`, value: JSON.stringify(newCard), description: String(newCard.order) }).select().single();
+    if (data) {
+      setInfoCards([...infoCards, { id: data.id, ...newCard }]);
+      toast.success('정보 카드가 추가되었습니다');
     }
-
-    toast({
-      title: "추가 완료",
-      description: "새 카드가 추가되었습니다.",
-    });
-
-    loadSettings();
   };
 
-  const handleUpdateInfoCard = async (id: string, cardData: any) => {
-    const { error } = await supabase
-      .from("site_settings")
-      .update({ value: JSON.stringify(cardData) })
-      .eq("id", id);
-
-    if (error) {
-      toast({
-        title: "오류",
-        description: "카드 업데이트 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    loadSettings();
+  const handleUpdateInfoCard = async (id: string, field: string, value: string) => {
+    const card = infoCards.find(c => c.id === id);
+    if (!card) return;
+    const updated = { ...card, [field]: value };
+    delete updated.id;
+    await supabase.from('site_settings').update({ value: JSON.stringify(updated) }).eq('id', id);
+    setInfoCards(infoCards.map(c => c.id === id ? { ...c, [field]: value } : c));
+    toast.success('정보 카드가 수정되었습니다');
   };
 
-  const handleReorderInfoCards = async (oldIndex: number, newIndex: number) => {
-    const cards = settings
-      .filter((s) => s.category === "home" && s.key.startsWith("info_card_"))
-      .sort((a, b) => {
-        const aData = JSON.parse(a.value);
-        const bData = JSON.parse(b.value);
-        return (aData.order || 0) - (bData.order || 0);
-      });
-
-    const reorderedCards = arrayMove(cards, oldIndex, newIndex);
-
-    // Update order for all cards
-    for (let i = 0; i < reorderedCards.length; i++) {
-      const card = reorderedCards[i];
-      const cardData = JSON.parse(card.value);
-      const { error } = await supabase
-        .from("site_settings")
-        .update({ value: JSON.stringify({ ...cardData, order: i }) })
-        .eq("id", card.id);
-
-      if (error) {
-        console.error("Error updating card order:", error);
-      }
-    }
-
-    toast({
-      title: "순서 변경 완료",
-      description: "카드 순서가 업데이트되었습니다.",
-    });
-
-    loadSettings();
-  };
-
-  const handleDragEndInfoCards = (event: DragEndEvent) => {
+  const handleDragEndInfoCards = async (event: DragEndEvent) => {
     const { active, over } = event;
-
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    const cards = settings
-      .filter((s) => s.category === "home" && s.key.startsWith("info_card_"))
-      .sort((a, b) => {
-        const aData = JSON.parse(a.value);
-        const bData = JSON.parse(b.value);
-        return (aData.order || 0) - (bData.order || 0);
-      });
-
-    const oldIndex = cards.findIndex((card) => card.id === active.id);
-    const newIndex = cards.findIndex((card) => card.id === over.id);
-
-    if (oldIndex !== -1 && newIndex !== -1) {
-      handleReorderInfoCards(oldIndex, newIndex);
-    }
-  };
-
-  const handleReorderBottomButtons = async (oldIndex: number, newIndex: number) => {
-    const buttons = settings
-      .filter((s) => s.category === "home" && s.key.startsWith("bottom_button_"))
-      .sort((a, b) => {
-        const aData = JSON.parse(a.value);
-        const bData = JSON.parse(b.value);
-        return (aData.order || 0) - (bData.order || 0);
-      });
-
-    const reorderedButtons = arrayMove(buttons, oldIndex, newIndex);
-
-    // Update order for all buttons
-    for (let i = 0; i < reorderedButtons.length; i++) {
-      const button = reorderedButtons[i];
-      const buttonData = JSON.parse(button.value);
-      const { error } = await supabase
-        .from("site_settings")
-        .update({ value: JSON.stringify({ ...buttonData, order: i }) })
-        .eq("id", button.id);
-
-      if (error) {
-        console.error("Error updating button order:", error);
-      }
-    }
-
-    toast({
-      title: "순서 변경 완료",
-      description: "버튼 순서가 업데이트되었습니다.",
-    });
-
-    loadSettings();
-  };
-
-  const handleDragEndBottomButtons = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    const buttons = settings
-      .filter((s) => s.category === "home" && s.key.startsWith("bottom_button_"))
-      .sort((a, b) => {
-        const aData = JSON.parse(a.value);
-        const bData = JSON.parse(b.value);
-        return (aData.order || 0) - (bData.order || 0);
-      });
-
-    const oldIndex = buttons.findIndex((button) => button.id === active.id);
-    const newIndex = buttons.findIndex((button) => button.id === over.id);
-
-    if (oldIndex !== -1 && newIndex !== -1) {
-      handleReorderBottomButtons(oldIndex, newIndex);
-    }
+    if (!over || active.id === over.id) return;
+    const oldIndex = infoCards.findIndex(c => c.id === active.id);
+    const newIndex = infoCards.findIndex(c => c.id === over.id);
+    const reordered = arrayMove(infoCards, oldIndex, newIndex);
+    setInfoCards(reordered);
+    await Promise.all(reordered.map((card, index) => {
+      const cardData = { ...card };
+      delete cardData.id;
+      return supabase.from('site_settings').update({ value: JSON.stringify(cardData), description: String(index) }).eq('id', card.id);
+    }));
+    toast.success('정보 카드 순서가 변경되었습니다');
   };
 
   const handleAddBottomButton = async () => {
-    const buttonCount = settings.filter(
-      (s) => s.category === "home" && s.key.startsWith("bottom_button_")
-    ).length;
-
-    const buttonData = {
-      text: "새 버튼",
-      link: "/",
-      variant: "outline",
-      order: buttonCount,
-    };
-
-    const { error } = await supabase.from("site_settings").insert({
-      category: "home",
-      key: `bottom_button_${Date.now()}`,
-      value: JSON.stringify(buttonData),
-      description: "하단 버튼",
-    });
-
-    if (error) {
-      toast({
-        title: "오류",
-        description: "버튼 추가 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-      return;
+    const newButton = { text: '새 버튼', link: '#', variant: 'default', order: bottomButtons.length };
+    const { data } = await supabase.from('site_settings').insert({ category: 'home', key: `bottom_button_${Date.now()}`, value: JSON.stringify(newButton), description: String(newButton.order) }).select().single();
+    if (data) {
+      setBottomButtons([...bottomButtons, { id: data.id, ...newButton }]);
+      toast.success('버튼이 추가되었습니다');
     }
-
-    toast({
-      title: "추가 완료",
-      description: "새 버튼이 추가되었습니다.",
-    });
-
-    loadSettings();
   };
 
-  const handleUpdateBottomButton = async (id: string, buttonData: any) => {
-    const { error } = await supabase
-      .from("site_settings")
-      .update({ value: JSON.stringify(buttonData) })
-      .eq("id", id);
+  const handleUpdateBottomButton = async (id: string, field: string, value: string) => {
+    const button = bottomButtons.find(b => b.id === id);
+    if (!button) return;
+    const updated = { ...button, [field]: value };
+    delete updated.id;
+    await supabase.from('site_settings').update({ value: JSON.stringify(updated) }).eq('id', id);
+    setBottomButtons(bottomButtons.map(b => b.id === id ? { ...b, [field]: value } : b));
+    toast.success('버튼이 수정되었습니다');
+  };
 
-    if (error) {
-      toast({
-        title: "오류",
-        description: "버튼 업데이트 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-      return;
+  const handleDragEndBottomButtons = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = bottomButtons.findIndex(b => b.id === active.id);
+    const newIndex = bottomButtons.findIndex(b => b.id === over.id);
+    const reordered = arrayMove(bottomButtons, oldIndex, newIndex);
+    setBottomButtons(reordered);
+    await Promise.all(reordered.map((button, index) => {
+      const buttonData = { ...button };
+      delete buttonData.id;
+      return supabase.from('site_settings').update({ value: JSON.stringify(buttonData), description: String(index) }).eq('id', button.id);
+    }));
+    toast.success('버튼 순서가 변경되었습니다');
+  };
+
+  const handleAddTransportCard = async () => {
+    const newCard = { icon: 'Train', title: '새 교통편', description: '설명을 입력하세요', order: transportCards.length };
+    const { data } = await supabase.from('site_settings').insert({ category: 'location', key: `transport_card_${Date.now()}`, value: JSON.stringify(newCard), description: String(newCard.order) }).select().single();
+    if (data) {
+      setTransportCards([...transportCards, { id: data.id, ...newCard }]);
+      toast.success('교통편이 추가되었습니다');
     }
+  };
 
-    loadSettings();
+  const handleUpdateTransportCard = async (id: string, field: string, value: string) => {
+    const card = transportCards.find(c => c.id === id);
+    if (!card) return;
+    const updated = { ...card, [field]: value };
+    delete updated.id;
+    await supabase.from('site_settings').update({ value: JSON.stringify(updated) }).eq('id', id);
+    setTransportCards(transportCards.map(c => c.id === id ? { ...c, [field]: value } : c));
+    toast.success('교통편이 수정되었습니다');
+  };
+
+  const handleDragEndTransportCards = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = transportCards.findIndex(c => c.id === active.id);
+    const newIndex = transportCards.findIndex(c => c.id === over.id);
+    const reordered = arrayMove(transportCards, oldIndex, newIndex);
+    setTransportCards(reordered);
+    await Promise.all(reordered.map((card, index) => {
+      const cardData = { ...card };
+      delete cardData.id;
+      return supabase.from('site_settings').update({ value: JSON.stringify(cardData), description: String(index) }).eq('id', card.id);
+    }));
+    toast.success('교통편 순서가 변경되었습니다');
   };
 
   const handleAddProgramCard = async () => {
-    const cardCount = settings.filter(
-      (s) => s.category === "program" && s.key.startsWith("program_card_")
-    ).length;
-
-    const cardData = {
-      time: "09:00",
-      title: "새 프로그램",
-      description: "내용을 입력하세요",
-      order: cardCount,
-    };
-
-    const { error } = await supabase.from("site_settings").insert({
-      category: "program",
-      key: `program_card_${Date.now()}`,
-      value: JSON.stringify(cardData),
-      description: "프로그램 카드",
-    });
-
-    if (error) {
-      toast({
-        title: "오류",
-        description: "프로그램 카드 추가 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-      return;
+    const newCard = { time: '00:00', title: '새 프로그램', description: '설명을 입력하세요', order: programCards.length };
+    const { data } = await supabase.from('site_settings').insert({ category: 'program', key: `program_card_${Date.now()}`, value: JSON.stringify(newCard), description: String(newCard.order) }).select().single();
+    if (data) {
+      setProgramCards([...programCards, { id: data.id, ...newCard }]);
+      toast.success('프로그램이 추가되었습니다');
     }
-
-    toast({
-      title: "추가 완료",
-      description: "새 프로그램 카드가 추가되었습니다.",
-    });
-
-    loadSettings();
   };
 
-  const handleUpdateProgramCard = async (id: string, cardData: any) => {
-    const { error } = await supabase
-      .from("site_settings")
-      .update({ value: JSON.stringify(cardData) })
-      .eq("id", id);
-
-    if (error) {
-      toast({
-        title: "오류",
-        description: "프로그램 카드 업데이트 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    loadSettings();
+  const handleUpdateProgramCard = async (id: string, field: string, value: string) => {
+    const card = programCards.find(c => c.id === id);
+    if (!card) return;
+    const updated = { ...card, [field]: value };
+    delete updated.id;
+    await supabase.from('site_settings').update({ value: JSON.stringify(updated) }).eq('id', id);
+    setProgramCards(programCards.map(c => c.id === id ? { ...c, [field]: value } : c));
+    toast.success('프로그램이 수정되었습니다');
   };
 
-  const handleStatusChange = async (id: string, newStatus: string) => {
-    const { error } = await supabase
-      .from("registrations")
-      .update({ status: newStatus })
-      .eq("id", id);
-
-    if (error) {
-      toast({
-        title: "상태 변경 실패",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "상태 변경 완료",
-      description: "신청 상태가 업데이트되었습니다.",
-    });
-
-    loadRegistrations();
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("정말 삭제하시겠습니까?")) return;
-
-    const { error } = await supabase
-      .from("registrations")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      toast({
-        title: "삭제 실패",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "삭제 완료",
-      description: "신청이 삭제되었습니다.",
-    });
-
-    loadRegistrations();
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">로딩중...</p>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return null;
-  }
+  if (loading) return <div className="flex items-center justify-center min-h-screen">로딩 중...</div>;
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-gradient-primary text-primary-foreground py-6 px-6">
-        <div className="flex items-center justify-between">
+      <header className="bg-gradient-primary text-primary-foreground py-6 px-6 shadow-lg">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/")}
-              className="text-primary-foreground hover:bg-primary-foreground/20"
-            >
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="text-primary-foreground hover:bg-primary-foreground/20">
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <h1 className="text-2xl font-bold">관리자 페이지</h1>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleLogout}
-            className="text-primary-foreground hover:bg-primary-foreground/20"
-          >
-            <LogOut className="w-5 h-5" />
+          <Button variant="ghost" onClick={async () => { await supabase.auth.signOut(); navigate("/auth"); }} className="text-primary-foreground hover:bg-primary-foreground/20">
+            <LogOut className="w-4 h-4 mr-2" />로그아웃
           </Button>
         </div>
       </header>
 
-      <main className="px-6 py-8">
-        <div className="mb-6 flex gap-4">
-          <Button
-            variant={activeTab === 'registrations' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('registrations')}
-          >
-            참가 신청 목록
-          </Button>
-          <Button
-            variant={activeTab === 'users' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('users')}
-          >
-            회원 목록
-          </Button>
-          <Button
-            variant={activeTab === 'settings' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('settings')}
-          >
-            사이트 설정
-          </Button>
-        </div>
+      <main className="max-w-7xl mx-auto p-6">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="registrations"><FileText className="w-4 h-4 mr-2" />신청 현황</TabsTrigger>
+            <TabsTrigger value="users"><Users className="w-4 h-4 mr-2" />회원 관리</TabsTrigger>
+            <TabsTrigger value="settings"><Settings className="w-4 h-4 mr-2" />사이트 설정</TabsTrigger>
+          </TabsList>
 
-        {activeTab === 'registrations' && (
-          <div className="bg-card rounded-lg shadow-elegant border border-border overflow-hidden">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-bold text-card-foreground">
-                참가 신청 목록 ({registrations.length}건)
-              </h2>
-            </div>
-
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>이름</TableHead>
-                  <TableHead>이메일</TableHead>
-                  <TableHead>연락처</TableHead>
-                  <TableHead>회사</TableHead>
-                  <TableHead>특이사항</TableHead>
-                  <TableHead>상태</TableHead>
-                  <TableHead>신청일</TableHead>
-                  <TableHead>작업</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {registrations.map((reg) => (
-                  <TableRow key={reg.id}>
-                    <TableCell className="font-medium">{reg.name}</TableCell>
-                    <TableCell>{reg.email}</TableCell>
-                    <TableCell>{reg.phone}</TableCell>
-                    <TableCell>{reg.company || "-"}</TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {reg.message || "-"}
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        value={reg.status}
-                        onValueChange={(value) => handleStatusChange(reg.id, value)}
-                      >
-                        <SelectTrigger className="w-32">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">대기중</SelectItem>
-                          <SelectItem value="approved">승인</SelectItem>
-                          <SelectItem value="rejected">거부</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(reg.created_at).toLocaleDateString("ko-KR")}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(reg.id)}
-                        className="text-destructive hover:text-destructive/80"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </TableCell>
+          <TabsContent value="registrations">
+            <div className="bg-card rounded-lg shadow-lg p-6">
+              <h2 className="text-xl font-bold mb-4">신청 현황</h2>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>이름</TableHead>
+                    <TableHead>이메일</TableHead>
+                    <TableHead>전화번호</TableHead>
+                    <TableHead>회사</TableHead>
+                    <TableHead>작업</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-            {registrations.length === 0 && (
-              <div className="p-12 text-center text-muted-foreground">
-                아직 참가 신청이 없습니다.
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'users' && (
-          <div className="bg-card rounded-lg shadow-elegant border border-border overflow-hidden">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-bold text-card-foreground">
-                회원 목록 ({users.length}명)
-              </h2>
+                </TableHeader>
+                <TableBody>
+                  {registrations.map((reg) => (
+                    <TableRow key={reg.id}>
+                      <TableCell>{reg.name}</TableCell>
+                      <TableCell>{reg.email}</TableCell>
+                      <TableCell>{reg.phone}</TableCell>
+                      <TableCell>{reg.company || '-'}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="icon" onClick={async () => { if (confirm("삭제하시겠습니까?")) { await supabase.from("registrations").delete().eq("id", reg.id); loadRegistrations(); } }}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
+          </TabsContent>
 
-            <div className="overflow-x-auto">
+          <TabsContent value="users">
+            <div className="bg-card rounded-lg shadow-lg p-6">
+              <h2 className="text-xl font-bold mb-4">회원 관리</h2>
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>이름</TableHead>
                     <TableHead>이메일</TableHead>
                     <TableHead>소속</TableHead>
-                    <TableHead>부서</TableHead>
-                    <TableHead>직함</TableHead>
-                    <TableHead>휴대전화</TableHead>
-                    <TableHead>가입일</TableHead>
-                    <TableHead>권한</TableHead>
-                    <TableHead>작업</TableHead>
+                    <TableHead>관리자</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.organization}</TableCell>
-                      <TableCell>{user.department || "-"}</TableCell>
-                      <TableCell>{user.position}</TableCell>
-                      <TableCell>{user.mobile_phone}</TableCell>
+                  {users.map((userProfile) => (
+                    <TableRow key={userProfile.id}>
+                      <TableCell>{userProfile.name}</TableCell>
+                      <TableCell>{userProfile.email}</TableCell>
+                      <TableCell>{userProfile.organization}</TableCell>
                       <TableCell>
-                        {new Date(user.created_at).toLocaleDateString("ko-KR")}
-                      </TableCell>
-                      <TableCell>
-                        {user.is_admin ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-medium">
-                            <Shield className="w-3 h-3" />
-                            관리자
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">
-                            일반 회원
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {user.is_admin ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRevokeAdmin(user.user_id)}
-                            className="text-destructive hover:text-destructive/80"
-                          >
-                            <ShieldOff className="w-4 h-4 mr-1" />
-                            권한 제거
+                        {userProfile.is_admin ? (
+                          <Button variant="ghost" size="sm" onClick={async () => { if (confirm("권한 제거?")) { await supabase.from("user_roles").delete().eq("user_id", userProfile.user_id).eq("role", "admin"); loadUsers(); } }}>
+                            <ShieldOff className="w-4 h-4 mr-2" />권한 제거
                           </Button>
                         ) : (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleGrantAdmin(user.user_id)}
-                            className="text-primary hover:text-primary/80"
-                          >
-                            <Shield className="w-4 h-4 mr-1" />
-                            권한 부여
+                          <Button variant="ghost" size="sm" onClick={async () => { await supabase.from("user_roles").insert({ user_id: userProfile.user_id, role: "admin" }); loadUsers(); }}>
+                            <Shield className="w-4 h-4 mr-2" />권한 부여
                           </Button>
                         )}
                       </TableCell>
@@ -942,606 +368,196 @@ const Admin = () => {
                 </TableBody>
               </Table>
             </div>
+          </TabsContent>
 
-            {users.length === 0 && (
-              <div className="p-12 text-center text-muted-foreground">
-                아직 가입한 회원이 없습니다.
-              </div>
-            )}
-          </div>
-        )}
+          <TabsContent value="settings">
+            <div className="bg-card rounded-lg shadow-lg p-6">
+              <Tabs value={activeSettingsTab} onValueChange={setActiveSettingsTab}>
+                <TabsList className="mb-6">
+                  <TabsTrigger value="home"><Home className="w-4 h-4 mr-2" />홈 화면</TabsTrigger>
+                  <TabsTrigger value="program">프로그램</TabsTrigger>
+                  <TabsTrigger value="location"><MapPin className="w-4 h-4 mr-2" />장소</TabsTrigger>
+                </TabsList>
 
-        {activeTab === 'settings' && (
-          <div className="space-y-6">
-            {/* Settings Sub-tabs */}
-            <div className="flex gap-2 border-b border-border pb-2">
-              <Button
-                variant={settingsTab === 'home' ? 'default' : 'ghost'}
-                onClick={() => setSettingsTab('home')}
-                size="sm"
-              >
-                홈 화면
-              </Button>
-              <Button
-                variant={settingsTab === 'program' ? 'default' : 'ghost'}
-                onClick={() => setSettingsTab('program')}
-                size="sm"
-              >
-                프로그램
-              </Button>
-              <Button
-                variant={settingsTab === 'location' ? 'default' : 'ghost'}
-                onClick={() => setSettingsTab('location')}
-                size="sm"
-              >
-                장소
-              </Button>
-              <Button
-                variant={settingsTab === 'other' ? 'default' : 'ghost'}
-                onClick={() => setSettingsTab('other')}
-                size="sm">
-                기타
-              </Button>
-            </div>
-
-            {/* Home Settings Tab */}
-            {settingsTab === 'home' && (
-              <div className="space-y-6">
-                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
-                  <h2 className="text-xl font-bold text-card-foreground mb-4">
-                    히어로 섹션
-                  </h2>
+                <TabsContent value="home" className="space-y-6">
                   <div className="space-y-4">
-                    <div>
-                      <Label>배지 텍스트</Label>
-                      <Input
-                        value={
-                          settings.find(
-                            (s) => s.category === "home" && s.key === "hero_badge"
-                          )?.value || ""
-                        }
-                        onChange={(e) =>
-                          handleQuickUpdate("home", "hero_badge", e.target.value)
-                        }
-                        placeholder="초대합니다"
-                      />
-                    </div>
-                    <div>
-                      <Label>메인 제목 (줄바꿈 가능)</Label>
-                      <Textarea
-                        value={
-                          settings.find(
-                            (s) => s.category === "home" && s.key === "hero_title"
-                          )?.value || ""
-                        }
-                        onChange={(e) =>
-                          handleQuickUpdate("home", "hero_title", e.target.value)
-                        }
-                        placeholder="2024 비즈니스&#10;컨퍼런스"
-                        rows={2}
-                      />
-                    </div>
-                    <div>
-                      <Label>부제목 (줄바꿈 가능)</Label>
-                      <Textarea
-                        value={
-                          settings.find(
-                            (s) => s.category === "home" && s.key === "hero_subtitle"
-                          )?.value || ""
-                        }
-                        onChange={(e) =>
-                          handleQuickUpdate("home", "hero_subtitle", e.target.value)
-                        }
-                        placeholder="미래를 함께 만들어갈&#10;여러분을 초대합니다"
-                        rows={2}
-                      />
-                    </div>
-                    <div>
-                      <Label>버튼 텍스트</Label>
-                      <Input
-                        value={
-                          settings.find(
-                            (s) => s.category === "home" && s.key === "hero_button_text"
-                          )?.value || ""
-                        }
-                        onChange={(e) =>
-                          handleQuickUpdate("home", "hero_button_text", e.target.value)
-                        }
-                        placeholder="참가 신청하기"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold text-card-foreground">
-                      정보 카드
-                    </h2>
-                    <Button onClick={handleAddInfoCard} size="sm" variant="outline">
-                      <Plus className="w-4 h-4 mr-2" />
-                      카드 추가
-                    </Button>
-                  </div>
-
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEndInfoCards}
-                  >
-                    <SortableContext
-                      items={settings
-                        .filter(
-                          (s) => s.category === "home" && s.key.startsWith("info_card_")
-                        )
-                        .sort((a, b) => {
-                          const aData = JSON.parse(a.value);
-                          const bData = JSON.parse(b.value);
-                          return (aData.order || 0) - (bData.order || 0);
-                        })
-                        .map((s) => s.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <div className="space-y-4">
-                        {settings
-                          .filter(
-                            (s) => s.category === "home" && s.key.startsWith("info_card_")
-                          )
-                          .sort((a, b) => {
-                            const aData = JSON.parse(a.value);
-                            const bData = JSON.parse(b.value);
-                            return (aData.order || 0) - (bData.order || 0);
-                          })
-                          .map((card) => {
-                            const cardData = JSON.parse(card.value);
-                            return (
-                              <SortableInfoCard
-                                key={card.id}
-                                id={card.id}
-                                card={card}
-                                cardData={cardData}
-                                onUpdate={handleUpdateInfoCard}
-                                onDelete={handleDeleteSetting}
-                              />
-                            );
-                          })}
+                    <h3 className="text-lg font-semibold">히어로 섹션</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>배지 텍스트</Label>
+                        <Input placeholder="2024 컨퍼런스" defaultValue={settings.find(s => s.key === 'hero_badge')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'hero_badge', e.target.value, '배지 텍스트')} />
                       </div>
-                    </SortableContext>
-                  </DndContext>
-                </div>
-
-                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
-                  <h2 className="text-xl font-bold text-card-foreground mb-4">
-                    행사 소개
-                  </h2>
-                  <div className="space-y-4">
-                    <div>
-                      <Label>제목</Label>
-                      <Input
-                        value={
-                          settings.find(
-                            (s) => s.category === "home" && s.key === "description_title"
-                          )?.value || ""
-                        }
-                        onChange={(e) =>
-                          handleQuickUpdate("home", "description_title", e.target.value)
-                        }
-                        placeholder="행사 소개"
-                      />
-                    </div>
-                    <div>
-                      <Label>설명 (줄바꿈 가능)</Label>
-                      <Textarea
-                        value={
-                          settings.find(
-                            (s) => s.category === "home" && s.key === "description_content"
-                          )?.value || ""
-                        }
-                        onChange={(e) =>
-                          handleQuickUpdate("home", "description_content", e.target.value)
-                        }
-                        placeholder="행사에 대한 설명을 입력하세요"
-                        rows={4}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold text-card-foreground">
-                      하단 버튼
-                    </h2>
-                    <Button onClick={handleAddBottomButton} size="sm" variant="outline">
-                      <Plus className="w-4 h-4 mr-2" />
-                      버튼 추가
-                    </Button>
-                  </div>
-
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEndBottomButtons}
-                  >
-                    <SortableContext
-                      items={settings
-                        .filter(
-                          (s) => s.category === "home" && s.key.startsWith("bottom_button_")
-                        )
-                        .sort((a, b) => {
-                          const aData = JSON.parse(a.value);
-                          const bData = JSON.parse(b.value);
-                          return (aData.order || 0) - (bData.order || 0);
-                        })
-                        .map((s) => s.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <div className="space-y-4">
-                        {settings
-                          .filter(
-                            (s) => s.category === "home" && s.key.startsWith("bottom_button_")
-                          )
-                          .sort((a, b) => {
-                            const aData = JSON.parse(a.value);
-                            const bData = JSON.parse(b.value);
-                            return (aData.order || 0) - (bData.order || 0);
-                          })
-                          .map((button) => {
-                            const buttonData = JSON.parse(button.value);
-                            return (
-                              <SortableBottomButton
-                                key={button.id}
-                                id={button.id}
-                                button={button}
-                                buttonData={buttonData}
-                                onUpdate={handleUpdateBottomButton}
-                                onDelete={handleDeleteSetting}
-                              />
-                            );
-                          })}
+                      <div className="space-y-2">
+                        <Label>제목</Label>
+                        <Input placeholder="환영합니다" defaultValue={settings.find(s => s.key === 'hero_title')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'hero_title', e.target.value, '제목')} />
                       </div>
-                    </SortableContext>
-                  </DndContext>
-                </div>
-              </div>
-            )}
-
-            {/* Program Settings Tab */}
-            {settingsTab === 'program' && (
-              <div className="space-y-6">
-                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
-                  <h2 className="text-xl font-bold text-card-foreground mb-4">
-                    프로그램 페이지 설정
-                  </h2>
-                  
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <Label htmlFor="program_title">페이지 제목</Label>
-                      <Input
-                        id="program_title"
-                        value={
-                          settings.find(
-                            (s) =>
-                              s.category === "program" && s.key === "page_title"
-                          )?.value || ""
-                        }
-                        onChange={(e) =>
-                          handleQuickUpdate("program", "page_title", e.target.value)
-                        }
-                        placeholder="프로그램"
-                      />
+                      <div className="space-y-2">
+                        <Label>부제목</Label>
+                        <Textarea placeholder="부제목" defaultValue={settings.find(s => s.key === 'hero_subtitle')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'hero_subtitle', e.target.value, '부제목')} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>버튼 텍스트</Label>
+                        <Input placeholder="참가 신청하기" defaultValue={settings.find(s => s.key === 'hero_button_text')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'hero_button_text', e.target.value, '버튼 텍스트')} />
+                      </div>
                     </div>
-                    <div>
-                      <Label htmlFor="program_description">페이지 설명</Label>
-                      <Textarea
-                        id="program_description"
-                        value={
-                          settings.find(
-                            (s) =>
-                              s.category === "program" && s.key === "page_description"
-                          )?.value || ""
-                        }
-                        onChange={(e) =>
-                          handleQuickUpdate("program", "page_description", e.target.value)
-                        }
-                        placeholder="행사 프로그램을 안내합니다"
-                        rows={2}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold">프로그램 일정</h3>
-                    <Button
-                      onClick={handleAddProgramCard}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      프로그램 추가
-                    </Button>
                   </div>
 
                   <div className="space-y-4">
-                    {settings
-                      .filter(
-                        (s) =>
-                          s.category === "program" &&
-                          s.key.startsWith("program_card_")
-                      )
-                      .sort((a, b) => {
-                        const aData = JSON.parse(a.value);
-                        const bData = JSON.parse(b.value);
-                        return (aData.order || 0) - (bData.order || 0);
-                      })
-                      .map((card) => {
-                        const cardData = JSON.parse(card.value);
-                        return (
-                          <div
-                            key={card.id}
-                            className="border-2 border-border rounded-lg p-4 space-y-4"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-medium text-lg">
-                                {cardData.time} - {cardData.title || "제목 없음"}
-                              </h4>
-                              <Button
-                                onClick={() => handleDeleteSetting(card.id)}
-                                size="sm"
-                                variant="destructive"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">정보 카드</h3>
+                      <Button onClick={handleAddInfoCard} size="sm"><Plus className="w-4 h-4 mr-2" />카드 추가</Button>
+                    </div>
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndInfoCards}>
+                      <SortableContext items={infoCards.map(c => c.id)} strategy={verticalListSortingStrategy}>
+                        <div className="space-y-3">
+                          {infoCards.map((card) => <SortableInfoCard key={card.id} card={card} onUpdate={handleUpdateInfoCard} onDelete={() => handleDeleteSetting(card.id)} />)}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  </div>
 
-                            <div className="grid gap-4 md:grid-cols-2">
-                              <div>
-                                <Label>시간</Label>
-                                <Input
-                                  type="time"
-                                  value={cardData.time || "09:00"}
-                                  onChange={(e) =>
-                                    handleUpdateProgramCard(card.id, {
-                                      ...cardData,
-                                      time: e.target.value,
-                                    })
-                                  }
-                                />
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">설명 섹션</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>제목</Label>
+                        <Input placeholder="행사 소개" defaultValue={settings.find(s => s.key === 'description_title')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'description_title', e.target.value, '설명 제목')} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>내용</Label>
+                        <Textarea placeholder="행사 설명" defaultValue={settings.find(s => s.key === 'description_content')?.value || ''} onBlur={(e) => handleQuickUpdate('home', 'description_content', e.target.value, '설명 내용')} className="min-h-[120px]" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">하단 버튼</h3>
+                      <Button onClick={handleAddBottomButton} size="sm"><Plus className="w-4 h-4 mr-2" />버튼 추가</Button>
+                    </div>
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndBottomButtons}>
+                      <SortableContext items={bottomButtons.map(b => b.id)} strategy={verticalListSortingStrategy}>
+                        <div className="space-y-3">
+                          {bottomButtons.map((button) => <SortableBottomButton key={button.id} button={button} onUpdate={handleUpdateBottomButton} onDelete={() => handleDeleteSetting(button.id)} />)}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="program" className="space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">페이지 정보</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>페이지 제목</Label>
+                        <Input placeholder="프로그램" defaultValue={settings.find(s => s.key === 'program_page_title')?.value || ''} onBlur={(e) => handleQuickUpdate('program', 'program_page_title', e.target.value, '페이지 제목')} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>페이지 설명</Label>
+                        <Input placeholder="행사 일정 안내" defaultValue={settings.find(s => s.key === 'program_page_description')?.value || ''} onBlur={(e) => handleQuickUpdate('program', 'program_page_description', e.target.value, '페이지 설명')} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">프로그램 카드</h3>
+                      <Button onClick={handleAddProgramCard} size="sm"><Plus className="w-4 h-4 mr-2" />프로그램 추가</Button>
+                    </div>
+                    <div className="space-y-3">
+                      {programCards.map((card) => (
+                        <div key={card.id} className="bg-muted rounded-lg p-4 space-y-3">
+                          <div className="flex justify-between items-start">
+                            <div className="space-y-3 flex-1">
+                              <div className="space-y-2">
+                                <Label className="text-sm">시작 시간</Label>
+                                <Input type="time" value={card.time} onChange={(e) => handleUpdateProgramCard(card.id, 'time', e.target.value)} />
                               </div>
-                              <div>
-                                <Label>제목</Label>
-                                <Input
-                                  value={cardData.title || ""}
-                                  onChange={(e) =>
-                                    handleUpdateProgramCard(card.id, {
-                                      ...cardData,
-                                      title: e.target.value,
-                                    })
-                                  }
-                                  placeholder="프로그램 제목"
-                                />
+                              <div className="space-y-2">
+                                <Label className="text-sm">제목</Label>
+                                <Input value={card.title} onChange={(e) => handleUpdateProgramCard(card.id, 'title', e.target.value)} placeholder="프로그램 제목" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm">설명</Label>
+                                <Textarea value={card.description} onChange={(e) => handleUpdateProgramCard(card.id, 'description', e.target.value)} placeholder="프로그램 설명" />
                               </div>
                             </div>
-
-                            <div>
-                              <Label>설명 (줄바꿈 가능)</Label>
-                              <Textarea
-                                value={cardData.description || ""}
-                                onChange={(e) =>
-                                  handleUpdateProgramCard(card.id, {
-                                    ...cardData,
-                                    description: e.target.value,
-                                  })
-                                }
-                                placeholder="프로그램에 대한 상세 설명을 입력하세요"
-                                rows={3}
-                              />
-                            </div>
-
-                            <div>
-                              <Label>순서</Label>
-                              <Input
-                                type="number"
-                                value={cardData.order || 0}
-                                onChange={(e) =>
-                                  handleUpdateProgramCard(card.id, {
-                                    ...cardData,
-                                    order: parseInt(e.target.value),
-                                  })
-                                }
-                              />
-                            </div>
+                            <Button variant="ghost" size="icon" onClick={() => handleDeleteSetting(card.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           </div>
-                        );
-                      })}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
+                </TabsContent>
 
-            {/* Location Settings Tab */}
-            {settingsTab === 'location' && (
-              <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
-                <h2 className="text-xl font-bold text-card-foreground mb-4">
-                  장소 페이지 설정
-                </h2>
-                <p className="text-muted-foreground">
-                  장소 페이지 설정 기능은 추후 구현 예정입니다.
-                </p>
-              </div>
-            )}
+                <TabsContent value="location" className="space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">페이지 정보</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>페이지 제목</Label>
+                        <Input placeholder="오시는 길" defaultValue={settings.find(s => s.key === 'location_page_title')?.value || ''} onBlur={(e) => handleQuickUpdate('location', 'location_page_title', e.target.value, '페이지 제목')} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>페이지 설명</Label>
+                        <Input placeholder="행사 장소 안내" defaultValue={settings.find(s => s.key === 'location_page_description')?.value || ''} onBlur={(e) => handleQuickUpdate('location', 'location_page_description', e.target.value, '페이지 설명')} />
+                      </div>
+                    </div>
+                  </div>
 
-            {/* Other Settings Tab - Original content */}
-            {settingsTab === 'other' && (
-              <div className="space-y-6">
-                {/* Add New Setting Form */}
-                <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
-                  <h2 className="text-xl font-bold text-card-foreground mb-4">
-                    새 설정 추가
-                  </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="category">카테고리 *</Label>
-                  <Input
-                    id="category"
-                    placeholder="예: 행사정보, 프로그램, 위치정보"
-                    value={newSetting.category}
-                    onChange={(e) => setNewSetting({ ...newSetting, category: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="key">키 *</Label>
-                  <Input
-                    id="key"
-                    placeholder="예: event_title, program_description"
-                    value={newSetting.key}
-                    onChange={(e) => setNewSetting({ ...newSetting, key: e.target.value })}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="value">값 *</Label>
-                  <Textarea
-                    id="value"
-                    placeholder="설정 값을 입력하세요"
-                    value={newSetting.value}
-                    onChange={(e) => setNewSetting({ ...newSetting, value: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="description">설명</Label>
-                  <Input
-                    id="description"
-                    placeholder="이 설정에 대한 설명 (선택사항)"
-                    value={newSetting.description}
-                    onChange={(e) => setNewSetting({ ...newSetting, description: e.target.value })}
-                  />
-                </div>
-              </div>
-              <Button onClick={handleAddSetting} className="mt-4">
-                <Plus className="w-4 h-4 mr-2" />
-                추가
-              </Button>
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">주소 정보</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>장소명</Label>
+                        <Input placeholder="서울 컨벤션 센터" defaultValue={settings.find(s => s.key === 'location_name')?.value || ''} onBlur={(e) => handleQuickUpdate('location', 'location_name', e.target.value, '장소명')} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>주소</Label>
+                        <Input placeholder="서울특별시 강남구 테헤란로 123" defaultValue={settings.find(s => s.key === 'location_address')?.value || ''} onBlur={(e) => handleQuickUpdate('location', 'location_address', e.target.value, '주소')} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>지도 URL</Label>
+                        <Input placeholder="https://map.kakao.com" defaultValue={settings.find(s => s.key === 'location_map_url')?.value || ''} onBlur={(e) => handleQuickUpdate('location', 'location_map_url', e.target.value, '지도 URL')} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">교통 안내</h3>
+                      <Button onClick={handleAddTransportCard} size="sm"><Plus className="w-4 h-4 mr-2" />교통편 추가</Button>
+                    </div>
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndTransportCards}>
+                      <SortableContext items={transportCards.map(c => c.id)} strategy={verticalListSortingStrategy}>
+                        <div className="space-y-3">
+                          {transportCards.map((card) => <SortableTransportCard key={card.id} card={card} onUpdate={handleUpdateTransportCard} onDelete={() => handleDeleteSetting(card.id)} />)}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">문의 정보</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>전화번호</Label>
+                        <Input placeholder="02-1234-5678" defaultValue={settings.find(s => s.key === 'location_phone')?.value || ''} onBlur={(e) => handleQuickUpdate('location', 'location_phone', e.target.value, '전화번호')} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>이메일</Label>
+                        <Input placeholder="contact@conference.com" defaultValue={settings.find(s => s.key === 'location_email')?.value || ''} onBlur={(e) => handleQuickUpdate('location', 'location_email', e.target.value, '이메일')} />
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
-
-            {/* Settings List */}
-            <div className="bg-card rounded-lg shadow-elegant border border-border overflow-hidden">
-              <div className="p-6 border-b border-border">
-                <h2 className="text-xl font-bold text-card-foreground">
-                  설정 목록 ({settings.length}개)
-                </h2>
-              </div>
-
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>카테고리</TableHead>
-                      <TableHead>키</TableHead>
-                      <TableHead>값</TableHead>
-                      <TableHead>설명</TableHead>
-                      <TableHead>수정일</TableHead>
-                      <TableHead>작업</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {settings.map((setting) => (
-                      <TableRow key={setting.id}>
-                        {editingSetting?.id === setting.id ? (
-                          <>
-                            <TableCell>
-                              <Input
-                                value={editingSetting.category}
-                                onChange={(e) => setEditingSetting({ ...editingSetting, category: e.target.value })}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                value={editingSetting.key}
-                                onChange={(e) => setEditingSetting({ ...editingSetting, key: e.target.value })}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Textarea
-                                value={editingSetting.value}
-                                onChange={(e) => setEditingSetting({ ...editingSetting, value: e.target.value })}
-                                rows={2}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                value={editingSetting.description || ''}
-                                onChange={(e) => setEditingSetting({ ...editingSetting, description: e.target.value })}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              {new Date(setting.updated_at).toLocaleDateString("ko-KR")}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={handleUpdateSetting}
-                                >
-                                  저장
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setEditingSetting(null)}
-                                >
-                                  취소
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </>
-                        ) : (
-                          <>
-                            <TableCell className="font-medium">{setting.category}</TableCell>
-                            <TableCell className="font-mono text-sm">{setting.key}</TableCell>
-                            <TableCell className="max-w-xs truncate">{setting.value}</TableCell>
-                            <TableCell className="text-muted-foreground">{setting.description || "-"}</TableCell>
-                            <TableCell>
-                              {new Date(setting.updated_at).toLocaleDateString("ko-KR")}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => setEditingSetting(setting)}
-                                >
-                                  <Pencil className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleDeleteSetting(setting.id)}
-                                  className="text-destructive hover:text-destructive/80"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </>
-                        )}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {settings.filter((s) => !["home", "program", "location"].includes(s.category)).length === 0 && (
-                <div className="p-12 text-center text-muted-foreground">
-                  아직 기타 설정이 없습니다.
-                </div>
-              )}
-            </div>
-              </div>
-            )}
-          </div>
-        )}
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
