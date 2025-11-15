@@ -12,6 +12,7 @@ interface RegistrationField {
   placeholder: string;
   type: string;
   required: boolean;
+  options?: string[];
 }
 
 interface RegistrationSettingsProps {
@@ -140,11 +141,12 @@ const RegistrationSettings = ({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="text">텍스트</SelectItem>
+                      <SelectItem value="text">짧은 텍스트</SelectItem>
                       <SelectItem value="email">이메일</SelectItem>
                       <SelectItem value="tel">전화번호</SelectItem>
                       <SelectItem value="number">숫자</SelectItem>
                       <SelectItem value="textarea">긴 텍스트</SelectItem>
+                      <SelectItem value="select">드롭다운 선택</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -157,6 +159,20 @@ const RegistrationSettings = ({
                   />
                   <Label htmlFor={`required-${field.id}`}>필수 항목</Label>
                 </div>
+
+                {field.type === "select" && (
+                  <div>
+                    <Label>선택 옵션 (쉼표로 구분)</Label>
+                    <Input
+                      value={(field.options || []).join(", ")}
+                      onChange={(e) => {
+                        const options = e.target.value.split(",").map(opt => opt.trim()).filter(opt => opt);
+                        handleFieldChange(index, "options", options);
+                      }}
+                      placeholder="옵션1, 옵션2, 옵션3"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ))}
