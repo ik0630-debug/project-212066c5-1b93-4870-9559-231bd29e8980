@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Phone, Building } from "lucide-react";
+import { User, Mail, Phone, Building, ArrowLeft, Upload } from "lucide-react";
 
 const Registration = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
+  const [headerImage, setHeaderImage] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -41,13 +44,57 @@ const Registration = () => {
     });
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setHeaderImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="bg-gradient-primary text-primary-foreground py-8 px-6">
-        <h1 className="text-3xl font-bold text-center mb-2">참가 신청</h1>
-        <p className="text-center text-primary-foreground/80">
-          아래 양식을 작성해주세요
-        </p>
+      <header 
+        className="relative bg-gradient-primary text-primary-foreground py-8 px-6 bg-cover bg-center"
+        style={headerImage ? { backgroundImage: `url(${headerImage})` } : {}}
+      >
+        <div className="absolute inset-0 bg-gradient-primary/80" />
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="absolute left-0 top-0 text-primary-foreground hover:bg-primary-foreground/20"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <label htmlFor="header-upload-registration" className="absolute right-0 top-0 cursor-pointer">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-primary-foreground hover:bg-primary-foreground/20"
+              asChild
+            >
+              <span>
+                <Upload className="w-5 h-5" />
+              </span>
+            </Button>
+            <input
+              id="header-upload-registration"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </label>
+          <h1 className="text-3xl font-bold text-center mb-2">참가 신청</h1>
+          <p className="text-center text-primary-foreground/80">
+            아래 양식을 작성해주세요
+          </p>
+        </div>
       </header>
 
       <main className="px-6 py-8">
