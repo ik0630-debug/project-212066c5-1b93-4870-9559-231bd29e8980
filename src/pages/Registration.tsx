@@ -6,8 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, Building, ArrowLeft, Upload } from "lucide-react";
+
+interface RegistrationField {
+  id: string;
+  label: string;
+  placeholder: string;
+  type: string;
+  required: boolean;
+  options?: string[];
+}
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -20,7 +30,7 @@ const Registration = () => {
     successTitle: "신청이 완료되었습니다!",
     successDescription: "참가 확인 메일을 발송해드렸습니다.",
   });
-  const [fields, setFields] = useState([
+  const [fields, setFields] = useState<RegistrationField[]>([
     { id: "name", label: "성함", placeholder: "홍길동", type: "text", required: true },
     { id: "email", label: "이메일", placeholder: "example@company.com", type: "email", required: true },
     { id: "phone", label: "연락처", placeholder: "010-0000-0000", type: "tel", required: true },
@@ -199,6 +209,22 @@ const Registration = () => {
                   rows={4}
                   className="resize-none"
                 />
+              ) : field.type === "select" ? (
+                <Select
+                  value={formData[field.id] || ""}
+                  onValueChange={(value) => setFormData({ ...formData, [field.id]: value })}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder={field.placeholder} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(field.options || []).map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               ) : (
                 <Input
                   id={field.id}
