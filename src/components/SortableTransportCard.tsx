@@ -7,21 +7,14 @@ import { Button } from "@/components/ui/button";
 import { GripVertical, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface TransportCard {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-  order: number;
-}
-
 interface SortableTransportCardProps {
-  card: TransportCard;
-  onUpdate: (id: string, field: string, value: string) => void;
+  id: string;
+  card: any;
+  onUpdate: (data: any) => void;
   onDelete: () => void;
 }
 
-const SortableTransportCard = ({ card, onUpdate, onDelete }: SortableTransportCardProps) => {
+const SortableTransportCard = ({ id, card, onUpdate, onDelete }: SortableTransportCardProps) => {
   const {
     attributes,
     listeners,
@@ -29,7 +22,7 @@ const SortableTransportCard = ({ card, onUpdate, onDelete }: SortableTransportCa
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: card.id });
+  } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -54,7 +47,7 @@ const SortableTransportCard = ({ card, onUpdate, onDelete }: SortableTransportCa
                 <Label className="text-sm">아이콘</Label>
                 <Select
                   value={card.icon}
-                  onValueChange={(value) => onUpdate(card.id, 'icon', value)}
+                  onValueChange={(value) => onUpdate({ ...card, icon: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -72,7 +65,7 @@ const SortableTransportCard = ({ card, onUpdate, onDelete }: SortableTransportCa
                 <Label className="text-sm">제목</Label>
                 <Input
                   value={card.title}
-                  onChange={(e) => onUpdate(card.id, 'title', e.target.value)}
+                  onChange={(e) => onUpdate({ ...card, title: e.target.value })}
                   placeholder="교통편 제목"
                 />
               </div>
@@ -80,7 +73,7 @@ const SortableTransportCard = ({ card, onUpdate, onDelete }: SortableTransportCa
                 <Label className="text-sm">설명</Label>
                 <Input
                   value={card.description}
-                  onChange={(e) => onUpdate(card.id, 'description', e.target.value)}
+                  onChange={(e) => onUpdate({ ...card, description: e.target.value })}
                   placeholder="교통편 설명"
                 />
               </div>
