@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from "@supabase/supabase-js";
-import { ArrowLeft, LogOut, Trash2, Shield, ShieldOff, Plus, Pencil } from "lucide-react";
+import { ArrowLeft, LogOut, Trash2, Shield, ShieldOff, Plus, Pencil, GripVertical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,6 +23,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import IconPicker from "@/components/IconPicker";
+import SortableInfoCard from "@/components/SortableInfoCard";
+import SortableBottomButton from "@/components/SortableBottomButton";
 
 interface Registration {
   id: string;
@@ -77,6 +97,14 @@ const Admin = () => {
     value: '',
     description: ''
   });
+
+  // Sensors for drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     checkAuth();
@@ -430,6 +458,118 @@ const Admin = () => {
     }
 
     loadSettings();
+  };
+
+  const handleReorderInfoCards = async (oldIndex: number, newIndex: number) => {
+    const cards = settings
+      .filter((s) => s.category === "home" && s.key.startsWith("info_card_"))
+      .sort((a, b) => {
+        const aData = JSON.parse(a.value);
+        const bData = JSON.parse(b.value);
+        return (aData.order || 0) - (bData.order || 0);
+      });
+
+    const reorderedCards = arrayMove(cards, oldIndex, newIndex);
+
+    // Update order for all cards
+    for (let i = 0; i < reorderedCards.length; i++) {
+      const card = reorderedCards[i];
+      const cardData = JSON.parse(card.value);
+      const { error } = await supabase
+        .from("site_settings")
+        .update({ value: JSON.stringify({ ...cardData, order: i }) })
+        .eq("id", card.id);
+
+      if (error) {
+        console.error("Error updating card order:", error);
+      }
+    }
+
+    toast({
+      title: "순서 변경 완료",
+      description: "카드 순서가 업데이트되었습니다.",
+    });
+
+    loadSettings();
+  };
+
+  const handleDragEndInfoCards = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const cards = settings
+      .filter((s) => s.category === "home" && s.key.startsWith("info_card_"))
+      .sort((a, b) => {
+        const aData = JSON.parse(a.value);
+        const bData = JSON.parse(b.value);
+        return (aData.order || 0) - (bData.order || 0);
+      });
+
+    const oldIndex = cards.findIndex((card) => card.id === active.id);
+    const newIndex = cards.findIndex((card) => card.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      handleReorderInfoCards(oldIndex, newIndex);
+    }
+  };
+
+  const handleReorderBottomButtons = async (oldIndex: number, newIndex: number) => {
+    const buttons = settings
+      .filter((s) => s.category === "home" && s.key.startsWith("bottom_button_"))
+      .sort((a, b) => {
+        const aData = JSON.parse(a.value);
+        const bData = JSON.parse(b.value);
+        return (aData.order || 0) - (bData.order || 0);
+      });
+
+    const reorderedButtons = arrayMove(buttons, oldIndex, newIndex);
+
+    // Update order for all buttons
+    for (let i = 0; i < reorderedButtons.length; i++) {
+      const button = reorderedButtons[i];
+      const buttonData = JSON.parse(button.value);
+      const { error } = await supabase
+        .from("site_settings")
+        .update({ value: JSON.stringify({ ...buttonData, order: i }) })
+        .eq("id", button.id);
+
+      if (error) {
+        console.error("Error updating button order:", error);
+      }
+    }
+
+    toast({
+      title: "순서 변경 완료",
+      description: "버튼 순서가 업데이트되었습니다.",
+    });
+
+    loadSettings();
+  };
+
+  const handleDragEndBottomButtons = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const buttons = settings
+      .filter((s) => s.category === "home" && s.key.startsWith("bottom_button_"))
+      .sort((a, b) => {
+        const aData = JSON.parse(a.value);
+        const bData = JSON.parse(b.value);
+        return (aData.order || 0) - (bData.order || 0);
+      });
+
+    const oldIndex = buttons.findIndex((button) => button.id === active.id);
+    const newIndex = buttons.findIndex((button) => button.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      handleReorderBottomButtons(oldIndex, newIndex);
+    }
   };
 
   const handleAddBottomButton = async () => {
@@ -924,99 +1064,50 @@ const Admin = () => {
                     </Button>
                   </div>
 
-                  <div className="space-y-4">
-                    {settings
-                      .filter(
-                        (s) => s.category === "home" && s.key.startsWith("info_card_")
-                      )
-                      .sort((a, b) => {
-                        const aData = JSON.parse(a.value);
-                        const bData = JSON.parse(b.value);
-                        return (aData.order || 0) - (bData.order || 0);
-                      })
-                      .map((card) => {
-                        const cardData = JSON.parse(card.value);
-                        return (
-                          <div
-                            key={card.id}
-                            className="border-2 border-border rounded-lg p-4 space-y-4"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-medium text-lg">
-                                {cardData.title || "제목 없음"}
-                              </h4>
-                              <Button
-                                onClick={() => handleDeleteSetting(card.id)}
-                                size="sm"
-                                variant="destructive"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-
-                            <div>
-                              <Label>아이콘 (Lucide 아이콘 이름)</Label>
-                              <Input
-                                value={cardData.icon || ""}
-                                onChange={(e) =>
-                                  handleUpdateInfoCard(card.id, {
-                                    ...cardData,
-                                    icon: e.target.value,
-                                  })
-                                }
-                                placeholder="Calendar, MapPin, Users 등"
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEndInfoCards}
+                  >
+                    <SortableContext
+                      items={settings
+                        .filter(
+                          (s) => s.category === "home" && s.key.startsWith("info_card_")
+                        )
+                        .sort((a, b) => {
+                          const aData = JSON.parse(a.value);
+                          const bData = JSON.parse(b.value);
+                          return (aData.order || 0) - (bData.order || 0);
+                        })
+                        .map((s) => s.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-4">
+                        {settings
+                          .filter(
+                            (s) => s.category === "home" && s.key.startsWith("info_card_")
+                          )
+                          .sort((a, b) => {
+                            const aData = JSON.parse(a.value);
+                            const bData = JSON.parse(b.value);
+                            return (aData.order || 0) - (bData.order || 0);
+                          })
+                          .map((card) => {
+                            const cardData = JSON.parse(card.value);
+                            return (
+                              <SortableInfoCard
+                                key={card.id}
+                                id={card.id}
+                                card={card}
+                                cardData={cardData}
+                                onUpdate={handleUpdateInfoCard}
+                                onDelete={handleDeleteSetting}
                               />
-                              <p className="text-xs text-muted-foreground mt-1">
-                                lucide-react 아이콘 이름 (예: Calendar, MapPin, Users)
-                              </p>
-                            </div>
-
-                            <div>
-                              <Label>제목</Label>
-                              <Input
-                                value={cardData.title || ""}
-                                onChange={(e) =>
-                                  handleUpdateInfoCard(card.id, {
-                                    ...cardData,
-                                    title: e.target.value,
-                                  })
-                                }
-                                placeholder="일시"
-                              />
-                            </div>
-
-                            <div>
-                              <Label>내용 (줄바꿈 가능)</Label>
-                              <Textarea
-                                value={cardData.content || ""}
-                                onChange={(e) =>
-                                  handleUpdateInfoCard(card.id, {
-                                    ...cardData,
-                                    content: e.target.value,
-                                  })
-                                }
-                                placeholder="2024년 12월 15일 (금)&#10;오전 9:00 - 오후 6:00"
-                                rows={3}
-                              />
-                            </div>
-
-                            <div>
-                              <Label>순서</Label>
-                              <Input
-                                type="number"
-                                value={cardData.order || 0}
-                                onChange={(e) =>
-                                  handleUpdateInfoCard(card.id, {
-                                    ...cardData,
-                                    order: parseInt(e.target.value),
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div>
+                            );
+                          })}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 </div>
 
                 <div className="bg-card rounded-lg shadow-elegant border border-border p-6">
@@ -1067,104 +1158,50 @@ const Admin = () => {
                     </Button>
                   </div>
 
-                  <div className="space-y-4">
-                    {settings
-                      .filter(
-                        (s) => s.category === "home" && s.key.startsWith("bottom_button_")
-                      )
-                      .sort((a, b) => {
-                        const aData = JSON.parse(a.value);
-                        const bData = JSON.parse(b.value);
-                        return (aData.order || 0) - (bData.order || 0);
-                      })
-                      .map((button) => {
-                        const buttonData = JSON.parse(button.value);
-                        return (
-                          <div
-                            key={button.id}
-                            className="border-2 border-border rounded-lg p-4 space-y-4"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-medium text-lg">
-                                {buttonData.text || "텍스트 없음"}
-                              </h4>
-                              <Button
-                                onClick={() => handleDeleteSetting(button.id)}
-                                size="sm"
-                                variant="destructive"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-
-                            <div>
-                              <Label>버튼 텍스트</Label>
-                              <Input
-                                value={buttonData.text || ""}
-                                onChange={(e) =>
-                                  handleUpdateBottomButton(button.id, {
-                                    ...buttonData,
-                                    text: e.target.value,
-                                  })
-                                }
-                                placeholder="프로그램 보기"
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEndBottomButtons}
+                  >
+                    <SortableContext
+                      items={settings
+                        .filter(
+                          (s) => s.category === "home" && s.key.startsWith("bottom_button_")
+                        )
+                        .sort((a, b) => {
+                          const aData = JSON.parse(a.value);
+                          const bData = JSON.parse(b.value);
+                          return (aData.order || 0) - (bData.order || 0);
+                        })
+                        .map((s) => s.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-4">
+                        {settings
+                          .filter(
+                            (s) => s.category === "home" && s.key.startsWith("bottom_button_")
+                          )
+                          .sort((a, b) => {
+                            const aData = JSON.parse(a.value);
+                            const bData = JSON.parse(b.value);
+                            return (aData.order || 0) - (bData.order || 0);
+                          })
+                          .map((button) => {
+                            const buttonData = JSON.parse(button.value);
+                            return (
+                              <SortableBottomButton
+                                key={button.id}
+                                id={button.id}
+                                button={button}
+                                buttonData={buttonData}
+                                onUpdate={handleUpdateBottomButton}
+                                onDelete={handleDeleteSetting}
                               />
-                            </div>
-
-                            <div>
-                              <Label>버튼 링크 (경로)</Label>
-                              <Input
-                                value={buttonData.link || ""}
-                                onChange={(e) =>
-                                  handleUpdateBottomButton(button.id, {
-                                    ...buttonData,
-                                    link: e.target.value,
-                                  })
-                                }
-                                placeholder="/program"
-                              />
-                            </div>
-
-                            <div>
-                              <Label>버튼 스타일</Label>
-                              <Select
-                                value={buttonData.variant || "outline"}
-                                onValueChange={(value) =>
-                                  handleUpdateBottomButton(button.id, {
-                                    ...buttonData,
-                                    variant: value,
-                                  })
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover z-50">
-                                  <SelectItem value="default">기본</SelectItem>
-                                  <SelectItem value="outline">아웃라인</SelectItem>
-                                  <SelectItem value="secondary">보조</SelectItem>
-                                  <SelectItem value="ghost">고스트</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <div>
-                              <Label>순서</Label>
-                              <Input
-                                type="number"
-                                value={buttonData.order || 0}
-                                onChange={(e) =>
-                                  handleUpdateBottomButton(button.id, {
-                                    ...buttonData,
-                                    order: parseInt(e.target.value),
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div>
+                            );
+                          })}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 </div>
               </div>
             )}
