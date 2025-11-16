@@ -37,7 +37,18 @@ const RegistrationSettings = ({
 
   const handleFieldChange = (index: number, key: keyof RegistrationField, value: any) => {
     const newFields = [...registrationFields];
-    newFields[index] = { ...newFields[index], [key]: value };
+    
+    // 레이블이 변경되면 ID도 자동으로 업데이트
+    if (key === 'label') {
+      const autoId = value
+        .toLowerCase()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_가-힣]/g, '');
+      newFields[index] = { ...newFields[index], [key]: value, id: autoId || `field_${Date.now()}` };
+    } else {
+      newFields[index] = { ...newFields[index], [key]: value };
+    }
+    
     onRegistrationFieldsChange(newFields);
   };
 
@@ -108,18 +119,11 @@ const RegistrationSettings = ({
               
               <div className="grid gap-3">
                 <div>
-                  <Label>필드 ID</Label>
-                  <Input
-                    value={field.id}
-                    onChange={(e) => handleFieldChange(index, "id", e.target.value)}
-                  />
-                </div>
-                
-                <div>
                   <Label>레이블</Label>
                   <Input
                     value={field.label}
                     onChange={(e) => handleFieldChange(index, "label", e.target.value)}
+                    placeholder="예: 이름, 이메일, 회사명"
                   />
                 </div>
                 
