@@ -186,24 +186,29 @@ const HomeSettings = ({
                   placeholder="/registration 또는 https://example.com"
                 />
               </div>
-              <ColorPicker
-                value={settings.hero_button_bg_color || "280 100% 70%"}
-                onChange={(value) => onSettingChange("hero_button_bg_color", value)}
-                label="배경 색상"
-              />
-              <ColorPicker
-                value={settings.hero_button_text_color || "0 0% 100%"}
-                onChange={(value) => onSettingChange("hero_button_text_color", value)}
-                label="텍스트 색상"
-              />
-              <div>
-                <Label htmlFor="hero_button_text_size">텍스트 크기</Label>
-                <Input
-                  id="hero_button_text_size"
-                  value={settings.hero_button_text_size || ""}
-                  onChange={(e) => onSettingChange("hero_button_text_size", e.target.value)}
-                  placeholder="lg (sm, base, lg, xl 등)"
+              <div className="grid grid-cols-3 gap-4">
+                <ColorPicker
+                  value={settings.hero_button_bg_color || "280 100% 70%"}
+                  onChange={(value) => onSettingChange("hero_button_bg_color", value)}
+                  label="배경 색상"
                 />
+                <ColorPicker
+                  value={settings.hero_button_text_color || "0 0% 100%"}
+                  onChange={(value) => onSettingChange("hero_button_text_color", value)}
+                  label="텍스트 색상"
+                />
+                <div>
+                  <Label htmlFor="hero_button_text_size">텍스트 크기 (px)</Label>
+                  <Input
+                    id="hero_button_text_size"
+                    type="number"
+                    value={settings.hero_button_text_size || ""}
+                    onChange={(e) => onSettingChange("hero_button_text_size", e.target.value)}
+                    placeholder="16"
+                    min="12"
+                    max="48"
+                  />
+                </div>
               </div>
             </div>
           </div>
