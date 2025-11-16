@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Plus, ArrowUp, ArrowDown } from "lucide-react";
+import { ColorPicker } from "@/components/ColorPicker";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableInfoCard from "@/components/SortableInfoCard";
@@ -185,24 +186,16 @@ const HomeSettings = ({
                   placeholder="/registration 또는 https://example.com"
                 />
               </div>
-              <div>
-                <Label htmlFor="hero_button_bg_color">배경 색상 (HSL)</Label>
-                <Input
-                  id="hero_button_bg_color"
-                  value={settings.hero_button_bg_color || ""}
-                  onChange={(e) => onSettingChange("hero_button_bg_color", e.target.value)}
-                  placeholder="280 100% 70%"
-                />
-              </div>
-              <div>
-                <Label htmlFor="hero_button_text_color">텍스트 색상 (HSL)</Label>
-                <Input
-                  id="hero_button_text_color"
-                  value={settings.hero_button_text_color || ""}
-                  onChange={(e) => onSettingChange("hero_button_text_color", e.target.value)}
-                  placeholder="0 0% 100%"
-                />
-              </div>
+              <ColorPicker
+                value={settings.hero_button_bg_color || "280 100% 70%"}
+                onChange={(value) => onSettingChange("hero_button_bg_color", value)}
+                label="배경 색상"
+              />
+              <ColorPicker
+                value={settings.hero_button_text_color || "0 0% 100%"}
+                onChange={(value) => onSettingChange("hero_button_text_color", value)}
+                label="텍스트 색상"
+              />
               <div>
                 <Label htmlFor="hero_button_text_size">텍스트 크기</Label>
                 <Input
