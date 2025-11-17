@@ -28,6 +28,7 @@ const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   // Home page settings
+  const [heroImageUrl, setHeroImageUrl] = useState("");
   const [heroBadge, setHeroBadge] = useState("초대합니다");
   const [heroTitle, setHeroTitle] = useState("2024 비즈니스\n컨퍼런스");
   const [heroSubtitle, setHeroSubtitle] = useState("미래를 함께 만들어갈\n여러분을 초대합니다");
@@ -79,6 +80,7 @@ const Index = () => {
 
       if (settings) {
         // Load hero section
+        const imageUrl = settings.find((s) => s.key === "hero_image_url");
         const badge = settings.find((s) => s.key === "hero_badge");
         const title = settings.find((s) => s.key === "hero_title");
         const subtitle = settings.find((s) => s.key === "hero_subtitle");
@@ -88,6 +90,7 @@ const Index = () => {
         const buttonTextColor = settings.find((s) => s.key === "hero_button_text_color");
         const buttonTextSize = settings.find((s) => s.key === "hero_button_text_size");
 
+        if (imageUrl) setHeroImageUrl(imageUrl.value);
         if (badge) setHeroBadge(badge.value);
         if (title) setHeroTitle(title.value);
         if (subtitle) setHeroSubtitle(subtitle.value);
@@ -241,7 +244,7 @@ const Index = () => {
         </div>
         <div className="absolute inset-0 bg-gradient-hero opacity-95" />
         <img
-          src={heroImage}
+          src={heroImageUrl || heroImage}
           alt="Conference Hero"
           className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
         />

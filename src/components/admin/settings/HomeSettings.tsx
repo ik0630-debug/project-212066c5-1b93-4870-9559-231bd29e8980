@@ -151,6 +151,15 @@ const HomeSettings = ({
             <SectionControls title="히어로 섹션" index={index} />
             <div className="grid gap-4">
               <div>
+                <Label htmlFor="hero_image_url">배경 이미지 URL</Label>
+                <Input
+                  id="hero_image_url"
+                  value={settings.hero_image_url || ""}
+                  onChange={(e) => onSettingChange("hero_image_url", e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div>
                 <Label htmlFor="hero_title">메인 제목</Label>
                 <Input
                   id="hero_title"
