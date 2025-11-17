@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Plus, ArrowUp, ArrowDown } from "lucide-react";
 import { ColorPicker } from "@/components/ColorPicker";
+import ImageUpload from "@/components/ImageUpload";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableInfoCard from "@/components/SortableInfoCard";
@@ -150,15 +151,11 @@ const HomeSettings = ({
           <div key={sectionId} className="space-y-4">
             <SectionControls title="히어로 섹션" index={index} />
             <div className="grid gap-4">
-              <div>
-                <Label htmlFor="hero_image_url">배경 이미지 URL</Label>
-                <Input
-                  id="hero_image_url"
-                  value={settings.hero_image_url || ""}
-                  onChange={(e) => onSettingChange("hero_image_url", e.target.value)}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
+              <ImageUpload
+                value={settings.hero_image_url || ""}
+                onChange={(url) => onSettingChange("hero_image_url", url)}
+                label="배경 이미지"
+              />
               <div>
                 <Label htmlFor="hero_title">메인 제목</Label>
                 <Input
