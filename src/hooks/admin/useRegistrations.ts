@@ -16,6 +16,48 @@ export const useRegistrations = () => {
 
   useEffect(() => {
     loadRegistrations();
+
+    // 실시간 구독 설정
+    const channel = supabase
+      .channel('registrations-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE, DELETE 모두 감지
+          schema: 'public',
+          table: 'registrations'
+        },
+        (payload) => {
+          console.log('Registration change detected:', payload);
+          
+          if (payload.eventType === 'INSERT') {
+            // 새로운 신청 추가
+            setRegistrations((prev) => [payload.new, ...prev]);
+            toast({
+              title: "새로운 신청이 등록되었습니다",
+              description: `${payload.new.name}님의 신청`,
+            });
+          } else if (payload.eventType === 'UPDATE') {
+            // 신청 정보 업데이트
+            setRegistrations((prev) =>
+              prev.map((reg) =>
+                reg.id === payload.new.id ? payload.new : reg
+              )
+            );
+          } else if (payload.eventType === 'DELETE') {
+            // 신청 삭제
+            setRegistrations((prev) =>
+              prev.filter((reg) => reg.id !== payload.old.id)
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    // 클린업 함수
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const deleteRegistration = async (id: string) => {
