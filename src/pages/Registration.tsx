@@ -148,6 +148,8 @@ const Registration = () => {
         email: validatedData.email || "",
         phone: validatedData.phone || "",
         company: validatedData.company && validatedData.company.trim() ? validatedData.company : null,
+        department: validatedData.department && validatedData.department.trim() ? validatedData.department : null,
+        position: validatedData.position && validatedData.position.trim() ? validatedData.position : null,
         message: validatedData.message && validatedData.message.trim() ? validatedData.message : null,
       };
 
