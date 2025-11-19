@@ -70,26 +70,6 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-20">
       <header className="flex flex-col items-center justify-center">
         <div className="relative w-full max-w-[1000px]">
-          <div className="absolute top-4 right-4 z-10 flex gap-2">
-            {isAdmin && (
-              <Button onClick={() => navigate("/admin")} size="sm" variant="secondary" className="shadow-lg">
-                <LucideIcons.Shield className="w-4 h-4 mr-2" />
-                관리자
-              </Button>
-            )}
-            {isLoggedIn ? (
-              <Button onClick={() => navigate("/profile")} size="sm" variant="secondary" className="shadow-lg">
-                <LucideIcons.User className="w-4 h-4 mr-2" />
-                내 정보
-              </Button>
-            ) : (
-              <Button onClick={() => navigate("/auth")} size="sm" variant="secondary" className="shadow-lg">
-                <LucideIcons.LogIn className="w-4 h-4 mr-2" />
-                로그인
-              </Button>
-            )}
-          </div>
-          
           <div className="relative">
             <div 
               className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
