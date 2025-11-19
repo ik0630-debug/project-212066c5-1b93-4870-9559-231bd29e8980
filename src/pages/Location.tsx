@@ -10,13 +10,13 @@ const Location = () => {
   const navigate = useNavigate();
   const [headerImage, setHeaderImage] = useState<string>("");
   const [headerColor, setHeaderColor] = useState("");
-  const [pageTitle, setPageTitle] = useState("오시는 길");
-  const [pageDescription, setPageDescription] = useState("행사 장소 안내");
-  const [locationName, setLocationName] = useState("서울 컨벤션 센터");
-  const [locationAddress, setLocationAddress] = useState("서울특별시 강남구 테헤란로 123 (역삼동)");
-  const [locationMapUrl, setLocationMapUrl] = useState("https://map.kakao.com");
-  const [locationPhone, setLocationPhone] = useState("02-1234-5678");
-  const [locationEmail, setLocationEmail] = useState("contact@conference.com");
+  const [pageTitle, setPageTitle] = useState("");
+  const [pageDescription, setPageDescription] = useState("");
+  const [locationName, setLocationName] = useState("");
+  const [locationAddress, setLocationAddress] = useState("");
+  const [locationMapUrl, setLocationMapUrl] = useState("");
+  const [locationPhone, setLocationPhone] = useState("");
+  const [locationEmail, setLocationEmail] = useState("");
   const [transportations, setTransportations] = useState<any[]>([]);
 
   useEffect(() => {
