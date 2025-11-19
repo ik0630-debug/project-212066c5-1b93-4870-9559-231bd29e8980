@@ -40,18 +40,7 @@ const RegistrationSettings = ({
 
   const handleFieldChange = (index: number, key: keyof RegistrationField, value: any) => {
     const newFields = [...registrationFields];
-    
-    // 레이블이 변경되면 ID도 자동으로 업데이트
-    if (key === 'label') {
-      const autoId = value
-        .toLowerCase()
-        .replace(/\s+/g, '_')
-        .replace(/[^a-z0-9_가-힣]/g, '');
-      newFields[index] = { ...newFields[index], [key]: value, id: autoId || `field_${Date.now()}` };
-    } else {
-      newFields[index] = { ...newFields[index], [key]: value };
-    }
-    
+    newFields[index] = { ...newFields[index], [key]: value };
     onRegistrationFieldsChange(newFields);
   };
 
