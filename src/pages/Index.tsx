@@ -105,7 +105,7 @@ const Index = () => {
         if (overlayOpacity) setHeroOverlayOpacity(overlayOpacity.value);
 
         const cards = settings
-          .filter((s) => s.key.startsWith("info_card_"))
+          .filter((s) => s.key.startsWith("home_info_card_"))
           .map((s) => {
             const cardData = JSON.parse(s.value);
             return { id: s.id, ...cardData };
@@ -119,7 +119,7 @@ const Index = () => {
         if (descContent) setDescriptionContent(descContent.value);
 
         const buttons = settings
-          .filter((s) => s.key.startsWith("bottom_button_"))
+          .filter((s) => s.key.startsWith("home_bottom_button_"))
           .map((s) => {
             const buttonData = JSON.parse(s.value);
             return { id: s.id, ...buttonData };
