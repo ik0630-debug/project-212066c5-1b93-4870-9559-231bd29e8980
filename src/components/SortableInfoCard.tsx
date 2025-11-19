@@ -11,8 +11,8 @@ interface SortableCardProps {
   id: string;
   card: any;
   cardData: any;
-  onUpdate: (id: string, data: any) => void;
-  onDelete: (id: string) => void;
+  onUpdate: (data: any) => void;
+  onDelete: () => void;
 }
 
 const SortableInfoCard = ({
@@ -54,7 +54,7 @@ const SortableInfoCard = ({
         <h4 className="font-medium text-lg flex-1">
           {cardData.title || "제목 없음"}
         </h4>
-        <Button onClick={() => onDelete(id)} size="sm" variant="destructive">
+        <Button onClick={onDelete} size="sm" variant="destructive">
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
@@ -64,7 +64,7 @@ const SortableInfoCard = ({
         <IconPicker
           value={cardData.icon || "Calendar"}
           onValueChange={(iconName) =>
-            onUpdate(id, {
+            onUpdate({
               ...cardData,
               icon: iconName,
             })
@@ -77,7 +77,7 @@ const SortableInfoCard = ({
         <Input
           value={cardData.title || ""}
           onChange={(e) =>
-            onUpdate(id, {
+            onUpdate({
               ...cardData,
               title: e.target.value,
             })
@@ -91,7 +91,7 @@ const SortableInfoCard = ({
         <Textarea
           value={cardData.content || ""}
           onChange={(e) =>
-            onUpdate(id, {
+            onUpdate({
               ...cardData,
               content: e.target.value,
             })
