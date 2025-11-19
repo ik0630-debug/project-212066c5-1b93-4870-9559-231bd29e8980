@@ -142,17 +142,26 @@ const Registration = () => {
       // Validate form data
       const validatedData = registrationSchema.parse(formData);
 
+      console.log("=== 신청 데이터 디버깅 ===");
+      console.log("1. formData:", formData);
+      console.log("2. validatedData:", validatedData);
+      console.log("3. fields:", fields);
+
       // Prepare data for database - 동적 필드 기반으로 데이터 구성
       const insertData: any = {};
       
       fields.forEach(field => {
         const value = validatedData[field.id];
+        console.log(`필드 ${field.id}: "${value}" -> ${(value && value.trim()) ? `"${value}"` : 'null'}`);
         // 빈 문자열이 아닌 값만 저장, 없으면 null
         insertData[field.id] = (value && value.trim()) ? value : null;
       });
       
+      console.log("4. insertData:", insertData);
+      
       // 필수 필드 확인 (name, email, phone은 반드시 있어야 함)
       if (!insertData.name || !insertData.email || !insertData.phone) {
+        console.error("필수 필드 누락:", { name: insertData.name, email: insertData.email, phone: insertData.phone });
         throw new Error("필수 필드가 누락되었습니다.");
       }
 
