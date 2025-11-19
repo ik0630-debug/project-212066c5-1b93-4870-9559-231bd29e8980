@@ -239,18 +239,17 @@ const Registration = () => {
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
         {/* Header */}
-        <header
-        className="relative bg-gradient-primary text-primary-foreground py-4 px-6 bg-cover bg-center"
-        style={headerImage ? { backgroundImage: `url(${headerImage})` } : {}}
-      >
-        <div className="absolute inset-0 bg-gradient-primary/80" />
-        <div className="relative">
-          <h1 className="text-2xl font-bold text-center mb-1">{pageSettings.pageTitle}</h1>
-          <p className="text-center text-primary-foreground/80 text-sm">
-            {pageSettings.pageDescription}
-          </p>
-        </div>
-      </header>
+        <header 
+          className="text-primary-foreground py-4 px-6"
+          style={{ backgroundColor: headerImage ? undefined : 'hsl(var(--primary))' }}
+        >
+          <h1 className="text-2xl font-bold mb-1">{pageSettings.pageTitle}</h1>
+          {pageSettings.pageDescription && (
+            <p className="text-primary-foreground/90 text-sm whitespace-pre-line">
+              {pageSettings.pageDescription}
+            </p>
+          )}
+        </header>
 
       <main className="px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">

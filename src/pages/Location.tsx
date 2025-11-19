@@ -116,21 +116,18 @@ const Location = () => {
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
-        <header
-        className="relative text-primary-foreground py-4 px-6 bg-cover bg-center"
-        style={{
-          ...(headerImage && { backgroundImage: `url(${headerImage})` }),
-          ...(headerColor && { backgroundColor: `hsl(${headerColor})` }),
-          ...(!headerColor && !headerImage && {})
-        }}
-        {...(!headerColor && !headerImage && { className: "relative bg-gradient-primary text-primary-foreground py-4 px-6 bg-cover bg-center" })}
-      >
-        <div className="absolute inset-0 bg-gradient-primary/80" style={{ opacity: headerImage ? 1 : 0 }} />
-        <div className="relative">
+        <header 
+          className="text-primary-foreground py-4 px-6"
+          style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
+          {...(!headerColor && { className: "bg-gradient-primary text-primary-foreground py-4 px-6" })}
+        >
           <h1 className="text-2xl font-bold mb-1">{pageTitle}</h1>
-          <p className="text-primary-foreground/90 text-sm">{pageDescription}</p>
-        </div>
-      </header>
+          {pageDescription && (
+            <p className="text-primary-foreground/90 text-sm whitespace-pre-line">
+              {pageDescription}
+            </p>
+          )}
+        </header>
 
       <main className="px-6 py-8 space-y-8">
         {/* Map placeholder */}
