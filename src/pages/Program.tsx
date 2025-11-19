@@ -40,9 +40,9 @@ const Program = () => {
 
       if (settings) {
         // Load page title and description
-        const titleSetting = settings.find((s) => s.key === "page_title");
-        const descSetting = settings.find((s) => s.key === "page_description");
-        const colorSetting = settings.find((s) => s.key === "header_color");
+        const titleSetting = settings.find((s) => s.key === "program_title");
+        const descSetting = settings.find((s) => s.key === "program_description");
+        const colorSetting = settings.find((s) => s.key === "program_header_color");
 
         if (titleSetting) setPageTitle(titleSetting.value);
         if (descSetting) setPageDescription(descSetting.value);
