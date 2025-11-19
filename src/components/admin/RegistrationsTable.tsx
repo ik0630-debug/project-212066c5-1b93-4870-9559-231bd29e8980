@@ -7,12 +7,20 @@ import { Trash2, FileDown } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useToast } from "@/hooks/use-toast";
 
+interface RegistrationField {
+  id: string;
+  label: string;
+  type: string;
+  required: boolean;
+}
+
 interface RegistrationsTableProps {
   registrations: any[];
+  registrationFormFields: RegistrationField[];
   onDelete: (id: string) => void;
 }
 
-const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps) => {
+const RegistrationsTable = ({ registrations, registrationFormFields, onDelete }: RegistrationsTableProps) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("active");
 
@@ -43,17 +51,19 @@ const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps
   const handleExportToExcel = () => {
     try {
       // 현재 필터된 데이터만 내보내기
-      const exportData = filteredRegistrations.map((reg) => ({
-        이름: reg.name,
-        소속: reg.company || "-",
-        부서: reg.department || "-",
-        직함: reg.position || "-",
-        연락처: reg.phone,
-        이메일: reg.email,
-        특이사항: reg.message || "-",
-        상태: reg.status === "cancelled" ? "취소됨" : "신청완료",
-        신청일: new Date(reg.created_at).toLocaleString("ko-KR"),
-      }));
+      const exportData = filteredRegistrations.map((reg) => {
+        const row: Record<string, any> = {};
+        
+        // 동적 필드에 따라 데이터 구성
+        registrationFormFields.forEach(field => {
+          row[field.label] = reg[field.id] || "-";
+        });
+        
+        row["상태"] = reg.status === "cancelled" ? "취소됨" : "신청완료";
+        row["신청일"] = new Date(reg.created_at).toLocaleString("ko-KR");
+        
+        return row;
+      });
 
       // 워크북 생성
       const worksheet = XLSX.utils.json_to_sheet(exportData);
@@ -102,12 +112,9 @@ const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>이름</TableHead>
-                  <TableHead>소속</TableHead>
-                  <TableHead>부서</TableHead>
-                  <TableHead>직함</TableHead>
-                  <TableHead>연락처</TableHead>
-                  <TableHead>이메일</TableHead>
+                  {registrationFormFields.map((field) => (
+                    <TableHead key={field.id}>{field.label}</TableHead>
+                  ))}
                   <TableHead>신청일</TableHead>
                   <TableHead>작업</TableHead>
                 </TableRow>
@@ -115,19 +122,18 @@ const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps
               <TableBody>
                 {filteredRegistrations.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={registrationFormFields.length + 2} className="text-center py-8 text-muted-foreground">
                       신청 내역이 없습니다.
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredRegistrations.map((reg) => (
                     <TableRow key={reg.id}>
-                      <TableCell className="font-medium">{reg.name || "-"}</TableCell>
-                      <TableCell>{reg.company || "-"}</TableCell>
-                      <TableCell>{reg.department || "-"}</TableCell>
-                      <TableCell>{reg.position || "-"}</TableCell>
-                      <TableCell>{reg.phone || "-"}</TableCell>
-                      <TableCell>{reg.email || "-"}</TableCell>
+                      {registrationFormFields.map((field) => (
+                        <TableCell key={field.id} className={field.id === 'name' ? 'font-medium' : ''}>
+                          {reg[field.id] || "-"}
+                        </TableCell>
+                      ))}
                       <TableCell>{new Date(reg.created_at).toLocaleDateString("ko-KR")}</TableCell>
                       <TableCell>
                         <Button variant="destructive" size="sm" onClick={() => onDelete(reg.id)}>
