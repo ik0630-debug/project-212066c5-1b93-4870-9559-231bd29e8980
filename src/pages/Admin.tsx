@@ -10,7 +10,7 @@ import { useSettings } from "@/hooks/admin/useSettings";
 const Admin = () => {
   const navigate = useNavigate();
   const { loading, signOut } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'settings'>('registrations');
+  const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'page-settings' | 'config'>('registrations');
   const [activeSettingsTab, setActiveSettingsTab] = useState(0);
 
   const { registrations, registrationFields: registrationFormFields, deleteRegistration } = useRegistrations();
