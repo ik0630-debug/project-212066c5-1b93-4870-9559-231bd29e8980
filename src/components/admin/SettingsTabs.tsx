@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Users, FileText, MapPin, Home, UserPlus, RefreshCw } from "lucide-react";
@@ -53,9 +53,16 @@ const SettingsTabs = ({
   onSave,
 }: SettingsTabsProps) => {
   const [previewKey, setPreviewKey] = useState(0);
+  const isInitialMount = useRef(true);
 
   // Auto-save when settings change (debounced, silent)
   useEffect(() => {
+    // Skip auto-save on initial mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     const timer = setTimeout(() => {
       onSave({ silent: true });
     }, 1000);
