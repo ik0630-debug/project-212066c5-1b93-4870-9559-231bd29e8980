@@ -26,7 +26,7 @@ const ProgramSettings = ({
   );
 
   const handleAddProgramCard = () => {
-    onProgramCardsChange([...programCards, { time: "", title: "", location: "" }]);
+    onProgramCardsChange([...programCards, { time: "", title: "", description: "" }]);
   };
 
   const handleDeleteProgramCard = (index: number) => {
@@ -95,7 +95,7 @@ const ProgramSettings = ({
             <div className="space-y-4">
               {programCards.map((card, i) => (
                 <div key={i} className="p-4 border rounded-lg space-y-2">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <Input
                       placeholder="시간"
                       value={card.time}
@@ -114,16 +114,16 @@ const ProgramSettings = ({
                         onProgramCardsChange(newCards);
                       }}
                     />
-                    <Input
-                      placeholder="장소"
-                      value={card.location}
-                      onChange={(e) => {
-                        const newCards = [...programCards];
-                        newCards[i].location = e.target.value;
-                        onProgramCardsChange(newCards);
-                      }}
-                    />
                   </div>
+                  <Input
+                    placeholder="설명"
+                    value={card.description}
+                    onChange={(e) => {
+                      const newCards = [...programCards];
+                      newCards[i].description = e.target.value;
+                      onProgramCardsChange(newCards);
+                    }}
+                  />
                   <Button
                     variant="destructive"
                     size="sm"
