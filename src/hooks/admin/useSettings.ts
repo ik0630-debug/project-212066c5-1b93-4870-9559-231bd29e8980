@@ -24,6 +24,7 @@ export const useSettings = () => {
     hero_button_bg_color: "",
     hero_button_text_color: "",
     hero_button_text_size: "",
+    hero_overlay_opacity: "95",
     description_title: "",
     description_content: "",
     program_title: "",

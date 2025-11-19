@@ -37,6 +37,7 @@ const Index = () => {
   const [heroButtonBgColor, setHeroButtonBgColor] = useState("");
   const [heroButtonTextColor, setHeroButtonTextColor] = useState("");
   const [heroButtonTextSize, setHeroButtonTextSize] = useState("lg");
+  const [heroOverlayOpacity, setHeroOverlayOpacity] = useState("95");
   const [infoCards, setInfoCards] = useState<InfoCard[]>([]);
   const [descriptionTitle, setDescriptionTitle] = useState("행사 소개");
   const [descriptionContent, setDescriptionContent] = useState(
@@ -89,6 +90,7 @@ const Index = () => {
         const buttonBgColor = settings.find((s) => s.key === "hero_button_bg_color");
         const buttonTextColor = settings.find((s) => s.key === "hero_button_text_color");
         const buttonTextSize = settings.find((s) => s.key === "hero_button_text_size");
+        const overlayOpacity = settings.find((s) => s.key === "hero_overlay_opacity");
 
         if (imageUrl) setHeroImageUrl(imageUrl.value);
         if (badge) setHeroBadge(badge.value);
@@ -99,6 +101,7 @@ const Index = () => {
         if (buttonBgColor) setHeroButtonBgColor(buttonBgColor.value);
         if (buttonTextColor) setHeroButtonTextColor(buttonTextColor.value);
         if (buttonTextSize) setHeroButtonTextSize(buttonTextSize.value);
+        if (overlayOpacity) setHeroOverlayOpacity(overlayOpacity.value);
 
         // Load info cards
         const cards = settings
@@ -246,7 +249,10 @@ const Index = () => {
                 </Button>
               )}
             </div>
-            <div className="absolute inset-0 bg-gradient-hero opacity-95" />
+            <div 
+              className="absolute inset-0 bg-gradient-hero" 
+              style={{ opacity: parseInt(heroOverlayOpacity) / 100 }}
+            />
             <img
               src={heroImageUrl || heroImage}
               alt="Conference Hero"
