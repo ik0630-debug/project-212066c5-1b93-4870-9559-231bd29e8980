@@ -207,80 +207,88 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Hero Section */}
-      <header className="relative overflow-hidden">
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
-          {isAdmin && (
-            <Button
-              onClick={() => navigate("/admin")}
-              size="sm"
-              variant="secondary"
-              className="shadow-lg"
-            >
-              <LucideIcons.Shield className="w-4 h-4 mr-2" />
-              관리자
-            </Button>
-          )}
-          {isLoggedIn ? (
-            <Button
-              onClick={() => navigate("/profile")}
-              size="sm"
-              variant="secondary"
-              className="shadow-lg"
-            >
-              <LucideIcons.User className="w-4 h-4 mr-2" />
-              내 정보
-            </Button>
-          ) : (
-            <Button
-              onClick={() => navigate("/auth")}
-              size="sm"
-              variant="secondary"
-              className="shadow-lg"
-            >
-              <LucideIcons.LogIn className="w-4 h-4 mr-2" />
-              로그인
-            </Button>
-          )}
-        </div>
-        <div className="absolute inset-0 bg-gradient-hero opacity-95" />
-        <img
-          src={heroImageUrl || heroImage}
-          alt="Conference Hero"
-          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
-        />
-        <div className="relative px-6 py-16 text-center text-primary-foreground">
-          {heroBadge && (
-            <div className="inline-block mb-4">
-              <span className="inline-block px-4 py-1.5 bg-accent/90 text-accent-foreground text-sm font-bold rounded-full shadow-glow">
-                {heroBadge}
-              </span>
+      <header className="relative w-full">
+        {/* 16:9 Aspect Ratio Container */}
+        <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+          {/* Absolute positioned content fills the aspect ratio container */}
+          <div className="absolute inset-0">
+            <div className="absolute top-4 right-4 z-10 flex gap-2">
+              {isAdmin && (
+                <Button
+                  onClick={() => navigate("/admin")}
+                  size="sm"
+                  variant="secondary"
+                  className="shadow-lg"
+                >
+                  <LucideIcons.Shield className="w-4 h-4 mr-2" />
+                  관리자
+                </Button>
+              )}
+              {isLoggedIn ? (
+                <Button
+                  onClick={() => navigate("/profile")}
+                  size="sm"
+                  variant="secondary"
+                  className="shadow-lg"
+                >
+                  <LucideIcons.User className="w-4 h-4 mr-2" />
+                  내 정보
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => navigate("/auth")}
+                  size="sm"
+                  variant="secondary"
+                  className="shadow-lg"
+                >
+                  <LucideIcons.LogIn className="w-4 h-4 mr-2" />
+                  로그인
+                </Button>
+              )}
             </div>
-          )}
-          <h1 className="text-4xl font-bold mb-4 leading-tight whitespace-pre-line">
-            {heroTitle}
-          </h1>
-          <p className="text-lg text-primary-foreground/90 mb-8 whitespace-pre-line">
-            {heroSubtitle}
-          </p>
-          {heroButtonText && heroButtonUrl && (
-            <Button
-              onClick={() => {
-                if (heroButtonUrl.startsWith("http")) {
-                  window.open(heroButtonUrl, "_blank");
-                } else {
-                  navigate(heroButtonUrl);
-                }
-              }}
-              size={heroButtonTextSize as any || "lg"}
-              style={{
-                backgroundColor: heroButtonBgColor ? `hsl(${heroButtonBgColor})` : undefined,
-                color: heroButtonTextColor ? `hsl(${heroButtonTextColor})` : undefined,
-              }}
-              className="h-12 px-8 font-bold shadow-glow hover:opacity-90 transition-opacity"
-            >
-              {heroButtonText}
-            </Button>
-          )}
+            <div className="absolute inset-0 bg-gradient-hero opacity-95" />
+            <img
+              src={heroImageUrl || heroImage}
+              alt="Conference Hero"
+              className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
+            />
+            <div className="relative h-full flex items-center justify-center px-6 text-center text-primary-foreground">
+              <div className="w-full max-w-4xl">
+                {heroBadge && (
+                  <div className="inline-block mb-4">
+                    <span className="inline-block px-4 py-1.5 bg-accent/90 text-accent-foreground text-sm font-bold rounded-full shadow-glow">
+                      {heroBadge}
+                    </span>
+                  </div>
+                )}
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight whitespace-pre-line">
+                  {heroTitle}
+                </h1>
+                <p className="text-base sm:text-lg md:text-xl text-primary-foreground/90 mb-6 sm:mb-8 whitespace-pre-line">
+                  {heroSubtitle}
+                </p>
+                {heroButtonText && heroButtonUrl && (
+                  <Button
+                    onClick={() => {
+                      if (heroButtonUrl.startsWith("http")) {
+                        window.open(heroButtonUrl, "_blank");
+                      } else {
+                        navigate(heroButtonUrl);
+                      }
+                    }}
+                    size={heroButtonTextSize as any || "lg"}
+                    style={{
+                      backgroundColor: heroButtonBgColor ? `hsl(${heroButtonBgColor})` : undefined,
+                      color: heroButtonTextColor ? `hsl(${heroButtonTextColor})` : undefined,
+                    }}
+                    className="h-10 sm:h-12 px-6 sm:px-8 text-sm sm:text-base font-bold shadow-glow hover:opacity-90 transition-opacity"
+                  >
+                    {heroButtonText}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
