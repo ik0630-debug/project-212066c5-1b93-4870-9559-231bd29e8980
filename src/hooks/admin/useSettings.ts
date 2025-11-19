@@ -163,6 +163,30 @@ export const useSettings = () => {
           key: "registration_fields",
           value: JSON.stringify(registrationFields),
         },
+        // Save info cards
+        ...infoCards.map((card, index) => ({
+          category: "home",
+          key: "home_info_card",
+          value: JSON.stringify({ ...card, order: index }),
+        })),
+        // Save bottom buttons
+        ...bottomButtons.map((button, index) => ({
+          category: "home",
+          key: "home_bottom_button",
+          value: JSON.stringify({ ...button, order: index }),
+        })),
+        // Save program cards
+        ...programCards.map((card, index) => ({
+          category: "program",
+          key: "program_card",
+          value: JSON.stringify({ ...card, order: index }),
+        })),
+        // Save transport cards
+        ...transportCards.map((card, index) => ({
+          category: "location",
+          key: `location_transport_card_${index}`,
+          value: JSON.stringify(card),
+        })),
       ];
 
       await supabase.from("site_settings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
