@@ -52,8 +52,6 @@ const HomeSettings = ({
 
   const handleAddInfoCard = () => {
     onInfoCardsChange([...infoCards, { title: "", description: "", icon: "Info" }]);
-    onSave();
-    setTimeout(refreshPreview, 500);
   };
 
   const handleUpdateInfoCard = (id: string, data: any) => {
@@ -61,14 +59,10 @@ const HomeSettings = ({
     const newCards = [...infoCards];
     newCards[index] = { ...newCards[index], ...data };
     onInfoCardsChange(newCards);
-    onSave();
-    setTimeout(refreshPreview, 500);
   };
 
   const handleDeleteInfoCard = (index: number) => {
     onInfoCardsChange(infoCards.filter((_, i) => i !== index));
-    onSave();
-    setTimeout(refreshPreview, 500);
   };
 
   const handleDragEndInfoCards = (event: DragEndEvent) => {
@@ -77,15 +71,11 @@ const HomeSettings = ({
       const oldIndex = infoCards.findIndex((_, i) => i.toString() === active.id);
       const newIndex = infoCards.findIndex((_, i) => i.toString() === over.id);
       onInfoCardsChange(arrayMove(infoCards, oldIndex, newIndex));
-      onSave();
-      setTimeout(refreshPreview, 500);
     }
   };
 
   const handleAddBottomButton = () => {
     onBottomButtonsChange([...bottomButtons, { text: "", url: "" }]);
-    onSave();
-    setTimeout(refreshPreview, 500);
   };
 
   const handleUpdateBottomButton = (id: string, data: any) => {
@@ -93,14 +83,10 @@ const HomeSettings = ({
     const newButtons = [...bottomButtons];
     newButtons[index] = { ...newButtons[index], ...data };
     onBottomButtonsChange(newButtons);
-    onSave();
-    setTimeout(refreshPreview, 500);
   };
 
   const handleDeleteBottomButton = (index: number) => {
     onBottomButtonsChange(bottomButtons.filter((_, i) => i !== index));
-    onSave();
-    setTimeout(refreshPreview, 500);
   };
 
   const handleDragEndBottomButtons = (event: DragEndEvent) => {
@@ -109,8 +95,6 @@ const HomeSettings = ({
       const oldIndex = bottomButtons.findIndex((_, i) => i.toString() === active.id);
       const newIndex = bottomButtons.findIndex((_, i) => i.toString() === over.id);
       onBottomButtonsChange(arrayMove(bottomButtons, oldIndex, newIndex));
-      onSave();
-      setTimeout(refreshPreview, 500);
     }
   };
 
