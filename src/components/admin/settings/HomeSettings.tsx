@@ -140,13 +140,25 @@ const HomeSettings = ({
     const HeroButton = () => {
       if (settings.hero_use_button !== "true" || !settings.hero_button_text) return null;
       
+      const sizeType = settings.hero_button_size_type || "lg";
+      const customStyle: React.CSSProperties = {
+        backgroundColor: settings.hero_button_bg_color ? `hsl(${settings.hero_button_bg_color})` : undefined,
+        color: settings.hero_button_text_color ? `hsl(${settings.hero_button_text_color})` : undefined,
+      };
+      
+      if (sizeType === "custom") {
+        if (settings.hero_button_custom_width) {
+          customStyle.width = `${settings.hero_button_custom_width}px`;
+        }
+        if (settings.hero_button_custom_height) {
+          customStyle.height = `${settings.hero_button_custom_height}px`;
+        }
+      }
+      
       return (
         <Button
-          size={settings.hero_button_text_size as any || "lg"}
-          style={{
-            backgroundColor: settings.hero_button_bg_color ? `hsl(${settings.hero_button_bg_color})` : undefined,
-            color: settings.hero_button_text_color ? `hsl(${settings.hero_button_text_color})` : undefined,
-          }}
+          size={sizeType !== "custom" ? (sizeType as any) : "default"}
+          style={customStyle}
           className="shadow-glow"
         >
           {settings.hero_button_text || "버튼"}
@@ -315,14 +327,44 @@ const HomeSettings = ({
                     />
                   </div>
                   <div>
-                    <Label htmlFor="hero_button_text_size">버튼 크기</Label>
-                    <Input
-                      id="hero_button_text_size"
-                      value={settings.hero_button_text_size || ""}
-                      onChange={(e) => onSettingChange("hero_button_text_size", e.target.value)}
-                      placeholder="lg"
-                    />
+                    <Label htmlFor="hero_button_size_type">버튼 크기</Label>
+                    <select
+                      id="hero_button_size_type"
+                      value={settings.hero_button_size_type || "lg"}
+                      onChange={(e) => onSettingChange("hero_button_size_type", e.target.value)}
+                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                    >
+                      <option value="sm">작게 (sm)</option>
+                      <option value="default">기본 (default)</option>
+                      <option value="lg">크게 (lg)</option>
+                      <option value="custom">사용자 지정</option>
+                    </select>
                   </div>
+                  
+                  {settings.hero_button_size_type === "custom" && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="hero_button_custom_width">가로 (px)</Label>
+                        <Input
+                          id="hero_button_custom_width"
+                          type="number"
+                          value={settings.hero_button_custom_width || ""}
+                          onChange={(e) => onSettingChange("hero_button_custom_width", e.target.value)}
+                          placeholder="200"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="hero_button_custom_height">세로 (px)</Label>
+                        <Input
+                          id="hero_button_custom_height"
+                          type="number"
+                          value={settings.hero_button_custom_height || ""}
+                          onChange={(e) => onSettingChange("hero_button_custom_height", e.target.value)}
+                          placeholder="48"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
