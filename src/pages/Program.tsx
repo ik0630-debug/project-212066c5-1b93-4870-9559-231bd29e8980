@@ -16,7 +16,7 @@ interface ProgramCard {
 
 const Program = () => {
   const navigate = useNavigate();
-  const [pageTitle, setPageTitle] = useState("프로그램");
+  const [pageTitle, setPageTitle] = useState("");
   const [pageDescription, setPageDescription] = useState("");
   const [headerColor, setHeaderColor] = useState("");
   const [programCards, setProgramCards] = useState<ProgramCard[]>([]);
