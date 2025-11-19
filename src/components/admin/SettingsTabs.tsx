@@ -58,7 +58,7 @@ const SettingsTabs = ({
     { icon: Home, label: "홈 화면", value: "0" },
     { icon: FileText, label: "프로그램", value: "1" },
     { icon: UserPlus, label: "참가 신청", value: "2" },
-    { icon: MapPin, label: "장소", value: "3" },
+    { icon: MapPin, label: "오시는 길", value: "3" },
   ];
 
   const renderContent = () => {

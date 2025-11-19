@@ -27,7 +27,7 @@ const LocationSettings = ({
   );
 
   const handleAddTransportCard = () => {
-    onTransportCardsChange([...transportCards, { icon: "Train", title: "", description: "" }]);
+    onTransportCardsChange([...transportCards, { icon: "Train", title: "새 교통수단", description: "설명을 입력하세요" }]);
   };
 
   const handleUpdateTransportCard = (id: string, data: any) => {
