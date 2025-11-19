@@ -1,6 +1,7 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Users, FileText, MapPin, Home, UserPlus } from "lucide-react";
+import { Settings, Users, FileText, MapPin, Home, UserPlus, RefreshCw } from "lucide-react";
 import HomeSettings from "./settings/HomeSettings";
 import ProgramSettings from "./settings/ProgramSettings";
 import LocationSettings from "./settings/LocationSettings";
@@ -51,6 +52,16 @@ const SettingsTabs = ({
   onSaveSectionOrder,
   onSave,
 }: SettingsTabsProps) => {
+  const [previewKey, setPreviewKey] = useState(0);
+
+  // Auto-refresh preview when settings change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPreviewKey(prev => prev + 1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [settings, infoCards, bottomButtons, programCards, transportCards, registrationSettings, registrationFields]);
+
   const tabs = [
     { icon: Home, label: "홈 화면", value: "0" },
     { icon: FileText, label: "프로그램", value: "1" },
@@ -133,11 +144,20 @@ const SettingsTabs = ({
 
       <div className="sticky top-6 h-[calc(100vh-200px)]">
         <div className="border rounded-lg overflow-hidden h-full bg-card">
-          <div className="p-4 border-b bg-muted/50">
+          <div className="p-4 border-b bg-muted/50 flex items-center justify-between">
             <h3 className="font-semibold text-sm">미리보기</h3>
+            <Button
+              onClick={() => setPreviewKey(prev => prev + 1)}
+              size="sm"
+              variant="ghost"
+              className="h-7 w-7 p-0"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+            </Button>
           </div>
           <div className="h-[calc(100%-56px)] overflow-auto">
             <iframe
+              key={previewKey}
               src="/"
               className="w-full h-full border-0"
               title="Preview"
