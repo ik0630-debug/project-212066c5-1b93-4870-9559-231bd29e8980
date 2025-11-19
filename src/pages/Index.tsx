@@ -147,15 +147,7 @@ const Index = () => {
     return Icon || LucideIcons.Calendar;
   };
 
-  const defaultInfoCards = [
-    { id: "default-1", icon: "Calendar", title: "일시", content: "2024년 12월 15일 (금)\n오전 9:00 - 오후 6:00", order: 0 },
-    { id: "default-2", icon: "MapPin", title: "장소", content: "서울 컨벤션 센터\n서울특별시 강남구 테헤란로 123", order: 1 },
-    { id: "default-3", icon: "Users", title: "대상", content: "업계 전문가, 일원진\n정원 200명 (선착순 마감)", order: 2 },
-  ];
-
-  const displayCards = infoCards.length > 0 ? infoCards : defaultInfoCards;
-
-  const displayButtons = bottomButtons;
+  
 
   const HeroButton = () => {
     if (heroUseButton !== "true" || !heroButtonText || !heroButtonUrl) return null;
@@ -245,10 +237,10 @@ const Index = () => {
       <main className="px-6 py-8">
         <div className="space-y-6">
           {sectionOrder.map((sectionKey) => {
-            if (sectionKey === 'info_cards') {
+            if (sectionKey === 'info_cards' && infoCards.length > 0) {
               return (
                 <div key={sectionKey} className="grid gap-4">
-                  {displayCards.map((card) => {
+                  {infoCards.map((card) => {
                     const IconComponent = getIconComponent(card.icon);
                     return (
                       <div key={card.id} className="bg-card rounded-lg p-5 shadow-elegant border border-border">
@@ -277,10 +269,10 @@ const Index = () => {
               );
             }
             
-            if (sectionKey === 'bottom_buttons' && displayButtons.length > 0) {
+            if (sectionKey === 'bottom_buttons' && bottomButtons.length > 0) {
               return (
                 <div key={sectionKey} className="grid grid-cols-2 gap-4">
-                  {displayButtons.map((button) => (
+                  {bottomButtons.map((button) => (
                     <Button
                       key={button.id}
                       onClick={() => navigate(button.link)}
