@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, ArrowUp, ArrowDown } from "lucide-react";
 import { ColorPicker } from "@/components/ColorPicker";
 import ImageUpload from "@/components/ImageUpload";
@@ -14,7 +13,6 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableInfoCard from "@/components/SortableInfoCard";
 import SortableBottomButton from "@/components/SortableBottomButton";
-import heroImage from "@/assets/hero-image.jpg";
 
 interface HomeSettingsProps {
   settings: any;
@@ -39,7 +37,6 @@ const HomeSettings = ({
   onSectionOrderChange,
   onSaveSectionOrder,
 }: HomeSettingsProps) => {
-  const [activePreviewTab, setActivePreviewTab] = useState<string>("hero");
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -136,76 +133,6 @@ const HomeSettings = ({
     </div>
   );
 
-  const HeroPreview = () => {
-    const HeroButton = () => {
-      if (settings.hero_use_button !== "true" || !settings.hero_button_text) return null;
-      
-      const sizeType = settings.hero_button_size_type || "lg";
-      const customStyle: React.CSSProperties = {
-        backgroundColor: settings.hero_button_bg_color ? `hsl(${settings.hero_button_bg_color})` : undefined,
-        color: settings.hero_button_text_color ? `hsl(${settings.hero_button_text_color})` : undefined,
-      };
-      
-      if (sizeType === "custom") {
-        if (settings.hero_button_custom_width) {
-          customStyle.width = `${settings.hero_button_custom_width}px`;
-        }
-        if (settings.hero_button_custom_height) {
-          customStyle.height = `${settings.hero_button_custom_height}px`;
-        }
-      }
-      
-      return (
-        <Button
-          size={sizeType !== "custom" ? (sizeType as any) : "default"}
-          style={customStyle}
-          className="shadow-glow"
-        >
-          {settings.hero_button_text || "버튼"}
-        </Button>
-      );
-    };
-
-    return (
-      <div className="relative w-full max-w-[500px] mx-auto">
-        <div className="relative">
-          <div 
-            className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-            style={{ opacity: parseInt(settings.hero_overlay_opacity || "95") / 100 }}
-          />
-          <img
-            src={settings.hero_image_url || heroImage}
-            alt="Hero Preview"
-            className="w-full h-auto object-contain"
-          />
-          
-          {settings.hero_use_text === "true" && settings.hero_text_content && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center px-6 text-center text-primary-foreground pointer-events-none">
-              <div 
-                className="w-full text-sm"
-                dangerouslySetInnerHTML={{ __html: settings.hero_text_content }}
-              />
-            </div>
-          )}
-          
-          {settings.hero_button_position === "inside" && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-              <div className="pointer-events-auto mt-16">
-                <HeroButton />
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {settings.hero_button_position === "below" && (
-          <div className="flex justify-center py-4">
-            <HeroButton />
-          </div>
-        )}
-      </div>
-    );
-  };
-
   const renderSection = (sectionId: string, index: number) => {
     switch (sectionId) {
       case "hero_section":
@@ -234,20 +161,17 @@ const HomeSettings = ({
               </div>
               
               {settings.hero_use_text === "true" && (
-                <div>
-                  <Label htmlFor="hero_text_content">텍스트 에디터</Label>
-                  <Textarea
-                    id="hero_text_content"
-                    value={settings.hero_text_content || ""}
-                    onChange={(e) => {
-                      onSettingChange("hero_text_content", e.target.value);
-                      setActivePreviewTab("hero");
-                    }}
-                    placeholder="HTML 또는 일반 텍스트를 입력하세요&#10;예시:&#10;<h1>제목</h1>&#10;<p>부제목</p>"
-                    className="min-h-[150px] font-mono text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">HTML 태그를 사용할 수 있습니다</p>
-                </div>
+                  <div>
+                    <Label htmlFor="hero_text_content">텍스트 에디터</Label>
+                    <Textarea
+                      id="hero_text_content"
+                      value={settings.hero_text_content || ""}
+                      onChange={(e) => onSettingChange("hero_text_content", e.target.value)}
+                      placeholder="HTML 또는 일반 텍스트를 입력하세요&#10;예시:&#10;<h1>제목</h1>&#10;<p>부제목</p>"
+                      className="min-h-[150px] font-mono text-sm"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">HTML 태그를 사용할 수 있습니다</p>
+                  </div>
               )}
               
               <div>
@@ -473,17 +397,14 @@ const HomeSettings = ({
       
       <div className="col-span-1">
         <div className="sticky top-4">
-          <h3 className="text-lg font-semibold mb-4">미리보기</h3>
-          <Tabs value={activePreviewTab} onValueChange={setActivePreviewTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-1">
-              <TabsTrigger value="hero">히어로 섹션</TabsTrigger>
-            </TabsList>
-            <TabsContent value="hero" className="mt-4">
-              <div className="border rounded-lg p-4 bg-muted/20">
-                <HeroPreview />
-              </div>
-            </TabsContent>
-          </Tabs>
+          <h3 className="text-lg font-semibold mb-4">전체 페이지 미리보기</h3>
+          <div className="border rounded-lg overflow-hidden bg-muted/20" style={{ height: '80vh' }}>
+            <iframe
+              src="/"
+              className="w-full h-full"
+              title="Page Preview"
+            />
+          </div>
         </div>
       </div>
     </div>
