@@ -39,10 +39,8 @@ const Index = () => {
   const [heroButtonTextSize, setHeroButtonTextSize] = useState("lg");
   const [heroOverlayOpacity, setHeroOverlayOpacity] = useState("95");
   const [infoCards, setInfoCards] = useState<InfoCard[]>([]);
-  const [descriptionTitle, setDescriptionTitle] = useState("행사 소개");
-  const [descriptionContent, setDescriptionContent] = useState(
-    "2024 비즈니스 컨퍼런스는 업계 리더들과 함께 미래 비즈니스 트렌드를 논의하고 네트워킹할 수 있는 특별한 기회입니다.\n\n최고의 연사진과 함께하는 심도 있는 세션, 실무 중심의 워크샵, 그리고 다양한 네트워킹 기회를 통해 비즈니스 인사이트를 얻어가세요."
-  );
+  const [descriptionTitle, setDescriptionTitle] = useState("");
+  const [descriptionContent, setDescriptionContent] = useState("");
   const [bottomButtons, setBottomButtons] = useState<BottomButton[]>([]);
   const [sectionOrder, setSectionOrder] = useState<string[]>(['hero_section', 'info_cards', 'description', 'bottom_buttons']);
 
@@ -260,11 +258,11 @@ const Index = () => {
               );
             }
             
-            if (sectionKey === 'description') {
+            if (sectionKey === 'description' && (descriptionTitle || descriptionContent)) {
               return (
                 <div key={sectionKey} className="bg-card rounded-lg p-6 shadow-elegant border border-border">
-                  <h2 className="text-2xl font-bold text-card-foreground mb-4">{descriptionTitle}</h2>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>
+                  {descriptionTitle && <h2 className="text-2xl font-bold text-card-foreground mb-4">{descriptionTitle}</h2>}
+                  {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
                 </div>
               );
             }
