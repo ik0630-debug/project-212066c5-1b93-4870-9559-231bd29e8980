@@ -142,16 +142,19 @@ const Registration = () => {
       // Validate form data
       const validatedData = registrationSchema.parse(formData);
 
-      // Prepare data for database - ensure required fields exist
-      const insertData = {
-        name: validatedData.name || "",
-        email: validatedData.email || "",
-        phone: validatedData.phone || "",
-        company: validatedData.company && validatedData.company.trim() ? validatedData.company : null,
-        department: validatedData.department && validatedData.department.trim() ? validatedData.department : null,
-        position: validatedData.position && validatedData.position.trim() ? validatedData.position : null,
-        message: validatedData.message && validatedData.message.trim() ? validatedData.message : null,
-      };
+      // Prepare data for database - 동적 필드 기반으로 데이터 구성
+      const insertData: any = {};
+      
+      fields.forEach(field => {
+        const value = validatedData[field.id];
+        // 빈 문자열이 아닌 값만 저장, 없으면 null
+        insertData[field.id] = (value && value.trim()) ? value : null;
+      });
+      
+      // 필수 필드 확인 (name, email, phone은 반드시 있어야 함)
+      if (!insertData.name || !insertData.email || !insertData.phone) {
+        throw new Error("필수 필드가 누락되었습니다.");
+      }
 
       const { error } = await supabase
         .from("registrations")
@@ -164,13 +167,12 @@ const Registration = () => {
         description: pageSettings.successDescription,
       });
 
-      setFormData({
-        name: "",
-        email: "",
-        phone: "010-",
-        company: "",
-        message: "",
+      // 폼 초기화 - 동적 필드 기반
+      const resetFormData: Record<string, string> = {};
+      fields.forEach(field => {
+        resetFormData[field.id] = field.id === "phone" ? "010-" : "";
       });
+      setFormData(resetFormData);
       setAgreedToPrivacy(false);
     } catch (error: any) {
       if (error instanceof z.ZodError) {
