@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -180,6 +181,26 @@ const RegistrationSettings = ({
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">개인정보 동의 내용</h3>
+        <div>
+          <Label htmlFor="registration_privacy_content">개인정보 수집 및 이용 동의 내용</Label>
+          <Textarea
+            id="registration_privacy_content"
+            value={registrationSettings.registration_privacy_content || ""}
+            onChange={(e) => handleChange("registration_privacy_content", e.target.value)}
+            placeholder="개인정보 수집 및 이용에 대한 상세 내용을 입력하세요."
+            rows={10}
+            className="resize-none"
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            참가신청 페이지의 "내용 상세 보기"에 표시될 내용입니다.
+          </p>
         </div>
       </div>
 

@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, Building, Upload } from "lucide-react";
 import { z } from "zod";
@@ -26,6 +28,8 @@ const Registration = () => {
   const { toast } = useToast();
   const [headerImage, setHeaderImage] = useState<string>("");
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+  const [privacyContent, setPrivacyContent] = useState("");
   const [pageSettings, setPageSettings] = useState({
     pageTitle: "참가 신청",
     pageDescription: "아래 양식을 작성해주세요",
@@ -71,6 +75,8 @@ const Registration = () => {
             newSettings.successTitle = value;
           } else if (key === "registration_success_description") {
             newSettings.successDescription = value;
+          } else if (key === "registration_privacy_content") {
+            setPrivacyContent(value);
           }
         });
         setPageSettings(newSettings);
@@ -81,6 +87,16 @@ const Registration = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 개인정보 동의 체크 확인
+    if (!agreedToPrivacy) {
+      toast({
+        title: "개인정보 수집 및 이용 동의 필요",
+        description: "개인정보 수집 및 이용에 동의해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Validate required fields
     for (const field of fields) {
@@ -288,9 +304,42 @@ const Registration = () => {
             </div>
           ))}
 
+          {/* 개인정보 동의 체크박스 */}
+          <div className="flex items-start gap-3 pt-4 border-t border-border">
+            <Checkbox
+              id="privacy-agreement"
+              checked={agreedToPrivacy}
+              onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)}
+              className="mt-1"
+            />
+            <div className="flex-1">
+              <Label htmlFor="privacy-agreement" className="cursor-pointer text-sm">
+                개인정보 수집, 이용에 동의합니다. *
+              </Label>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="link" className="h-auto p-0 text-xs text-primary">
+                    내용 상세 보기
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>개인정보 수집 및 이용 동의</DialogTitle>
+                  </DialogHeader>
+                  <DialogDescription asChild>
+                    <div className="whitespace-pre-line text-sm text-foreground">
+                      {privacyContent || "개인정보 수집 및 이용 동의 내용이 설정되지 않았습니다."}
+                    </div>
+                  </DialogDescription>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+
           <Button
             type="submit"
-            className="w-full h-12 bg-gradient-accent text-accent-foreground font-bold shadow-glow hover:opacity-90 transition-opacity"
+            disabled={!agreedToPrivacy}
+            className="w-full h-12 bg-gradient-accent text-accent-foreground font-bold shadow-glow hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             신청하기
           </Button>
