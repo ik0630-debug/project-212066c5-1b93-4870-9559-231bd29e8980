@@ -108,7 +108,7 @@ const IconPicker = ({ value, onValueChange }: IconPickerProps) => {
           <span>{value || "아이콘 선택"}</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px]" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>아이콘 선택</DialogTitle>
         </DialogHeader>
