@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2 } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -135,14 +136,15 @@ const ProgramSettings = ({
                   </div>
                   <div>
                     <Label className="text-xs mb-1">설명</Label>
-                    <Input
-                      placeholder="프로그램 설명"
+                    <Textarea
+                      placeholder="프로그램 설명&#10;줄바꿈을 입력할 수 있습니다"
                       value={card.description}
                       onChange={(e) => {
                         const newCards = [...programCards];
                         newCards[i].description = e.target.value;
                         onProgramCardsChange(newCards);
                       }}
+                      rows={3}
                     />
                   </div>
                   <Button
