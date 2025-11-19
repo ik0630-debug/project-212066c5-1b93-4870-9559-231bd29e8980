@@ -117,9 +117,9 @@ const Location = () => {
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
         <header 
-          className="text-primary-foreground py-4 px-6"
+          className="text-primary-foreground py-4 px-6 text-center"
           style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
-          {...(!headerColor && { className: "bg-gradient-primary text-primary-foreground py-4 px-6" })}
+          {...(!headerColor && { className: "bg-gradient-primary text-primary-foreground py-4 px-6 text-center" })}
         >
           <h1 className="text-2xl font-bold mb-1">{pageTitle}</h1>
           {pageDescription && (
