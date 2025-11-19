@@ -155,12 +155,7 @@ const Index = () => {
 
   const displayCards = infoCards.length > 0 ? infoCards : defaultInfoCards;
 
-  const defaultBottomButtons = [
-    { id: "default-btn-1", text: "프로그램 보기", link: "/program", variant: "outline", order: 0 },
-    { id: "default-btn-2", text: "오시는 길", link: "/location", variant: "outline", order: 1 },
-  ];
-
-  const displayButtons = bottomButtons.length > 0 ? bottomButtons : defaultBottomButtons;
+  const displayButtons = bottomButtons;
 
   const HeroButton = () => {
     if (heroUseButton !== "true" || !heroButtonText || !heroButtonUrl) return null;
