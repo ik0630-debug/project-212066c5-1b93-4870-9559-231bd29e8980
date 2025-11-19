@@ -30,10 +30,10 @@ const Index = () => {
   const [heroImageUrl, setHeroImageUrl] = useState("");
   const [heroUseText, setHeroUseText] = useState("true");
   const [heroTextContent, setHeroTextContent] = useState("");
-  const [heroUseButton, setHeroUseButton] = useState("true");
+  const [heroUseButton, setHeroUseButton] = useState("false");
   const [heroButtonPosition, setHeroButtonPosition] = useState("inside");
-  const [heroButtonText, setHeroButtonText] = useState("참가 신청하기");
-  const [heroButtonUrl, setHeroButtonUrl] = useState("/registration");
+  const [heroButtonText, setHeroButtonText] = useState("");
+  const [heroButtonUrl, setHeroButtonUrl] = useState("");
   const [heroButtonBgColor, setHeroButtonBgColor] = useState("");
   const [heroButtonTextColor, setHeroButtonTextColor] = useState("");
   const [heroButtonTextSize, setHeroButtonTextSize] = useState("lg");
