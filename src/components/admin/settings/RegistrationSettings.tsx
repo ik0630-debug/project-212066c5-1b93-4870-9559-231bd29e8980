@@ -5,8 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
-import IconPicker from "@/components/IconPicker";
+import { Plus, Trash2 } from "lucide-react";
 
 interface RegistrationField {
   id: string;
@@ -15,7 +14,6 @@ interface RegistrationField {
   type: string;
   required: boolean;
   options?: string[];
-  icon?: string;
 }
 
 interface RegistrationSettingsProps {
@@ -41,6 +39,7 @@ const RegistrationSettings = ({
   const handleFieldChange = (index: number, key: keyof RegistrationField, value: any) => {
     const newFields = [...registrationFields];
     
+    // 레이블이 변경되면 ID도 자동으로 업데이트
     if (key === 'label') {
       const autoId = value
         .toLowerCase()
@@ -67,20 +66,6 @@ const RegistrationSettings = ({
 
   const removeField = (index: number) => {
     const newFields = registrationFields.filter((_, i) => i !== index);
-    onRegistrationFieldsChange(newFields);
-  };
-
-  const moveFieldUp = (index: number) => {
-    if (index === 0) return;
-    const newFields = [...registrationFields];
-    [newFields[index - 1], newFields[index]] = [newFields[index], newFields[index - 1]];
-    onRegistrationFieldsChange(newFields);
-  };
-
-  const moveFieldDown = (index: number) => {
-    if (index === registrationFields.length - 1) return;
-    const newFields = [...registrationFields];
-    [newFields[index], newFields[index + 1]] = [newFields[index + 1], newFields[index]];
     onRegistrationFieldsChange(newFields);
   };
 
@@ -124,50 +109,25 @@ const RegistrationSettings = ({
             <div key={field.id} className="space-y-3 p-4 border rounded-lg">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium">{field.label}</h4>
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={() => moveFieldUp(index)}
-                    variant="outline"
-                    size="sm"
-                    disabled={index === 0}
-                  >
-                    <ArrowUp className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    onClick={() => moveFieldDown(index)}
-                    variant="outline"
-                    size="sm"
-                    disabled={index === registrationFields.length - 1}
-                  >
-                    <ArrowDown className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    onClick={() => removeField(index)}
-                    variant="destructive"
-                    size="sm"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
+                <Button
+                  onClick={() => removeField(index)}
+                  variant="destructive"
+                  size="sm"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
-
+              
               <div className="grid gap-3">
                 <div>
-                  <Label>아이콘</Label>
-                  <IconPicker
-                    value={field.icon || "User"}
-                    onValueChange={(icon) => handleFieldChange(index, "icon", icon)}
-                  />
-                </div>
-
-                <div>
-                  <Label>필드 레이블</Label>
+                  <Label>레이블</Label>
                   <Input
                     value={field.label}
                     onChange={(e) => handleFieldChange(index, "label", e.target.value)}
+                    placeholder="예: 이름, 이메일, 회사명"
                   />
                 </div>
-
+                
                 <div>
                   <Label>플레이스홀더</Label>
                   <Input
@@ -175,7 +135,7 @@ const RegistrationSettings = ({
                     onChange={(e) => handleFieldChange(index, "placeholder", e.target.value)}
                   />
                 </div>
-
+                
                 <div>
                   <Label>필드 타입</Label>
                   <Select
@@ -186,42 +146,38 @@ const RegistrationSettings = ({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="text">텍스트</SelectItem>
+                      <SelectItem value="text">짧은 텍스트</SelectItem>
                       <SelectItem value="email">이메일</SelectItem>
                       <SelectItem value="tel">전화번호</SelectItem>
+                      <SelectItem value="number">숫자</SelectItem>
                       <SelectItem value="textarea">긴 텍스트</SelectItem>
-                      <SelectItem value="select">선택</SelectItem>
+                      <SelectItem value="select">드롭다운 선택</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`required-${field.id}`}
+                    checked={field.required}
+                    onCheckedChange={(checked) => handleFieldChange(index, "required", checked)}
+                  />
+                  <Label htmlFor={`required-${field.id}`}>필수 항목</Label>
                 </div>
 
                 {field.type === "select" && (
                   <div>
                     <Label>선택 옵션 (쉼표로 구분)</Label>
                     <Input
-                      value={field.options?.join(", ") || ""}
-                      onChange={(e) =>
-                        handleFieldChange(
-                          index,
-                          "options",
-                          e.target.value.split(",").map((opt) => opt.trim())
-                        )
-                      }
+                      value={(field.options || []).join(", ")}
+                      onChange={(e) => {
+                        const options = e.target.value.split(",").map(opt => opt.trim()).filter(opt => opt);
+                        handleFieldChange(index, "options", options);
+                      }}
                       placeholder="옵션1, 옵션2, 옵션3"
                     />
                   </div>
                 )}
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`required-${field.id}`}
-                    checked={field.required}
-                    onCheckedChange={(checked) =>
-                      handleFieldChange(index, "required", checked)
-                    }
-                  />
-                  <Label htmlFor={`required-${field.id}`}>필수 입력</Label>
-                </div>
               </div>
             </div>
           ))}
