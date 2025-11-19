@@ -240,8 +240,7 @@ const Registration = () => {
       <div className="max-w-[800px] mx-auto">
         {/* Header */}
         <header 
-          className="text-primary-foreground py-4 px-6"
-          style={{ backgroundColor: headerImage ? undefined : 'hsl(var(--primary))' }}
+          className="bg-gradient-primary text-primary-foreground py-4 px-6 text-center"
         >
           <h1 className="text-2xl font-bold mb-1">{pageSettings.pageTitle}</h1>
           {pageSettings.pageDescription && (
