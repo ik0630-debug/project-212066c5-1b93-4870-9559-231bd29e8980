@@ -130,19 +130,6 @@ const Location = () => {
         </header>
 
       <main className="px-6 py-8 space-y-8">
-        {/* Map placeholder */}
-        <div className="bg-muted rounded-lg overflow-hidden shadow-elegant">
-          <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="w-16 h-16 text-primary mx-auto mb-3" />
-              <p className="text-muted-foreground font-medium">지도 영역</p>
-              <p className="text-sm text-muted-foreground/70">
-                실제 구현 시 카카오맵 등 연동
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Address */}
         <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
           <div className="flex items-start gap-4">
