@@ -70,13 +70,13 @@ export const useSettings = () => {
       
       switch (keyParts[0]) {
         case "home":
-          if (key === "home_info_card") {
+          if (key.startsWith("home_info_card_")) {
             try {
               const parsed = JSON.parse(value);
               const index = parsed.order || 0;
               loadedInfoCards[index] = parsed;
             } catch {}
-          } else if (key === "home_bottom_button") {
+          } else if (key.startsWith("home_bottom_button_")) {
             try {
               const parsed = JSON.parse(value);
               const index = parsed.order || 0;
@@ -91,7 +91,7 @@ export const useSettings = () => {
           }
           break;
         case "program":
-          if (key === "program_card") {
+          if (key.startsWith("program_card_")) {
             try {
               const parsed = JSON.parse(value);
               const index = parsed.order || 0;
@@ -169,19 +169,19 @@ export const useSettings = () => {
         // Save info cards
         ...infoCards.map((card, index) => ({
           category: "home",
-          key: "home_info_card",
+          key: `home_info_card_${index}`,
           value: JSON.stringify({ ...card, order: index }),
         })),
         // Save bottom buttons
         ...bottomButtons.map((button, index) => ({
           category: "home",
-          key: "home_bottom_button",
+          key: `home_bottom_button_${index}`,
           value: JSON.stringify({ ...button, order: index }),
         })),
         // Save program cards
         ...programCards.map((card, index) => ({
           category: "program",
-          key: "program_card",
+          key: `program_card_${index}`,
           value: JSON.stringify({ ...card, order: index }),
         })),
         // Save transport cards
