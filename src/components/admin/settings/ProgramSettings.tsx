@@ -6,6 +6,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { ColorPicker } from "@/components/ColorPicker";
+import IconPicker from "@/components/IconPicker";
 
 interface ProgramSettingsProps {
   settings: any;
@@ -26,7 +27,7 @@ const ProgramSettings = ({
   );
 
   const handleAddProgramCard = () => {
-    onProgramCardsChange([...programCards, { time: "", title: "", description: "" }]);
+    onProgramCardsChange([...programCards, { time: "", title: "", description: "", icon: "Clock" }]);
   };
 
   const handleDeleteProgramCard = (index: number) => {
@@ -94,36 +95,56 @@ const ProgramSettings = ({
           >
             <div className="space-y-4">
               {programCards.map((card, i) => (
-                <div key={i} className="p-4 border rounded-lg space-y-2">
-                  <div className="grid grid-cols-2 gap-2">
+                <div key={i} className="p-4 border rounded-lg space-y-3">
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <Label className="text-xs mb-1">아이콘</Label>
+                      <IconPicker
+                        value={card.icon || "Clock"}
+                        onValueChange={(icon) => {
+                          const newCards = [...programCards];
+                          newCards[i].icon = icon;
+                          onProgramCardsChange(newCards);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1">시간</Label>
+                      <Input
+                        placeholder="10:00"
+                        value={card.time}
+                        onChange={(e) => {
+                          const newCards = [...programCards];
+                          newCards[i].time = e.target.value;
+                          onProgramCardsChange(newCards);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs mb-1">제목</Label>
+                      <Input
+                        placeholder="프로그램 제목"
+                        value={card.title}
+                        onChange={(e) => {
+                          const newCards = [...programCards];
+                          newCards[i].title = e.target.value;
+                          onProgramCardsChange(newCards);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs mb-1">설명</Label>
                     <Input
-                      placeholder="시간"
-                      value={card.time}
+                      placeholder="프로그램 설명"
+                      value={card.description}
                       onChange={(e) => {
                         const newCards = [...programCards];
-                        newCards[i].time = e.target.value;
-                        onProgramCardsChange(newCards);
-                      }}
-                    />
-                    <Input
-                      placeholder="제목"
-                      value={card.title}
-                      onChange={(e) => {
-                        const newCards = [...programCards];
-                        newCards[i].title = e.target.value;
+                        newCards[i].description = e.target.value;
                         onProgramCardsChange(newCards);
                       }}
                     />
                   </div>
-                  <Input
-                    placeholder="설명"
-                    value={card.description}
-                    onChange={(e) => {
-                      const newCards = [...programCards];
-                      newCards[i].description = e.target.value;
-                      onProgramCardsChange(newCards);
-                    }}
-                  />
                   <Button
                     variant="destructive"
                     size="sm"
