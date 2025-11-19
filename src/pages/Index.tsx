@@ -29,7 +29,7 @@ const Index = () => {
   
   // Home page settings
   const [heroImageUrl, setHeroImageUrl] = useState("");
-  const [heroBadge, setHeroBadge] = useState("초대합니다");
+  const [heroBadge, setHeroBadge] = useState("");
   const [heroTitle, setHeroTitle] = useState("2024 비즈니스\n컨퍼런스");
   const [heroSubtitle, setHeroSubtitle] = useState("미래를 함께 만들어갈\n여러분을 초대합니다");
   const [heroButtonText, setHeroButtonText] = useState("참가 신청하기");
@@ -249,34 +249,38 @@ const Index = () => {
           className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
         />
         <div className="relative px-6 py-16 text-center text-primary-foreground">
-          <div className="inline-block mb-4">
-            <span className="inline-block px-4 py-1.5 bg-accent/90 text-accent-foreground text-sm font-bold rounded-full shadow-glow">
-              {heroBadge}
-            </span>
-          </div>
+          {heroBadge && (
+            <div className="inline-block mb-4">
+              <span className="inline-block px-4 py-1.5 bg-accent/90 text-accent-foreground text-sm font-bold rounded-full shadow-glow">
+                {heroBadge}
+              </span>
+            </div>
+          )}
           <h1 className="text-4xl font-bold mb-4 leading-tight whitespace-pre-line">
             {heroTitle}
           </h1>
           <p className="text-lg text-primary-foreground/90 mb-8 whitespace-pre-line">
             {heroSubtitle}
           </p>
-          <Button
-            onClick={() => {
-              if (heroButtonUrl.startsWith("http")) {
-                window.open(heroButtonUrl, "_blank");
-              } else {
-                navigate(heroButtonUrl);
-              }
-            }}
-            size={heroButtonTextSize as any || "lg"}
-            style={{
-              backgroundColor: heroButtonBgColor ? `hsl(${heroButtonBgColor})` : undefined,
-              color: heroButtonTextColor ? `hsl(${heroButtonTextColor})` : undefined,
-            }}
-            className="h-12 px-8 font-bold shadow-glow hover:opacity-90 transition-opacity"
-          >
-            {heroButtonText}
-          </Button>
+          {heroButtonText && heroButtonUrl && (
+            <Button
+              onClick={() => {
+                if (heroButtonUrl.startsWith("http")) {
+                  window.open(heroButtonUrl, "_blank");
+                } else {
+                  navigate(heroButtonUrl);
+                }
+              }}
+              size={heroButtonTextSize as any || "lg"}
+              style={{
+                backgroundColor: heroButtonBgColor ? `hsl(${heroButtonBgColor})` : undefined,
+                color: heroButtonTextColor ? `hsl(${heroButtonTextColor})` : undefined,
+              }}
+              className="h-12 px-8 font-bold shadow-glow hover:opacity-90 transition-opacity"
+            >
+              {heroButtonText}
+            </Button>
+          )}
         </div>
       </header>
 
