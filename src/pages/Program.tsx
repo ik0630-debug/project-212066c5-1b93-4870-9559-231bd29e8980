@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ClockIcon from "@/components/ClockIcon";
 import MobileNavigation from "@/components/MobileNavigation";
+import { useSwipeable } from "react-swipeable";
 
 interface ProgramCard {
   id: string;
@@ -69,6 +69,12 @@ const Program = () => {
     }
   };
 
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => navigate('/location'),
+    onSwipedRight: () => navigate('/'),
+    trackMouse: false,
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -78,24 +84,16 @@ const Program = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header 
-        className="text-primary-foreground py-8 px-6"
+        className="text-primary-foreground py-4 px-6"
         style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
-        {...(!headerColor && { className: "bg-gradient-primary text-primary-foreground py-8 px-6" })}
+        {...(!headerColor && { className: "bg-gradient-primary text-primary-foreground py-4 px-6" })}
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/")}
-          className="text-primary-foreground hover:bg-primary-foreground/20 mb-4"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <h1 className="text-3xl font-bold mb-2">{pageTitle}</h1>
+        <h1 className="text-2xl font-bold mb-1">{pageTitle}</h1>
         {pageDescription && (
-          <p className="text-primary-foreground/90 whitespace-pre-line">
+          <p className="text-primary-foreground/90 text-sm whitespace-pre-line">
             {pageDescription}
           </p>
         )}

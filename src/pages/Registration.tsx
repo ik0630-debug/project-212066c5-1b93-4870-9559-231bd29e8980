@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Phone, Building, ArrowLeft, Upload } from "lucide-react";
+import { User, Mail, Phone, Building, Upload } from "lucide-react";
 import { z } from "zod";
+import { useSwipeable } from "react-swipeable";
 
 interface RegistrationField {
   id: string;
@@ -172,43 +173,22 @@ const Registration = () => {
     }
   };
 
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => navigate('/'),
+    onSwipedRight: () => navigate('/location'),
+    trackMouse: false,
+  });
+
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <header 
-        className="relative bg-gradient-primary text-primary-foreground py-8 px-6 bg-cover bg-center"
+        className="relative bg-gradient-primary text-primary-foreground py-4 px-6 bg-cover bg-center"
         style={headerImage ? { backgroundImage: `url(${headerImage})` } : {}}
       >
         <div className="absolute inset-0 bg-gradient-primary/80" />
         <div className="relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="absolute left-0 top-0 text-primary-foreground hover:bg-primary-foreground/20"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <label htmlFor="header-upload-registration" className="absolute right-0 top-0 cursor-pointer">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-primary-foreground hover:bg-primary-foreground/20"
-              asChild
-            >
-              <span>
-                <Upload className="w-5 h-5" />
-              </span>
-            </Button>
-            <input
-              id="header-upload-registration"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-            />
-          </label>
-          <h1 className="text-3xl font-bold text-center mb-2">{pageSettings.pageTitle}</h1>
-          <p className="text-center text-primary-foreground/80">
+          <h1 className="text-2xl font-bold text-center mb-1">{pageSettings.pageTitle}</h1>
+          <p className="text-center text-primary-foreground/80 text-sm">
             {pageSettings.pageDescription}
           </p>
         </div>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
-import { MapPin, Train, Bus, Car, Navigation, ArrowLeft, Upload, Plane, Ship } from "lucide-react";
+import { MapPin, Train, Bus, Car, Navigation, Upload, Plane, Ship } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useSwipeable } from "react-swipeable";
 
 const Location = () => {
   const navigate = useNavigate();
@@ -107,50 +108,27 @@ const Location = () => {
     return icons[iconName] || MapPin;
   };
 
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => navigate('/registration'),
+    onSwipedRight: () => navigate('/program'),
+    trackMouse: false,
+  });
+
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <header 
-        className="relative text-primary-foreground py-8 px-6 bg-cover bg-center"
+        className="relative text-primary-foreground py-4 px-6 bg-cover bg-center"
         style={{
           ...(headerImage && { backgroundImage: `url(${headerImage})` }),
           ...(headerColor && { backgroundColor: `hsl(${headerColor})` }),
           ...(!headerColor && !headerImage && {})
         }}
-        {...(!headerColor && !headerImage && { className: "relative bg-gradient-primary text-primary-foreground py-8 px-6 bg-cover bg-center" })}
+        {...(!headerColor && !headerImage && { className: "relative bg-gradient-primary text-primary-foreground py-4 px-6 bg-cover bg-center" })}
       >
         <div className="absolute inset-0 bg-gradient-primary/80" style={{ opacity: headerImage ? 1 : 0 }} />
         <div className="relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="absolute left-0 top-0 text-primary-foreground hover:bg-primary-foreground/20"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <label htmlFor="header-upload-location" className="absolute right-0 top-0 cursor-pointer">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-primary-foreground hover:bg-primary-foreground/20"
-              asChild
-            >
-              <span>
-                <Upload className="w-5 h-5" />
-              </span>
-            </Button>
-            <input
-              id="header-upload-location"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-            />
-          </label>
-          <h1 className="text-3xl font-bold text-center mb-2">{pageTitle}</h1>
-          <p className="text-center text-primary-foreground/80">
-            {pageDescription}
-          </p>
+          <h1 className="text-2xl font-bold mb-1">{pageTitle}</h1>
+          <p className="text-primary-foreground/90 text-sm">{pageDescription}</p>
         </div>
       </header>
 
