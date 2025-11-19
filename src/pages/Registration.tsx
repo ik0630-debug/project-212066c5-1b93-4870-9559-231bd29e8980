@@ -58,12 +58,14 @@ const Registration = () => {
           if (key === "registration_fields") {
             try {
               const parsedFields = JSON.parse(value);
+              console.log("=== 필드 로드 ===", parsedFields);
               setFields(parsedFields);
               const initialFormData: Record<string, string> = {};
               parsedFields.forEach((field: any) => {
                 // 전화번호 필드는 기본값으로 "010-" 설정
                 initialFormData[field.id] = field.id === "phone" ? "010-" : "";
               });
+              console.log("=== 초기 formData ===", initialFormData);
               setFormData(initialFormData);
             } catch (e) {
               console.error("Failed to parse registration fields", e);
@@ -206,6 +208,7 @@ const Registration = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    console.log(`=== handleChange: ${name} = "${value}" ===`);
     
     // 전화번호 필드 특수 처리
     if (name === "phone") {
