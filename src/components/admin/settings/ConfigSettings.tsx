@@ -14,15 +14,9 @@ const ConfigSettings = ({ registrations }: ConfigSettingsProps) => {
   const [selectedRegistration, setSelectedRegistration] = useState<any>(null);
 
   const generateQRData = (registration: any) => {
-    return JSON.stringify({
-      name: registration.name,
-      email: registration.email,
-      phone: registration.phone,
-      company: registration.company,
-      department: registration.department,
-      position: registration.position,
-      id: registration.id,
-    });
+    // QR코드에 검증 페이지 URL 포함
+    const baseUrl = window.location.origin;
+    return `${baseUrl}/registration/verify?id=${registration.id}`;
   };
 
   const downloadQRCode = (registration: any) => {

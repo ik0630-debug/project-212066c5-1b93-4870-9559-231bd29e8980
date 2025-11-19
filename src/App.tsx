@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Program from "./pages/Program";
 import Registration from "./pages/Registration";
 import RegistrationCheck from "./pages/RegistrationCheck";
+import RegistrationVerify from "./pages/RegistrationVerify";
 import Location from "./pages/Location";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/program" element={<Program />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/registration/check" element={<RegistrationCheck />} />
+          <Route path="/registration/verify" element={<RegistrationVerify />} />
           <Route path="/location" element={<Location />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
