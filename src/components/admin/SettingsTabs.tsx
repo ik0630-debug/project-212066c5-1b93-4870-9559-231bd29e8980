@@ -115,7 +115,10 @@ const SettingsTabs = ({
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">사이트 설정</h2>
-          <Button onClick={() => onSave()} className="bg-gradient-accent text-accent-foreground">
+          <Button onClick={() => {
+            onSave();
+            setTimeout(() => setPreviewKey(prev => prev + 1), 500);
+          }} className="bg-gradient-accent text-accent-foreground">
             저장
           </Button>
         </div>
