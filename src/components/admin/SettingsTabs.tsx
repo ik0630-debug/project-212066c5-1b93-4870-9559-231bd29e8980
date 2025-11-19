@@ -54,14 +54,6 @@ const SettingsTabs = ({
 }: SettingsTabsProps) => {
   const [previewKey, setPreviewKey] = useState(0);
 
-  // Auto-refresh preview when settings change
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPreviewKey(prev => prev + 1);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [settings, infoCards, bottomButtons, programCards, transportCards, registrationSettings, registrationFields]);
-
   const tabs = [
     { icon: Home, label: "홈 화면", value: "0" },
     { icon: FileText, label: "프로그램", value: "1" },
