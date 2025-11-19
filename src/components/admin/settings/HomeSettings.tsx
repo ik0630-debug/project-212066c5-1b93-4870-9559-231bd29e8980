@@ -408,39 +408,13 @@ const HomeSettings = ({
   };
 
   return (
-    <div className="grid grid-cols-3 gap-6">
-      <div className="col-span-2 space-y-6">
-        {sectionOrder.map((sectionId, index) => (
-          <div key={sectionId}>
-            {renderSection(sectionId, index)}
-            {index < sectionOrder.length - 1 && <Separator className="my-6" />}
-          </div>
-        ))}
-      </div>
-      
-      <div className="col-span-1">
-        <div className="sticky top-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">전체 페이지 미리보기</h3>
-            <Button 
-              onClick={refreshPreview} 
-              size="sm" 
-              variant="outline"
-              className="text-xs"
-            >
-              새로고침
-            </Button>
-          </div>
-          <div className="border rounded-lg overflow-hidden bg-muted/20" style={{ height: '80vh' }}>
-            <iframe
-              key={previewKey}
-              src="/"
-              className="w-full h-full"
-              title="Page Preview"
-            />
-          </div>
+    <div className="space-y-6">
+      {sectionOrder.map((sectionId, index) => (
+        <div key={sectionId}>
+          {renderSection(sectionId, index)}
+          {index < sectionOrder.length - 1 && <Separator className="my-6" />}
         </div>
-      </div>
+      ))}
     </div>
   );
 };
