@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { ColorPicker } from "@/components/ColorPicker";
 
 interface ProgramSettingsProps {
   settings: any;
@@ -60,6 +61,13 @@ const ProgramSettings = ({
               id="program_description"
               value={settings.program_description}
               onChange={(e) => onSettingChange("program_description", e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="program_header_color">헤더 배경색</Label>
+            <ColorPicker
+              value={settings.program_header_color || ""}
+              onChange={(color) => onSettingChange("program_header_color", color)}
             />
           </div>
         </div>
