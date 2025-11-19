@@ -355,13 +355,24 @@ const Registration = () => {
             </div>
           </div>
 
-          <Button
-            type="submit"
-            disabled={!agreedToPrivacy || isSubmitting}
-            className="w-full h-12 bg-gradient-accent text-accent-foreground font-bold shadow-glow hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? "신청 중..." : "신청하기"}
-          </Button>
+          <div className="space-y-3">
+            <Button
+              type="submit"
+              disabled={!agreedToPrivacy || isSubmitting}
+              className="w-full h-12 bg-gradient-accent text-accent-foreground font-bold shadow-glow hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "신청 중..." : "신청하기"}
+            </Button>
+            
+            <Button
+              type="button"
+              onClick={() => navigate("/registration/check")}
+              variant="outline"
+              className="w-full h-12 bg-[hsl(220,70%,20%)] text-white border-[hsl(220,70%,30%)] hover:bg-[hsl(220,70%,25%)] hover:text-white font-semibold transition-colors"
+            >
+              참가 신청 확인
+            </Button>
+          </div>
         </form>
       </main>
 
