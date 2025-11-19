@@ -27,11 +27,6 @@ const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
       return;
     }
 
-    // Validate file size (5MB)
-    if (file.size > 5242880) {
-      toast.error("파일 크기는 5MB를 초과할 수 없습니다.");
-      return;
-    }
 
     setUploading(true);
 
@@ -127,7 +122,7 @@ const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        JPG, PNG, WEBP, GIF 형식 지원 (최대 5MB)
+        JPG, PNG, WEBP, GIF 형식 지원
       </p>
     </div>
   );
