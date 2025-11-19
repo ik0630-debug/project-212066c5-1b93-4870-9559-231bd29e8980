@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 
 interface RegistrationField {
   id: string;
@@ -69,6 +69,22 @@ const RegistrationSettings = ({
     onRegistrationFieldsChange(newFields);
   };
 
+  const moveFieldUp = (index: number) => {
+    if (index > 0) {
+      const newFields = [...registrationFields];
+      [newFields[index - 1], newFields[index]] = [newFields[index], newFields[index - 1]];
+      onRegistrationFieldsChange(newFields);
+    }
+  };
+
+  const moveFieldDown = (index: number) => {
+    if (index < registrationFields.length - 1) {
+      const newFields = [...registrationFields];
+      [newFields[index], newFields[index + 1]] = [newFields[index + 1], newFields[index]];
+      onRegistrationFieldsChange(newFields);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="space-y-4">
@@ -109,13 +125,31 @@ const RegistrationSettings = ({
             <div key={field.id} className="space-y-3 p-4 border rounded-lg">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium">{field.label}</h4>
-                <Button
-                  onClick={() => removeField(index)}
-                  variant="destructive"
-                  size="sm"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => moveFieldUp(index)}
+                    variant="outline"
+                    size="sm"
+                    disabled={index === 0}
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    onClick={() => moveFieldDown(index)}
+                    variant="outline"
+                    size="sm"
+                    disabled={index === registrationFields.length - 1}
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    onClick={() => removeField(index)}
+                    variant="destructive"
+                    size="sm"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
               
               <div className="grid gap-3">
