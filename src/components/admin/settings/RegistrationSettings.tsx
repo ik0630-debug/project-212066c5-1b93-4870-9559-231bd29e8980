@@ -167,7 +167,7 @@ const RegistrationSettings = ({
                 <div>
                   <Label>레이블</Label>
                   <Input
-                    value={field.label}
+                    value={field.label || ""}
                     onChange={(e) => handleFieldChange(index, "label", e.target.value)}
                     placeholder="예: 이름, 이메일, 회사명"
                   />
@@ -176,7 +176,7 @@ const RegistrationSettings = ({
                 <div>
                   <Label>플레이스홀더</Label>
                   <Input
-                    value={field.placeholder}
+                    value={field.placeholder || ""}
                     onChange={(e) => handleFieldChange(index, "placeholder", e.target.value)}
                   />
                 </div>
