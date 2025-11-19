@@ -27,7 +27,7 @@ interface SettingsTabsProps {
   onTransportCardsChange: (cards: any[]) => void;
   onSectionOrderChange: (order: string[]) => void;
   onSaveSectionOrder: (order: string[]) => void;
-  onSave: () => void;
+  onSave: (options?: { silent?: boolean }) => void;
 }
 
 const SettingsTabs = ({
@@ -54,12 +54,10 @@ const SettingsTabs = ({
 }: SettingsTabsProps) => {
   const [previewKey, setPreviewKey] = useState(0);
 
-  // Auto-save when settings change (debounced)
+  // Auto-save when settings change (debounced, silent)
   useEffect(() => {
     const timer = setTimeout(() => {
-      onSave();
-      // Refresh preview after save
-      setTimeout(() => setPreviewKey(prev => prev + 1), 300);
+      onSave({ silent: true });
     }, 1000);
     return () => clearTimeout(timer);
   }, [settings, infoCards, bottomButtons, programCards, transportCards, sectionOrder]);
@@ -125,7 +123,7 @@ const SettingsTabs = ({
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">사이트 설정</h2>
-          <Button onClick={onSave} className="bg-gradient-accent text-accent-foreground">
+          <Button onClick={() => onSave()} className="bg-gradient-accent text-accent-foreground">
             저장
           </Button>
         </div>

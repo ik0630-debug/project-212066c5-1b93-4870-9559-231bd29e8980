@@ -148,7 +148,7 @@ export const useSettings = () => {
     return "general";
   };
 
-  const saveSettings = async () => {
+  const saveSettings = async (options?: { silent?: boolean }) => {
     try {
       const settingsToSave = [
         ...Object.entries(settings).map(([key, value]) => ({
@@ -197,10 +197,12 @@ export const useSettings = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "저장 완료",
-        description: "설정이 저장되었습니다.",
-      });
+      if (!options?.silent) {
+        toast({
+          title: "저장 완료",
+          description: "설정이 저장되었습니다.",
+        });
+      }
     } catch (error: any) {
       toast({
         title: "저장 실패",
