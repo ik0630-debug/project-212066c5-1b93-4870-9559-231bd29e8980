@@ -1,142 +1,35 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import * as LucideIcons from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import * as LucideIcons from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
 import heroImage from "@/assets/hero-image.jpg";
-
-interface InfoCard {
-  id: string;
-  icon: string;
-  title: string;
-  content: string;
-  order: number;
-}
-
-interface BottomButton {
-  id: string;
-  text: string;
-  link: string;
-  variant: string;
-  order: number;
-}
+import { useHomeSettings } from "@/hooks/useHomeSettings";
 
 const Index = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
-  const [heroImageUrl, setHeroImageUrl] = useState("");
-  const [heroUseText, setHeroUseText] = useState("true");
-  const [heroTextContent, setHeroTextContent] = useState("");
-  const [heroUseButton, setHeroUseButton] = useState("false");
-  const [heroButtonPosition, setHeroButtonPosition] = useState("inside");
-  const [heroButtonText, setHeroButtonText] = useState("");
-  const [heroButtonUrl, setHeroButtonUrl] = useState("");
-  const [heroButtonBgColor, setHeroButtonBgColor] = useState("");
-  const [heroButtonTextColor, setHeroButtonTextColor] = useState("");
-  const [heroButtonTextSize, setHeroButtonTextSize] = useState("lg");
-  const [heroOverlayOpacity, setHeroOverlayOpacity] = useState("95");
-  const [infoCards, setInfoCards] = useState<InfoCard[]>([]);
-  const [descriptionTitle, setDescriptionTitle] = useState("");
-  const [descriptionContent, setDescriptionContent] = useState("");
-  const [bottomButtons, setBottomButtons] = useState<BottomButton[]>([]);
-  const [sectionOrder, setSectionOrder] = useState<string[]>(['hero_section', 'info_cards', 'description', 'bottom_buttons']);
+  const { settings, loading } = useHomeSettings();
 
   useEffect(() => {
     checkUserStatus();
-    loadHomeSettings();
   }, []);
 
   const checkUserStatus = async () => {
     const { data: { session } } = await supabase.auth.getSession();
+    setIsLoggedIn(!!session);
     
-    if (session?.user) {
-      setIsLoggedIn(true);
+    if (session) {
       const { data } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", session.user.id)
         .eq("role", "admin")
-        .single();
+        .maybeSingle();
       
       setIsAdmin(!!data);
-    }
-  };
-
-  const loadHomeSettings = async () => {
-    try {
-      const { data: settings, error } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("category", "home");
-
-      if (error) {
-        console.error("Error loading home settings:", error);
-        return;
-      }
-
-      if (settings) {
-        const imageUrl = settings.find((s) => s.key === "hero_image_url");
-        const useText = settings.find((s) => s.key === "hero_use_text");
-        const textContent = settings.find((s) => s.key === "hero_text_content");
-        const useButton = settings.find((s) => s.key === "hero_use_button");
-        const buttonPosition = settings.find((s) => s.key === "hero_button_position");
-        const buttonText = settings.find((s) => s.key === "hero_button_text");
-        const buttonUrl = settings.find((s) => s.key === "hero_button_url");
-        const buttonBgColor = settings.find((s) => s.key === "hero_button_bg_color");
-        const buttonTextColor = settings.find((s) => s.key === "hero_button_text_color");
-        const buttonTextSize = settings.find((s) => s.key === "hero_button_text_size");
-        const overlayOpacity = settings.find((s) => s.key === "hero_overlay_opacity");
-
-        if (imageUrl) setHeroImageUrl(imageUrl.value);
-        if (useText) setHeroUseText(useText.value);
-        if (textContent) setHeroTextContent(textContent.value);
-        if (useButton) setHeroUseButton(useButton.value);
-        if (buttonPosition) setHeroButtonPosition(buttonPosition.value);
-        if (buttonText) setHeroButtonText(buttonText.value);
-        if (buttonUrl) setHeroButtonUrl(buttonUrl.value);
-        if (buttonBgColor) setHeroButtonBgColor(buttonBgColor.value);
-        if (buttonTextColor) setHeroButtonTextColor(buttonTextColor.value);
-        if (buttonTextSize) setHeroButtonTextSize(buttonTextSize.value);
-        if (overlayOpacity) setHeroOverlayOpacity(overlayOpacity.value);
-
-        const cards = settings
-          .filter((s) => s.key.startsWith("home_info_card_"))
-          .map((s) => {
-            const cardData = JSON.parse(s.value);
-            return { id: s.id, ...cardData };
-          })
-          .sort((a, b) => (a.order || 0) - (b.order || 0));
-        setInfoCards(cards);
-
-        const descTitle = settings.find((s) => s.key === "description_title");
-        const descContent = settings.find((s) => s.key === "description_content");
-        if (descTitle) setDescriptionTitle(descTitle.value);
-        if (descContent) setDescriptionContent(descContent.value);
-
-        const buttons = settings
-          .filter((s) => s.key.startsWith("home_bottom_button_"))
-          .map((s) => {
-            const buttonData = JSON.parse(s.value);
-            return { id: s.id, ...buttonData };
-          })
-          .sort((a, b) => (a.order || 0) - (b.order || 0));
-        setBottomButtons(buttons);
-        
-        const orderSetting = settings.find((s) => s.key === "section_order");
-        if (orderSetting) {
-          try {
-            const order = JSON.parse(orderSetting.value);
-            setSectionOrder(order);
-          } catch {
-            setSectionOrder(['info_cards', 'description', 'bottom_buttons']);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error in loadHomeSettings:", error);
     }
   };
 
@@ -145,35 +38,37 @@ const Index = () => {
     return Icon || LucideIcons.Calendar;
   };
 
-  
-
   const HeroButton = () => {
-    if (heroUseButton !== "true" || !heroButtonText || !heroButtonUrl) return null;
+    if (settings.heroUseButton !== "true" || !settings.heroButtonText || !settings.heroButtonUrl) return null;
     
     return (
       <Button
         onClick={() => {
-          if (heroButtonUrl.startsWith("http")) {
-            window.open(heroButtonUrl, "_blank");
+          if (settings.heroButtonUrl.startsWith("http")) {
+            window.open(settings.heroButtonUrl, "_blank");
           } else {
-            navigate(heroButtonUrl);
+            navigate(settings.heroButtonUrl);
           }
         }}
-        size={heroButtonTextSize as any || "lg"}
+        size={settings.heroButtonTextSize as any || "lg"}
         style={{
-          backgroundColor: heroButtonBgColor ? `hsl(${heroButtonBgColor})` : undefined,
-          color: heroButtonTextColor ? `hsl(${heroButtonTextColor})` : undefined,
+          backgroundColor: settings.heroButtonBgColor ? `hsl(${settings.heroButtonBgColor})` : undefined,
+          color: settings.heroButtonTextColor ? `hsl(${settings.heroButtonTextColor})` : undefined,
         }}
-        className="shadow-glow hover-scale"
+        className="shadow-xl hover:shadow-2xl transition-all"
       >
-        {heroButtonText}
+        {settings.heroButtonText}
       </Button>
     );
   };
 
+  if (loading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">로딩 중...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="relative w-full flex justify-center">
+      <header className="flex flex-col items-center justify-center">
         <div className="relative w-full max-w-[1000px]">
           <div className="absolute top-4 right-4 z-10 flex gap-2">
             {isAdmin && (
@@ -198,24 +93,24 @@ const Index = () => {
           <div className="relative">
             <div 
               className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-              style={{ opacity: parseInt(heroOverlayOpacity) / 100 }}
+              style={{ opacity: parseInt(settings.heroOverlayOpacity) / 100 }}
             />
             <img
-              src={heroImageUrl || heroImage}
+              src={settings.heroImageUrl || heroImage}
               alt="Conference Hero"
               className="w-full h-auto object-contain"
             />
             
-            {heroUseText === "true" && heroTextContent && (
+            {settings.heroUseText === "true" && settings.heroTextContent && (
               <div className="absolute inset-0 z-20 flex items-center justify-center px-6 text-center text-primary-foreground pointer-events-none">
                 <div 
                   className="w-full max-w-4xl"
-                  dangerouslySetInnerHTML={{ __html: heroTextContent }}
+                  dangerouslySetInnerHTML={{ __html: settings.heroTextContent }}
                 />
               </div>
             )}
             
-            {heroButtonPosition === "inside" && (
+            {settings.heroButtonPosition === "inside" && (
               <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
                 <div className="pointer-events-auto mt-32">
                   <HeroButton />
@@ -224,7 +119,7 @@ const Index = () => {
             )}
           </div>
           
-          {heroButtonPosition === "below" && (
+          {settings.heroButtonPosition === "below" && (
             <div className="flex justify-center py-8">
               <HeroButton />
             </div>
@@ -234,14 +129,14 @@ const Index = () => {
 
       <main className="px-6 py-8">
         <div className="space-y-6">
-          {sectionOrder.map((sectionKey) => {
-            if (sectionKey === 'info_cards' && infoCards.length > 0) {
+          {settings.sectionOrder.map((sectionKey) => {
+            if (sectionKey === 'info_cards' && settings.infoCards.length > 0) {
               return (
                 <div key={sectionKey} className="grid gap-4">
-                  {infoCards.map((card) => {
+                  {settings.infoCards.map((card, index) => {
                     const IconComponent = getIconComponent(card.icon);
                     return (
-                      <div key={card.id} className="bg-card rounded-lg p-5 shadow-elegant border border-border">
+                      <div key={index} className="bg-card rounded-lg p-5 shadow-elegant border border-border">
                         <div className="flex items-start gap-4">
                           <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                             <IconComponent className="w-6 h-6 text-primary" />
@@ -258,21 +153,21 @@ const Index = () => {
               );
             }
             
-            if (sectionKey === 'description' && (descriptionTitle || descriptionContent)) {
+            if (sectionKey === 'description' && (settings.descriptionTitle || settings.descriptionContent)) {
               return (
                 <div key={sectionKey} className="bg-card rounded-lg p-6 shadow-elegant border border-border">
-                  {descriptionTitle && <h2 className="text-2xl font-bold text-card-foreground mb-4">{descriptionTitle}</h2>}
-                  {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
+                  {settings.descriptionTitle && <h2 className="text-2xl font-bold text-card-foreground mb-4">{settings.descriptionTitle}</h2>}
+                  {settings.descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{settings.descriptionContent}</p>}
                 </div>
               );
             }
             
-            if (sectionKey === 'bottom_buttons' && bottomButtons.length > 0) {
+            if (sectionKey === 'bottom_buttons' && settings.bottomButtons.length > 0) {
               return (
                 <div key={sectionKey} className="grid grid-cols-2 gap-4">
-                  {bottomButtons.map((button) => (
+                  {settings.bottomButtons.map((button, index) => (
                     <Button
-                      key={button.id}
+                      key={index}
                       onClick={() => navigate(button.link)}
                       variant={button.variant as any || "outline"}
                       className="h-12"
