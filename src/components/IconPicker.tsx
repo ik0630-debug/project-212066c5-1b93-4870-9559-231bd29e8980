@@ -21,18 +21,20 @@ interface IconPickerProps {
 const DEFAULT_ICONS = [
   // 시간 & 일정
   "Calendar", "CalendarDays", "CalendarCheck", "CalendarClock", "CalendarRange", "Clock", "Clock1", "Clock2", "Clock3", "Clock4", "Clock5", "Clock6", "Clock7", "Clock8", "Clock9", "Clock10", "Clock11", "Clock12", "Timer", "Hourglass", "AlarmClock", "CalendarX", "CalendarPlus",
-  // 사람 & 사용자
-  "User", "Users", "UserPlus", "UserMinus", "UserCheck", "UserX", "UserCog", "UsersRound", "Contact", "Baby", "PersonStanding",
+  // 사람 & 사용자 & 신체
+  "User", "Users", "UserPlus", "UserMinus", "UserCheck", "UserX", "UserCog", "UsersRound", "Contact", "Baby", "PersonStanding", "Eye", "EyeOff", "Ear", "EarOff", "Hand", "HandMetal", "Footprints", "Brain", "Skull", "Smile", "Frown", "Laugh", "Angry", "Annoyed",
+  // 강연 & 교육 & 프레젠테이션
+  "Presentation", "GraduationCap", "School", "Library", "BookOpen", "Book", "NotebookPen", "Megaphone", "Volume2", "Mic", "MicOff", "PodcastIcon", "Radio", "Tv", "MonitorSpeaker", "Projector", "ScreenShare", "Users", "UsersRound", "UserCheck", "MessageSquare", "SpeechIcon", "Quote",
   // 비즈니스 & 사무
   "Briefcase", "Building", "Building2", "Home", "Store", "Warehouse", "Factory", "Hotel", "School", "GraduationCap", "Library",
-  // 커뮤니케이션
-  "Mail", "MailOpen", "MailPlus", "MailCheck", "MessageCircle", "MessageSquare", "Phone", "PhoneCall", "PhoneIncoming", "PhoneOutgoing", "Smartphone", "Send", "SendHorizonal", "Inbox", "AtSign",
+  // 커뮤니케이션 & 대화
+  "Mail", "MailOpen", "MailPlus", "MailCheck", "MessageCircle", "MessageSquare", "MessageSquarePlus", "MessageSquareShare", "MessagesSquare", "Phone", "PhoneCall", "PhoneIncoming", "PhoneOutgoing", "Smartphone", "Send", "SendHorizonal", "Inbox", "AtSign", "Speech", "Quote", "SpeechIcon", "Megaphone", "Volume", "Volume1", "Volume2", "Radio", "Podcast",
   // 문서 & 파일
   "File", "FileText", "FileEdit", "FileCheck", "FilePlus", "FileMinus", "FileX", "Files", "Folder", "FolderOpen", "FolderPlus", "FolderCheck", "Archive", "Clipboard", "ClipboardCheck", "ClipboardList", "Newspaper", "BookOpen", "Book", "NotebookPen",
   // 미디어 & 이미지
   "Image", "ImagePlus", "Camera", "CameraOff", "Video", "VideoOff", "Film", "Music", "Mic", "MicOff", "Volume", "Volume1", "Volume2", "VolumeX", "Play", "Pause", "Square", "Circle",
-  // 위치 & 지도
-  "MapPin", "Map", "Navigation", "Compass", "Globe", "MapPinned", "Locate", "LocateFixed", "Route", "Signpost", "Milestone",
+  // 위치 & 지도 & 네비게이션
+  "MapPin", "Map", "MapPinned", "Navigation", "Navigation2", "Compass", "Globe", "Globe2", "Locate", "LocateFixed", "LocateOff", "Route", "Signpost", "Milestone", "Footprints", "Mountain", "MountainSnow", "TreeDeciduous", "TreePine", "Home", "Building", "Building2", "Landmark", "Store", "Hotel", "Hospital", "School",
   // 쇼핑 & 금융
   "ShoppingCart", "ShoppingBag", "CreditCard", "Wallet", "DollarSign", "Euro", "PoundSterling", "Bitcoin", "Banknote", "Coins", "Receipt", "Tag", "Tags", "Barcode", "Package", "PackageCheck", "PackageX", "Gift",
   // 상태 & 알림
