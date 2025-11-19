@@ -108,26 +108,43 @@ const SettingsTabs = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">사이트 설정</h2>
-        <Button onClick={onSave} className="bg-gradient-accent text-accent-foreground">
-          저장
-        </Button>
+    <div className="grid grid-cols-[2fr_1fr] gap-6">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">사이트 설정</h2>
+          <Button onClick={onSave} className="bg-gradient-accent text-accent-foreground">
+            저장
+          </Button>
+        </div>
+
+        <Tabs value={activeTab.toString()} onValueChange={(v) => onTabChange(parseInt(v))}>
+          <TabsList className="grid w-full grid-cols-4">
+            {tabs.map(({ icon: Icon, label, value }) => (
+              <TabsTrigger key={value} value={value} className="flex items-center gap-2">
+                <Icon className="w-4 h-4" />
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          <div className="mt-6">{renderContent()}</div>
+        </Tabs>
       </div>
 
-      <Tabs value={activeTab.toString()} onValueChange={(v) => onTabChange(parseInt(v))}>
-        <TabsList className="grid w-full grid-cols-4">
-          {tabs.map(({ icon: Icon, label, value }) => (
-            <TabsTrigger key={value} value={value} className="flex items-center gap-2">
-              <Icon className="w-4 h-4" />
-              {label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <div className="mt-6">{renderContent()}</div>
-      </Tabs>
+      <div className="sticky top-6 h-[calc(100vh-200px)]">
+        <div className="border rounded-lg overflow-hidden h-full bg-card">
+          <div className="p-4 border-b bg-muted/50">
+            <h3 className="font-semibold text-sm">미리보기</h3>
+          </div>
+          <div className="h-[calc(100%-56px)] overflow-auto">
+            <iframe
+              src="/"
+              className="w-full h-full border-0"
+              title="Preview"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
