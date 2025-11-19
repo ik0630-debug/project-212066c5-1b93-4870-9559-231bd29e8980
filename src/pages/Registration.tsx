@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, Building, ArrowLeft, Upload } from "lucide-react";
+import { z } from "zod";
 
 interface RegistrationField {
   id: string;
@@ -81,7 +82,7 @@ const Registration = () => {
 
     // Validate required fields
     for (const field of fields) {
-      if (field.required && !formData[field.id]) {
+      if (field.required && !formData[field.id]?.trim()) {
         toast({
           title: "필수 항목을 입력해주세요",
           description: `${field.label}은(는) 필수 항목입니다.`,
@@ -91,16 +92,34 @@ const Registration = () => {
       }
     }
 
+    // Validate using zod schema
+    const registrationSchema = z.object({
+      name: z.string().trim().min(1, "이름을 입력해주세요").max(100, "이름은 100자 이내로 입력해주세요"),
+      email: z.string().trim().email("올바른 이메일 형식이 아닙니다").max(255, "이메일은 255자 이내로 입력해주세요"),
+      phone: z.string().trim().min(1, "연락처를 입력해주세요").max(20, "연락처는 20자 이내로 입력해주세요"),
+      company: z.string().trim().max(100, "회사명은 100자 이내로 입력해주세요").optional().nullable(),
+      message: z.string().trim().max(1000, "메시지는 1000자 이내로 입력해주세요").optional().nullable(),
+    });
+
     try {
-      // Build the insert object with proper typing
-      const insertData: any = {};
-      fields.forEach(field => {
-        insertData[field.id] = formData[field.id] || null;
+      // Validate form data
+      const validatedData = registrationSchema.parse({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company || null,
+        message: formData.message || null,
       });
 
       const { error } = await supabase
         .from("registrations")
-        .insert([insertData]);
+        .insert([{
+          name: validatedData.name,
+          email: validatedData.email,
+          phone: validatedData.phone,
+          company: validatedData.company,
+          message: validatedData.message,
+        }]);
 
       if (error) throw error;
 
@@ -117,11 +136,19 @@ const Registration = () => {
         message: "",
       });
     } catch (error: any) {
-      toast({
-        title: "신청 실패",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "입력 오류",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "신청 실패",
+          description: error.message || "신청 중 오류가 발생했습니다.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
