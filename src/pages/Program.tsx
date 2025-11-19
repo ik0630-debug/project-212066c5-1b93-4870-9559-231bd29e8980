@@ -77,7 +77,7 @@ const Program = () => {
   };
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => navigate('/location'),
+    onSwipedLeft: () => navigate('/registration'),
     onSwipedRight: () => navigate('/'),
     trackMouse: false,
   });
