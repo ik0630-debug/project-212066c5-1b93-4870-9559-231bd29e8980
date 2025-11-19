@@ -3,9 +3,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import SortableFormField from "@/components/SortableFormField";
 
 interface RegistrationField {
   id: string;
@@ -29,6 +43,13 @@ const RegistrationSettings = ({
   onRegistrationSettingsChange,
   onRegistrationFieldsChange,
 }: RegistrationSettingsProps) => {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const handleChange = (key: string, value: string) => {
     onRegistrationSettingsChange({
       ...registrationSettings,
@@ -69,6 +90,17 @@ const RegistrationSettings = ({
     onRegistrationFieldsChange(newFields);
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = registrationFields.findIndex((field) => field.id === active.id);
+      const newIndex = registrationFields.findIndex((field) => field.id === over.id);
+
+      onRegistrationFieldsChange(arrayMove(registrationFields, oldIndex, newIndex));
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="space-y-4">
@@ -104,84 +136,28 @@ const RegistrationSettings = ({
           </Button>
         </div>
         
-        <div className="grid gap-6">
-          {registrationFields.map((field, index) => (
-            <div key={field.id} className="space-y-3 p-4 border rounded-lg">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium">{field.label}</h4>
-                <Button
-                  onClick={() => removeField(index)}
-                  variant="destructive"
-                  size="sm"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              <div className="grid gap-3">
-                <div>
-                  <Label>레이블</Label>
-                  <Input
-                    value={field.label}
-                    onChange={(e) => handleFieldChange(index, "label", e.target.value)}
-                    placeholder="예: 이름, 이메일, 회사명"
-                  />
-                </div>
-                
-                <div>
-                  <Label>플레이스홀더</Label>
-                  <Input
-                    value={field.placeholder}
-                    onChange={(e) => handleFieldChange(index, "placeholder", e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <Label>필드 타입</Label>
-                  <Select
-                    value={field.type}
-                    onValueChange={(value) => handleFieldChange(index, "type", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="text">짧은 텍스트</SelectItem>
-                      <SelectItem value="email">이메일</SelectItem>
-                      <SelectItem value="tel">전화번호</SelectItem>
-                      <SelectItem value="number">숫자</SelectItem>
-                      <SelectItem value="textarea">긴 텍스트</SelectItem>
-                      <SelectItem value="select">드롭다운 선택</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`required-${field.id}`}
-                    checked={field.required}
-                    onCheckedChange={(checked) => handleFieldChange(index, "required", checked)}
-                  />
-                  <Label htmlFor={`required-${field.id}`}>필수 항목</Label>
-                </div>
-
-                {field.type === "select" && (
-                  <div>
-                    <Label>선택 옵션 (쉼표로 구분)</Label>
-                    <Input
-                      value={(field.options || []).join(", ")}
-                      onChange={(e) => {
-                        const options = e.target.value.split(",").map(opt => opt.trim()).filter(opt => opt);
-                        handleFieldChange(index, "options", options);
-                      }}
-                      placeholder="옵션1, 옵션2, 옵션3"
-                    />
-                  </div>
-                )}
-              </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={registrationFields.map((f) => f.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="grid gap-4">
+              {registrationFields.map((field, index) => (
+                <SortableFormField
+                  key={field.id}
+                  field={field}
+                  index={index}
+                  onFieldChange={handleFieldChange}
+                  onRemove={removeField}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       </div>
 
       <Separator />
