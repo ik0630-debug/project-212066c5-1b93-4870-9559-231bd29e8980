@@ -59,9 +59,62 @@ export const useUsers = () => {
     }
   };
 
+  const approveUser = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ 
+          approved: true, 
+          approved_at: new Date().toISOString() 
+        })
+        .eq("user_id", userId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "승인 완료",
+        description: "사용자가 승인되었습니다.",
+      });
+      
+      loadUsers();
+    } catch (error: any) {
+      toast({
+        title: "승인 실패",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const rejectUser = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("user_id", userId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "거부 완료",
+        description: "사용자가 거부되었습니다.",
+      });
+      
+      loadUsers();
+    } catch (error: any) {
+      toast({
+        title: "거부 실패",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return {
     users,
     loadUsers,
     toggleAdmin,
+    approveUser,
+    rejectUser,
   };
 };
