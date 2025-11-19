@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminTabs from "@/components/admin/AdminTabs";
@@ -31,10 +31,15 @@ const Admin = () => {
     setProgramCards,
     setTransportCards,
     setSectionOrder,
+    loadSettings,
     saveSettings,
     handleSettingChange,
     saveSectionOrder,
   } = useSettings();
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
 
   if (loading) {
     return (
