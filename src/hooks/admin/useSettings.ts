@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -55,8 +55,11 @@ export const useSettings = () => {
     { id: "message", label: "특이사항", placeholder: "특별히 전달하실 말씀이 있으시면 작성해주세요", type: "textarea", required: false },
   ]);
 
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
+    console.log('useSettings: Loading settings from database...');
     const { data } = await supabase.from("site_settings").select("*");
+    
+    console.log('useSettings: Loaded data:', data?.length, 'records');
     
     const settingsMap: any = {};
     const loadedInfoCards: any = {};
@@ -130,13 +133,19 @@ export const useSettings = () => {
       }
     });
 
-    setInfoCards(Object.values(loadedInfoCards).filter((card: any) => card.title));
-    setBottomButtons(Object.values(loadedBottomButtons).filter((btn: any) => btn.text));
+    const cards = Object.values(loadedInfoCards).filter((card: any) => card.title);
+    const buttons = Object.values(loadedBottomButtons).filter((btn: any) => btn.text);
+    
+    console.log('useSettings: Loaded info cards:', cards.length);
+    console.log('useSettings: Loaded bottom buttons:', buttons.length);
+    
+    setInfoCards(cards);
+    setBottomButtons(buttons);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
     setTransportCards(Object.values(loadedTransportCards).filter((card: any) => card.title && card.description));
     setSettings(settingsMap);
     setRegistrationSettings(prev => ({ ...prev, ...registrationSettingsData }));
-  };
+  }, []);
 
   const getCategoryFromKey = (key: string): string => {
     if (key.startsWith("hero_")) return "home";
