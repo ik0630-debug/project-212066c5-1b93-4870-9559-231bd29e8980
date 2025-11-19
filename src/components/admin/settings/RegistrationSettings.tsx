@@ -4,22 +4,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import SortableFormField from "@/components/SortableFormField";
 
 interface RegistrationField {
@@ -44,23 +28,6 @@ const RegistrationSettings = ({
   onRegistrationSettingsChange,
   onRegistrationFieldsChange,
 }: RegistrationSettingsProps) => {
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 10,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   const handleChange = (key: string, value: string) => {
     onRegistrationSettingsChange({
       ...registrationSettings,
@@ -71,7 +38,6 @@ const RegistrationSettings = ({
   const handleFieldChange = (index: number, key: keyof RegistrationField, value: any) => {
     const newFields = [...registrationFields];
     
-    // 레이블이 변경되면 ID도 자동으로 업데이트
     if (key === 'label') {
       const autoId = value
         .toLowerCase()
@@ -101,15 +67,18 @@ const RegistrationSettings = ({
     onRegistrationFieldsChange(newFields);
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  const moveFieldUp = (index: number) => {
+    if (index === 0) return;
+    const newFields = [...registrationFields];
+    [newFields[index - 1], newFields[index]] = [newFields[index], newFields[index - 1]];
+    onRegistrationFieldsChange(newFields);
+  };
 
-    if (over && active.id !== over.id) {
-      const oldIndex = registrationFields.findIndex((field) => field.id === active.id);
-      const newIndex = registrationFields.findIndex((field) => field.id === over.id);
-
-      onRegistrationFieldsChange(arrayMove(registrationFields, oldIndex, newIndex));
-    }
+  const moveFieldDown = (index: number) => {
+    if (index === registrationFields.length - 1) return;
+    const newFields = [...registrationFields];
+    [newFields[index], newFields[index + 1]] = [newFields[index + 1], newFields[index]];
+    onRegistrationFieldsChange(newFields);
   };
 
   return (
@@ -147,28 +116,20 @@ const RegistrationSettings = ({
           </Button>
         </div>
         
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={registrationFields.map((f) => f.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="grid gap-4">
-              {registrationFields.map((field, index) => (
-                <SortableFormField
-                  key={field.id}
-                  field={field}
-                  index={index}
-                  onFieldChange={handleFieldChange}
-                  onRemove={removeField}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+        <div className="grid gap-4">
+          {registrationFields.map((field, index) => (
+            <SortableFormField
+              key={field.id}
+              field={field}
+              index={index}
+              totalFields={registrationFields.length}
+              onFieldChange={handleFieldChange}
+              onRemove={removeField}
+              onMoveUp={moveFieldUp}
+              onMoveDown={moveFieldDown}
+            />
+          ))}
+        </div>
       </div>
 
       <Separator />

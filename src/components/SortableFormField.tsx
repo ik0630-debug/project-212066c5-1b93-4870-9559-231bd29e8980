@@ -1,6 +1,4 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Trash2 } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,56 +19,46 @@ interface RegistrationField {
 interface SortableFormFieldProps {
   field: RegistrationField;
   index: number;
+  totalFields: number;
   onFieldChange: (index: number, key: keyof RegistrationField, value: any) => void;
   onRemove: (index: number) => void;
+  onMoveUp: (index: number) => void;
+  onMoveDown: (index: number) => void;
 }
 
-const SortableFormField = ({ field, index, onFieldChange, onRemove }: SortableFormFieldProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: field.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
+const SortableFormField = ({ field, index, totalFields, onFieldChange, onRemove, onMoveUp, onMoveDown }: SortableFormFieldProps) => {
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="space-y-3 p-4 border rounded-lg bg-card"
-    >
+    <div className="space-y-3 p-4 border rounded-lg bg-card">
       <div className="flex items-center justify-between">
+        <h4 className="font-medium">{field.label}</h4>
         <div className="flex items-center gap-2">
-          <button
-            ref={setActivatorNodeRef}
-            type="button"
-            className="cursor-grab active:cursor-grabbing touch-none"
-            {...attributes}
-            {...listeners}
+          <Button
+            onClick={() => onMoveUp(index)}
+            variant="outline"
+            size="sm"
+            disabled={index === 0}
           >
-            <GripVertical className="w-5 h-5 text-muted-foreground" />
-          </button>
-          <h4 className="font-medium">{field.label}</h4>
+            <ArrowUp className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={() => onMoveDown(index)}
+            variant="outline"
+            size="sm"
+            disabled={index === totalFields - 1}
+          >
+            <ArrowDown className="w-4 h-4" />
+          </Button>
+          <Button
+            onClick={() => onRemove(index)}
+            variant="destructive"
+            size="sm"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
         </div>
-        <Button
-          onClick={() => onRemove(index)}
-          variant="destructive"
-          size="sm"
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
       </div>
 
-      <div className="grid gap-3 pl-7">
+      <div className="grid gap-3">{/* ... keep existing code */}
         <div>
           <Label>아이콘</Label>
           <IconPicker
