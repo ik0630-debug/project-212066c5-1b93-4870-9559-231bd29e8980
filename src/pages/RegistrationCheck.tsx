@@ -82,7 +82,7 @@ const RegistrationCheck = () => {
         .from("registrations")
         .select("*")
         .eq("name", name.trim())
-        .eq("phone", phone.replace(/-/g, ""))
+        .eq("phone", phone)
         .maybeSingle();
 
       if (error) throw error;
