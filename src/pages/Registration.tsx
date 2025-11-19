@@ -177,12 +177,7 @@ const Registration = () => {
     onSwipedLeft: () => navigate('/location'),
     onSwipedRight: () => navigate('/program'),
     trackMouse: false,
-  });
-
-  // Prevent swipe on form elements
-  const preventSwipeHandlers = useSwipeable({
-    onSwiping: (e) => e.event.stopPropagation(),
-    trackMouse: false,
+    delta: 100, // 스와이프 감지를 위한 최소 이동 거리 (기본값 10px → 100px)
   });
 
   return (
@@ -200,7 +195,7 @@ const Registration = () => {
         </div>
       </header>
 
-      <main className="px-6 py-8" {...preventSwipeHandlers}>
+      <main className="px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           {fields.map((field) => (
             <div key={field.id} className="space-y-2">
