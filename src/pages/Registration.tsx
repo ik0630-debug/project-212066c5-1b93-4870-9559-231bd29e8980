@@ -30,6 +30,7 @@ const Registration = () => {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [privacyContent, setPrivacyContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [pageSettings, setPageSettings] = useState({
     pageTitle: "참가 신청",
     pageDescription: "아래 양식을 작성해주세요",
@@ -88,6 +89,9 @@ const Registration = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 이미 제출 중이면 중복 실행 방지
+    if (isSubmitting) return;
+
     // 개인정보 동의 체크 확인
     if (!agreedToPrivacy) {
       toast({
@@ -120,6 +124,8 @@ const Registration = () => {
     });
 
     try {
+      setIsSubmitting(true);
+
       // Validate form data
       const validatedData = registrationSchema.parse({
         name: formData.name,
@@ -149,10 +155,11 @@ const Registration = () => {
       setFormData({
         name: "",
         email: "",
-        phone: "",
+        phone: "010-",
         company: "",
         message: "",
       });
+      setAgreedToPrivacy(false);
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast({
@@ -167,6 +174,8 @@ const Registration = () => {
           variant: "destructive",
         });
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -338,10 +347,10 @@ const Registration = () => {
 
           <Button
             type="submit"
-            disabled={!agreedToPrivacy}
+            disabled={!agreedToPrivacy || isSubmitting}
             className="w-full h-12 bg-gradient-accent text-accent-foreground font-bold shadow-glow hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            신청하기
+            {isSubmitting ? "신청 중..." : "신청하기"}
           </Button>
         </form>
       </main>
