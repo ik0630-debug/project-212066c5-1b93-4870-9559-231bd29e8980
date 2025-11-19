@@ -78,7 +78,7 @@ const RegistrationSettings = ({
             <Label htmlFor="registration_page_title">페이지 제목</Label>
             <Input
               id="registration_page_title"
-              value={registrationSettings.registration_page_title}
+              value={registrationSettings.registration_page_title || ""}
               onChange={(e) => handleChange("registration_page_title", e.target.value)}
             />
           </div>
@@ -86,7 +86,7 @@ const RegistrationSettings = ({
             <Label htmlFor="registration_page_description">페이지 설명</Label>
             <Input
               id="registration_page_description"
-              value={registrationSettings.registration_page_description}
+              value={registrationSettings.registration_page_description || ""}
               onChange={(e) => handleChange("registration_page_description", e.target.value)}
             />
           </div>
@@ -213,7 +213,7 @@ const RegistrationSettings = ({
             <Label htmlFor="registration_success_title">성공 메시지 제목</Label>
             <Input
               id="registration_success_title"
-              value={registrationSettings.registration_success_title}
+              value={registrationSettings.registration_success_title || ""}
               onChange={(e) => handleChange("registration_success_title", e.target.value)}
             />
           </div>
@@ -221,7 +221,7 @@ const RegistrationSettings = ({
             <Label htmlFor="registration_success_description">성공 메시지 설명</Label>
             <Input
               id="registration_success_description"
-              value={registrationSettings.registration_success_description}
+              value={registrationSettings.registration_success_description || ""}
               onChange={(e) => handleChange("registration_success_description", e.target.value)}
             />
           </div>
