@@ -17,28 +17,52 @@ interface IconPickerProps {
   onValueChange: (iconName: string) => void;
 }
 
-// Popular icons for quick access
-const POPULAR_ICONS = [
-  "Calendar",
-  "MapPin",
-  "Users",
-  "Clock",
-  "Mail",
-  "Phone",
-  "Globe",
-  "Home",
-  "Building",
-  "Briefcase",
-  "Award",
-  "Star",
-  "Heart",
-  "MessageCircle",
-  "Bell",
-  "Settings",
-  "Info",
-  "AlertCircle",
-  "CheckCircle",
-  "XCircle",
+// Comprehensive icon list organized by category
+const DEFAULT_ICONS = [
+  // 시간 & 일정
+  "Calendar", "CalendarDays", "CalendarCheck", "CalendarClock", "CalendarRange", "Clock", "Clock1", "Clock2", "Clock3", "Clock4", "Clock5", "Clock6", "Clock7", "Clock8", "Clock9", "Clock10", "Clock11", "Clock12", "Timer", "Hourglass", "AlarmClock", "CalendarX", "CalendarPlus",
+  // 사람 & 사용자
+  "User", "Users", "UserPlus", "UserMinus", "UserCheck", "UserX", "UserCog", "UsersRound", "Contact", "Baby", "PersonStanding",
+  // 비즈니스 & 사무
+  "Briefcase", "Building", "Building2", "Home", "Store", "Warehouse", "Factory", "Hotel", "School", "GraduationCap", "Library",
+  // 커뮤니케이션
+  "Mail", "MailOpen", "MailPlus", "MailCheck", "MessageCircle", "MessageSquare", "Phone", "PhoneCall", "PhoneIncoming", "PhoneOutgoing", "Smartphone", "Send", "SendHorizonal", "Inbox", "AtSign",
+  // 문서 & 파일
+  "File", "FileText", "FileEdit", "FileCheck", "FilePlus", "FileMinus", "FileX", "Files", "Folder", "FolderOpen", "FolderPlus", "FolderCheck", "Archive", "Clipboard", "ClipboardCheck", "ClipboardList", "Newspaper", "BookOpen", "Book", "NotebookPen",
+  // 미디어 & 이미지
+  "Image", "ImagePlus", "Camera", "CameraOff", "Video", "VideoOff", "Film", "Music", "Mic", "MicOff", "Volume", "Volume1", "Volume2", "VolumeX", "Play", "Pause", "Square", "Circle",
+  // 위치 & 지도
+  "MapPin", "Map", "Navigation", "Compass", "Globe", "MapPinned", "Locate", "LocateFixed", "Route", "Signpost", "Milestone",
+  // 쇼핑 & 금융
+  "ShoppingCart", "ShoppingBag", "CreditCard", "Wallet", "DollarSign", "Euro", "PoundSterling", "Bitcoin", "Banknote", "Coins", "Receipt", "Tag", "Tags", "Barcode", "Package", "PackageCheck", "PackageX", "Gift",
+  // 상태 & 알림
+  "Bell", "BellOff", "BellRing", "Info", "AlertCircle", "AlertTriangle", "CheckCircle", "CheckCircle2", "XCircle", "Check", "X", "Plus", "Minus", "Star", "StarHalf", "Heart", "HeartPulse", "ThumbsUp", "ThumbsDown", "Flag", "Bookmark",
+  // 설정 & 도구
+  "Settings", "Cog", "Wrench", "Hammer", "Drill", "Gauge", "SlidersHorizontal", "SlidersVertical", "Filter", "Search", "Zap", "Key", "Lock", "LockOpen", "Shield", "ShieldCheck", "Eye", "EyeOff",
+  // 이동 & 방향
+  "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUpRight", "ArrowUpLeft", "ArrowDownRight", "ArrowDownLeft", "ChevronUp", "ChevronDown", "ChevronLeft", "ChevronRight", "ChevronsUp", "ChevronsDown", "MoveUp", "MoveDown", "Move", "Maximize", "Minimize", "CornerUpLeft", "CornerUpRight",
+  // 편집 & 작업
+  "Edit", "Edit2", "Edit3", "Pencil", "Pen", "PenTool", "Copy", "Clipboard", "ClipboardCopy", "Trash", "Trash2", "Save", "Download", "Upload", "RefreshCw", "RotateCw", "RotateCcw", "Undo", "Redo",
+  // 레이아웃 & UI
+  "Layout", "LayoutGrid", "LayoutList", "Menu", "MoreHorizontal", "MoreVertical", "Grid", "List", "Columns", "Rows", "PanelLeft", "PanelRight", "PanelTop", "PanelBottom", "Sidebar", "Table",
+  // 날씨 & 자연
+  "Sun", "Moon", "Cloud", "CloudRain", "CloudSnow", "CloudDrizzle", "CloudLightning", "Wind", "Snowflake", "Sunrise", "Sunset", "Thermometer", "Umbrella", "Sprout", "TreeDeciduous", "TreePine", "Flower", "Leaf",
+  // 교통 & 운송
+  "Car", "Truck", "Bus", "Train", "Plane", "Ship", "Bike", "Fuel", "ParkingCircle", "TrafficCone",
+  // 음식 & 음료
+  "Coffee", "Beer", "Wine", "Pizza", "Utensils", "UtensilsCrossed", "ChefHat", "CookingPot", "Apple", "Cherry", "Carrot",
+  // 건강 & 의료
+  "Heart", "HeartPulse", "Activity", "Stethoscope", "Pill", "Syringe", "Thermometer", "Cross", "Hospital",
+  // 기술 & 장치
+  "Monitor", "Laptop", "Tablet", "Smartphone", "Watch", "Tv", "Speaker", "Headphones", "Keyboard", "Mouse", "Printer", "HardDrive", "Cpu", "Database", "Server", "Wifi", "WifiOff", "Bluetooth", "Usb", "Battery", "BatteryCharging", "Plug", "Power", "PowerOff",
+  // 소셜 & 공유
+  "Share", "Share2", "Link", "Link2", "ExternalLink", "MessageCircle", "MessageSquare", "AtSign", "Hash", "Users",
+  // 차트 & 데이터
+  "BarChart", "BarChart2", "BarChart3", "LineChart", "PieChart", "TrendingUp", "TrendingDown", "Activity",
+  // 게임 & 엔터테인먼트
+  "Gamepad", "Gamepad2", "Trophy", "Award", "Medal", "Target", "Dice1", "Dice2", "Dice3", "Dice4", "Dice5", "Dice6", "Puzzle", "Crown",
+  // 기타
+  "Sparkles", "Zap", "Flame", "Droplet", "Waves", "Lightbulb", "Flashlight", "Lamp", "Rocket", "Plane", "Anchor", "Globe2"
 ];
 
 const IconPicker = ({ value, onValueChange }: IconPickerProps) => {
@@ -58,7 +82,7 @@ const IconPicker = ({ value, onValueChange }: IconPickerProps) => {
   // Filter icons based on search
   const filteredIcons = useMemo(() => {
     if (!search) {
-      return POPULAR_ICONS;
+      return DEFAULT_ICONS;
     }
     return allIcons.filter((iconName) =>
       iconName.toLowerCase().includes(search.toLowerCase())
@@ -96,8 +120,8 @@ const IconPicker = ({ value, onValueChange }: IconPickerProps) => {
               className="pl-9"
             />
           </div>
-          <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-            <div className="grid grid-cols-6 gap-2">
+          <ScrollArea className="h-[500px] w-full rounded-md border p-4">
+            <div className="grid grid-cols-8 gap-2">
               {filteredIcons.map((iconName) => {
                 const IconComponent = (LucideIcons as any)[iconName];
                 if (!IconComponent) return null;
@@ -106,17 +130,23 @@ const IconPicker = ({ value, onValueChange }: IconPickerProps) => {
                   <Button
                     key={iconName}
                     variant={value === iconName ? "default" : "outline"}
-                    className="h-16 flex flex-col gap-1 p-2"
+                    className="h-14 flex flex-col gap-1 p-1"
                     onClick={() => handleSelectIcon(iconName)}
+                    title={iconName}
                   >
-                    <IconComponent className="w-6 h-6" />
-                    <span className="text-[10px] truncate w-full">
+                    <IconComponent className="w-5 h-5" />
+                    <span className="text-[9px] truncate w-full leading-tight">
                       {iconName}
                     </span>
                   </Button>
                 );
               })}
             </div>
+            {filteredIcons.length === 0 && (
+              <div className="text-center text-muted-foreground py-8">
+                검색 결과가 없습니다
+              </div>
+            )}
           </ScrollArea>
         </div>
       </DialogContent>
