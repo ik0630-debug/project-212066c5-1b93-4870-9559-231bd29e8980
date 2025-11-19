@@ -52,7 +52,7 @@ const defaultSettings: HomeSettings = {
   descriptionContent: "",
   infoCards: [],
   bottomButtons: [],
-  sectionOrder: ['hero_section', 'info_cards', 'description', 'bottom_buttons'],
+  sectionOrder: ['hero_section', 'description', 'info_cards', 'bottom_buttons'],
 };
 
 export const useHomeSettings = () => {

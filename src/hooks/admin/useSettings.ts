@@ -11,8 +11,8 @@ export const useSettings = () => {
   const [transportCards, setTransportCards] = useState<any[]>([]);
   const [sectionOrder, setSectionOrder] = useState<string[]>([
     "hero_section",
-    "info_cards",
     "description",
+    "info_cards",
     "bottom_buttons",
   ]);
   
