@@ -4,6 +4,7 @@ import RegistrationsTable from "./RegistrationsTable";
 import UsersTable from "./UsersTable";
 import ApprovalTable from "./ApprovalTable";
 import SettingsTabs from "./SettingsTabs";
+import ConfigSettings from "./settings/ConfigSettings";
 
 interface AdminTabsProps {
   activeTab: 'registrations' | 'users' | 'page-settings' | 'config';
@@ -70,10 +71,7 @@ const AdminTabs = ({
       </TabsContent>
 
       <TabsContent value="config">
-        <div className="space-y-6">
-          <h2 className="text-2xl font-semibold">설정</h2>
-          <p className="text-muted-foreground">QR코드 생성 및 자동 이메일 발송 기능이 추가될 예정입니다.</p>
-        </div>
+        <ConfigSettings registrations={registrations} />
       </TabsContent>
     </Tabs>
   );
