@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import ClockIcon from "@/components/ClockIcon";
+import * as LucideIcons from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
 import { useSwipeable } from "react-swipeable";
 
@@ -11,6 +11,7 @@ interface ProgramCard {
   time: string;
   title: string;
   description: string;
+  icon?: string;
   order: number;
 }
 
@@ -69,6 +70,12 @@ const Program = () => {
     }
   };
 
+  const getIconComponent = (iconName?: string) => {
+    if (!iconName) return LucideIcons.Clock;
+    const Icon = (LucideIcons as any)[iconName];
+    return Icon || LucideIcons.Clock;
+  };
+
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => navigate('/location'),
     onSwipedRight: () => navigate('/'),
@@ -116,7 +123,10 @@ const Program = () => {
               >
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <ClockIcon time={card.time} className="w-6 h-6 text-primary" />
+                    {(() => {
+                      const IconComponent = getIconComponent(card.icon);
+                      return <IconComponent className="w-6 h-6 text-primary" />;
+                    })()}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-baseline gap-2 mb-2">
