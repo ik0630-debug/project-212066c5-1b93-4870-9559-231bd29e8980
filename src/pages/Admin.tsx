@@ -10,11 +10,11 @@ import { useSettings } from "@/hooks/admin/useSettings";
 const Admin = () => {
   const navigate = useNavigate();
   const { loading, signOut } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'settings'>('registrations');
+  const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'approval' | 'settings'>('registrations');
   const [activeSettingsTab, setActiveSettingsTab] = useState(0);
 
   const { registrations, deleteRegistration } = useRegistrations();
-  const { users, toggleAdmin } = useUsers();
+  const { users, toggleAdmin, approveUser, rejectUser } = useUsers();
   const {
     settings,
     registrationSettings,
@@ -56,6 +56,8 @@ const Admin = () => {
           users={users}
           onDeleteRegistration={deleteRegistration}
           onToggleAdmin={toggleAdmin}
+          onApproveUser={approveUser}
+          onRejectUser={rejectUser}
           settingsTabProps={{
             activeTab: activeSettingsTab,
             onTabChange: setActiveSettingsTab,

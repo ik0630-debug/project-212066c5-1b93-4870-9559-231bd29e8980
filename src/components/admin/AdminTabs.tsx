@@ -1,16 +1,19 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Users, FileText } from "lucide-react";
+import { Settings, Users, FileText, UserCheck } from "lucide-react";
 import RegistrationsTable from "./RegistrationsTable";
 import UsersTable from "./UsersTable";
+import ApprovalTable from "./ApprovalTable";
 import SettingsTabs from "./SettingsTabs";
 
 interface AdminTabsProps {
-  activeTab: 'registrations' | 'users' | 'settings';
-  onTabChange: (tab: 'registrations' | 'users' | 'settings') => void;
+  activeTab: 'registrations' | 'users' | 'approval' | 'settings';
+  onTabChange: (tab: 'registrations' | 'users' | 'approval' | 'settings') => void;
   registrations: any[];
   users: any[];
   onDeleteRegistration: (id: string) => void;
   onToggleAdmin: (userId: string, isAdmin: boolean) => void;
+  onApproveUser: (userId: string) => void;
+  onRejectUser: (userId: string) => void;
   settingsTabProps: any;
 }
 
@@ -21,17 +24,20 @@ const AdminTabs = ({
   users,
   onDeleteRegistration,
   onToggleAdmin,
+  onApproveUser,
+  onRejectUser,
   settingsTabProps,
 }: AdminTabsProps) => {
   const tabs = [
     { icon: FileText, label: "신청 관리", value: "registrations" as const },
+    { icon: UserCheck, label: "사용자 승인", value: "approval" as const },
     { icon: Users, label: "사용자 관리", value: "users" as const },
     { icon: Settings, label: "사이트 설정", value: "settings" as const },
   ];
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange}>
-      <TabsList className="grid w-full grid-cols-3 mb-8">
+      <TabsList className="grid w-full grid-cols-4 mb-8">
         {tabs.map(({ icon: Icon, label, value }) => (
           <TabsTrigger key={value} value={value} className="flex items-center gap-2">
             <Icon className="w-4 h-4" />
@@ -42,6 +48,14 @@ const AdminTabs = ({
 
       <TabsContent value="registrations">
         <RegistrationsTable registrations={registrations} onDelete={onDeleteRegistration} />
+      </TabsContent>
+
+      <TabsContent value="approval">
+        <ApprovalTable 
+          users={users} 
+          onApprove={onApproveUser}
+          onReject={onRejectUser}
+        />
       </TabsContent>
 
       <TabsContent value="users">
