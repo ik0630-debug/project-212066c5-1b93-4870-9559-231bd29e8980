@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import IconPicker from "@/components/IconPicker";
 
 interface RegistrationField {
   id: string;
@@ -14,6 +15,7 @@ interface RegistrationField {
   type: string;
   required: boolean;
   options?: string[];
+  icon?: string;
 }
 
 interface SortableFormFieldProps {
@@ -67,6 +69,14 @@ const SortableFormField = ({ field, index, onFieldChange, onRemove }: SortableFo
       </div>
 
       <div className="grid gap-3 pl-7">
+        <div>
+          <Label>아이콘</Label>
+          <IconPicker
+            value={field.icon || "User"}
+            onValueChange={(icon) => onFieldChange(index, "icon", icon)}
+          />
+        </div>
+
         <div>
           <Label>필드 레이블</Label>
           <Input
