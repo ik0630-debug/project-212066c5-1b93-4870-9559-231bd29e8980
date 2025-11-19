@@ -16,8 +16,8 @@ interface SortableButtonProps {
   id: string;
   button: any;
   buttonData: any;
-  onUpdate: (id: string, data: any) => void;
-  onDelete: (id: string) => void;
+  onUpdate: (data: any) => void;
+  onDelete: () => void;
 }
 
 const SortableBottomButton = ({
@@ -59,7 +59,7 @@ const SortableBottomButton = ({
         <h4 className="font-medium text-lg flex-1">
           {buttonData.text || "텍스트 없음"}
         </h4>
-        <Button onClick={() => onDelete(button.id)} size="sm" variant="destructive">
+        <Button onClick={onDelete} size="sm" variant="destructive">
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
@@ -69,7 +69,7 @@ const SortableBottomButton = ({
         <Input
           value={buttonData.text || ""}
           onChange={(e) =>
-            onUpdate(button.id, {
+            onUpdate({
               ...buttonData,
               text: e.target.value,
             })
@@ -83,7 +83,7 @@ const SortableBottomButton = ({
         <Input
           value={buttonData.link || ""}
           onChange={(e) =>
-            onUpdate(button.id, {
+            onUpdate({
               ...buttonData,
               link: e.target.value,
             })
@@ -97,7 +97,7 @@ const SortableBottomButton = ({
         <Select
           value={buttonData.variant || "outline"}
           onValueChange={(value) =>
-            onUpdate(button.id, {
+            onUpdate({
               ...buttonData,
               variant: value,
             })
