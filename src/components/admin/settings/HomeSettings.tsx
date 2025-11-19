@@ -39,11 +39,16 @@ const HomeSettings = ({
   onSaveSectionOrder,
   onSave,
 }: HomeSettingsProps) => {
+  const [previewKey, setPreviewKey] = useState(0);
   
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
+
+  const refreshPreview = () => {
+    setPreviewKey(prev => prev + 1);
+  };
 
   const handleAddInfoCard = () => {
     onInfoCardsChange([...infoCards, { title: "", description: "", icon: "Info" }]);
@@ -54,6 +59,8 @@ const HomeSettings = ({
     const newCards = [...infoCards];
     newCards[index] = { ...newCards[index], ...data };
     onInfoCardsChange(newCards);
+    onSave();
+    setTimeout(refreshPreview, 500);
   };
 
   const handleDeleteInfoCard = (index: number) => {
@@ -399,9 +406,20 @@ const HomeSettings = ({
       
       <div className="col-span-1">
         <div className="sticky top-4">
-          <h3 className="text-lg font-semibold mb-4">전체 페이지 미리보기</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">전체 페이지 미리보기</h3>
+            <Button 
+              onClick={refreshPreview} 
+              size="sm" 
+              variant="outline"
+              className="text-xs"
+            >
+              새로고침
+            </Button>
+          </div>
           <div className="border rounded-lg overflow-hidden bg-muted/20" style={{ height: '80vh' }}>
             <iframe
+              key={previewKey}
               src="/"
               className="w-full h-full"
               title="Page Preview"
