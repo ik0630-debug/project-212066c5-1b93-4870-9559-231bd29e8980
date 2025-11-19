@@ -92,66 +92,68 @@ const Program = () => {
 
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <header 
-        className="text-primary-foreground py-4 px-6"
-        style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
-        {...(!headerColor && { className: "bg-gradient-primary text-primary-foreground py-4 px-6" })}
-      >
-        <h1 className="text-2xl font-bold mb-1">{pageTitle}</h1>
-        {pageDescription && (
-          <p className="text-primary-foreground/90 text-sm whitespace-pre-line">
-            {pageDescription}
-          </p>
-        )}
-      </header>
+      <div className="max-w-[800px] mx-auto">
+        {/* Header */}
+        <header 
+          className="text-primary-foreground py-4 px-6"
+          style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
+          {...(!headerColor && { className: "bg-gradient-primary text-primary-foreground py-4 px-6" })}
+        >
+          <h1 className="text-2xl font-bold mb-1">{pageTitle}</h1>
+          {pageDescription && (
+            <p className="text-primary-foreground/90 text-sm whitespace-pre-line">
+              {pageDescription}
+            </p>
+          )}
+        </header>
 
-      {/* Program Schedule */}
-      <main className="px-6 py-8">
-        <div className="space-y-4">
-          {programCards.length === 0 ? (
-            <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center">
-              <p className="text-muted-foreground">
-                아직 등록된 프로그램이 없습니다.
-              </p>
-            </div>
-          ) : (
-            programCards.map((card) => (
-              <div
-                key={card.id}
-                className="bg-card rounded-lg p-5 shadow-elegant border border-border hover:shadow-glow transition-all duration-300"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    {(() => {
-                      const IconComponent = getIconComponent(card.icon);
-                      return <IconComponent className="w-6 h-6 text-primary" />;
-                    })()}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-sm font-semibold text-primary">
-                        {card.time}
-                      </span>
-                      <h3 className="text-lg font-bold text-card-foreground">
-                        {card.title}
-                      </h3>
+        {/* Program Schedule */}
+        <main className="px-6 py-8">
+          <div className="space-y-4">
+            {programCards.length === 0 ? (
+              <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center">
+                <p className="text-muted-foreground">
+                  아직 등록된 프로그램이 없습니다.
+                </p>
+              </div>
+            ) : (
+              programCards.map((card) => (
+                <div
+                  key={card.id}
+                  className="bg-card rounded-lg p-5 shadow-elegant border border-border hover:shadow-glow transition-all duration-300"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      {(() => {
+                        const IconComponent = getIconComponent(card.icon);
+                        return <IconComponent className="w-6 h-6 text-primary" />;
+                      })()}
                     </div>
-                    {card.description && (
-                      <p className="text-muted-foreground whitespace-pre-line">
-                        {card.description}
-                      </p>
-                    )}
+                    <div className="flex-1">
+                      <div className="flex items-baseline gap-2 mb-2">
+                        <span className="text-sm font-semibold text-primary">
+                          {card.time}
+                        </span>
+                        <h3 className="text-lg font-bold text-card-foreground">
+                          {card.title}
+                        </h3>
+                      </div>
+                      {card.description && (
+                        <p className="text-muted-foreground whitespace-pre-line">
+                          {card.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
-      </main>
+              ))
+            )}
+          </div>
+        </main>
 
-      {/* Mobile Navigation */}
-      <MobileNavigation />
+        {/* Mobile Navigation */}
+        <MobileNavigation />
+      </div>
     </div>
   );
 };

@@ -161,18 +161,22 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-6 py-8">
-      <div className="max-w-2xl mx-auto">
-        <Button
-          onClick={() => navigate("/")}
-          variant="ghost"
-          className="mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          돌아가기
-        </Button>
+    <div className="min-h-screen bg-background pb-20">
+      <div className="max-w-[800px] mx-auto">
+        <header className="bg-gradient-primary text-primary-foreground py-4 px-6 flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            className="text-primary-foreground hover:bg-primary-foreground/10"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h1 className="text-2xl font-bold">내 정보 관리</h1>
+        </header>
 
-        <h1 className="text-3xl font-bold text-foreground mb-8">내 정보 관리</h1>
+        <main className="px-6 py-8">
+          <div className="space-y-8">
 
         {/* Profile Update Form */}
         <div className="bg-card rounded-lg p-6 shadow-elegant border border-border mb-8">
@@ -329,6 +333,8 @@ const Profile = () => {
         >
           로그아웃
         </Button>
+          </div>
+        </main>
       </div>
     </div>
   );

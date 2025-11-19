@@ -117,7 +117,8 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-[800px]">
+        <div className="w-full max-w-md mx-auto">
         <div className="bg-card rounded-lg p-8 shadow-elegant border border-border">
           <h1 className="text-3xl font-bold text-center mb-6 text-card-foreground">
             {isLogin ? "로그인" : "회원가입"}
@@ -248,6 +249,7 @@ const Auth = () => {
               {isLogin ? "계정이 없으신가요? 회원가입" : "이미 계정이 있으신가요? 로그인"}
             </button>
           </div>
+        </div>
         </div>
       </div>
     </div>

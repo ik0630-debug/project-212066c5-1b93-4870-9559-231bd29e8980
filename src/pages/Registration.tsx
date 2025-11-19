@@ -237,7 +237,9 @@ const Registration = () => {
 
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
-      <header 
+      <div className="max-w-[800px] mx-auto">
+        {/* Header */}
+        <header
         className="relative bg-gradient-primary text-primary-foreground py-4 px-6 bg-cover bg-center"
         style={headerImage ? { backgroundImage: `url(${headerImage})` } : {}}
       >
@@ -346,7 +348,8 @@ const Registration = () => {
         </form>
       </main>
 
-      <MobileNavigation />
+        <MobileNavigation />
+      </div>
     </div>
   );
 };
