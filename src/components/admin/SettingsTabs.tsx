@@ -153,7 +153,13 @@ const SettingsTabs = ({
           <div className="h-[calc(100%-56px)] overflow-auto">
             <iframe
               key={previewKey}
-              src="/"
+              src={
+                activeTab === 0 ? "/" :
+                activeTab === 1 ? "/program" :
+                activeTab === 2 ? "/location" :
+                activeTab === 3 ? "/registration" :
+                "/"
+              }
               className="w-full h-full border-0"
               title="Preview"
             />
