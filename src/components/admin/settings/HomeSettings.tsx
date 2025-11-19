@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +24,7 @@ interface HomeSettingsProps {
   onBottomButtonsChange: (buttons: any[]) => void;
   onSectionOrderChange: (order: string[]) => void;
   onSaveSectionOrder: (order: string[]) => void;
+  onSave: () => void;
 }
 
 const HomeSettings = ({
@@ -36,12 +37,25 @@ const HomeSettings = ({
   onBottomButtonsChange,
   onSectionOrderChange,
   onSaveSectionOrder,
+  onSave,
 }: HomeSettingsProps) => {
   
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
+
+  const debouncedSave = useCallback(() => {
+    const timeoutId = setTimeout(() => {
+      onSave();
+    }, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [onSave]);
+
+  useEffect(() => {
+    const cleanup = debouncedSave();
+    return cleanup;
+  }, [infoCards, bottomButtons, debouncedSave]);
 
   const handleAddInfoCard = () => {
     onInfoCardsChange([...infoCards, { title: "", description: "", icon: "Info" }]);

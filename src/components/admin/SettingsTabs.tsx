@@ -72,6 +72,7 @@ const SettingsTabs = ({
             onBottomButtonsChange={onBottomButtonsChange}
             onSectionOrderChange={onSectionOrderChange}
             onSaveSectionOrder={onSaveSectionOrder}
+            onSave={onSave}
           />
         );
       case 1:
