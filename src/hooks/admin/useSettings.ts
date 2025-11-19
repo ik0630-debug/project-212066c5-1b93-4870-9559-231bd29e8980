@@ -107,14 +107,12 @@ export const useSettings = () => {
           }
           break;
         case "location":
-          if (key.startsWith("location_transport_card_")) {
-            const cardIndex = parseInt(key.split("_")[3]);
-            if (!isNaN(cardIndex)) {
-              loadedTransportCards[cardIndex] = {
-                ...(loadedTransportCards[cardIndex] || {}),
-                [key.split("_")[4]]: value,
-              };
-            }
+          if (key.startsWith("transport_card_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedTransportCards[index] = parsed;
+            } catch {}
           } else {
             settingsMap[key] = value;
           }
@@ -144,7 +142,30 @@ export const useSettings = () => {
     setInfoCards(cards);
     setBottomButtons(buttons);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
-    setTransportCards(Object.values(loadedTransportCards).filter((card: any) => card.title && card.description));
+    
+    const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card.title && card.description);
+    if (loadedTransportCardsArray.length > 0) {
+      setTransportCards(loadedTransportCardsArray);
+    } else {
+      setTransportCards([
+        {
+          icon: "Train",
+          title: "지하철",
+          description: "2호선 강남역 5번 출구에서 도보 5분",
+        },
+        {
+          icon: "Bus",
+          title: "버스",
+          description: "146, 360, 440, 1100번 - 강남역 하차",
+        },
+        {
+          icon: "Car",
+          title: "자가용",
+          description: "건물 지하 1~3층 주차 가능 (3시간 무료)",
+        },
+      ]);
+    }
+    
     setSettings(settingsMap);
     setRegistrationSettings(prev => ({ ...prev, ...registrationSettingsData }));
   }, []);
@@ -198,8 +219,8 @@ export const useSettings = () => {
         // Save transport cards
         ...transportCards.map((card, index) => ({
           category: "location",
-          key: `location_transport_card_${index}`,
-          value: JSON.stringify(card),
+          key: `transport_card_${index}`,
+          value: JSON.stringify({ ...card, order: index }),
         })),
       ];
 
