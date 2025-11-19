@@ -52,9 +52,10 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AdminHeader onBack={() => navigate(-1)} onSignOut={signOut} />
-      
-      <main className="px-6 py-8">
+      <div className="max-w-[800px] mx-auto">
+        <AdminHeader onBack={() => navigate(-1)} onSignOut={signOut} />
+        
+        <main className="px-6 py-8">
         <AdminTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -87,7 +88,8 @@ const Admin = () => {
             onSave: saveSettings,
           }}
         />
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

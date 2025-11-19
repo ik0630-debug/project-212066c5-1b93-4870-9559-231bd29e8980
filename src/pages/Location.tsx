@@ -115,7 +115,8 @@ const Location = () => {
 
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
-      <header 
+      <div className="max-w-[800px] mx-auto">
+        <header
         className="relative text-primary-foreground py-4 px-6 bg-cover bg-center"
         style={{
           ...(headerImage && { backgroundImage: `url(${headerImage})` }),
@@ -219,7 +220,8 @@ const Location = () => {
         </div>
       </main>
 
-      <MobileNavigation />
+        <MobileNavigation />
+      </div>
     </div>
   );
 };

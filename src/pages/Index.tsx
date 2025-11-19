@@ -74,103 +74,105 @@ const Index = () => {
 
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
-      <header className="flex flex-col items-center justify-center">
-        <div className="relative w-full max-w-[1000px]">
-          <div className="relative">
-            <div 
-              className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-              style={{ opacity: parseInt(settings.heroOverlayOpacity) / 100 }}
-            />
-            <img
-              src={settings.heroImageUrl || heroImage}
-              alt="Conference Hero"
-              className="w-full h-auto object-contain"
-            />
-            
-            {settings.heroUseText === "true" && settings.heroTextContent && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center px-6 text-center text-primary-foreground pointer-events-none">
-                <div 
-                  className="w-full max-w-4xl"
-                  dangerouslySetInnerHTML={{ __html: settings.heroTextContent }}
-                />
-              </div>
-            )}
-            
-            {settings.heroButtonPosition === "inside" && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                <div className="pointer-events-auto mt-32">
-                  <HeroButton />
+      <div className="max-w-[800px] mx-auto">
+        <header className="flex flex-col items-center justify-center">
+          <div className="relative w-full">
+            <div className="relative">
+              <div 
+                className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
+                style={{ opacity: parseInt(settings.heroOverlayOpacity) / 100 }}
+              />
+              <img
+                src={settings.heroImageUrl || heroImage}
+                alt="Conference Hero"
+                className="w-full h-auto object-contain"
+              />
+              
+              {settings.heroUseText === "true" && settings.heroTextContent && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center px-6 text-center text-primary-foreground pointer-events-none">
+                  <div 
+                    className="w-full max-w-4xl"
+                    dangerouslySetInnerHTML={{ __html: settings.heroTextContent }}
+                  />
                 </div>
+              )}
+              
+              {settings.heroButtonPosition === "inside" && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                  <div className="pointer-events-auto mt-32">
+                    <HeroButton />
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {settings.heroButtonPosition === "below" && (
+              <div className="flex justify-center py-8">
+                <HeroButton />
               </div>
             )}
           </div>
-          
-          {settings.heroButtonPosition === "below" && (
-            <div className="flex justify-center py-8">
-              <HeroButton />
-            </div>
-          )}
-        </div>
-      </header>
+        </header>
 
-      <main className="px-6 py-8">
-        <div className="space-y-6">
-          {settings.sectionOrder.map((sectionKey) => {
-            if (sectionKey === 'info_cards' && settings.infoCards.length > 0) {
-              return (
-                <div key={sectionKey} className="grid gap-4">
-                  {settings.infoCards.map((card, index) => {
-                    const IconComponent = getIconComponent(card.icon);
-                    return (
-                      <div key={index} className="bg-card rounded-lg p-5 shadow-elegant border border-border">
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                            <IconComponent className="w-6 h-6 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-card-foreground mb-1">{card.title}</h3>
-                            <p className="text-muted-foreground whitespace-pre-line">{card.content}</p>
+        <main className="px-6 py-8">
+          <div className="space-y-6">
+            {settings.sectionOrder.map((sectionKey) => {
+              if (sectionKey === 'info_cards' && settings.infoCards.length > 0) {
+                return (
+                  <div key={sectionKey} className="grid gap-4">
+                    {settings.infoCards.map((card, index) => {
+                      const IconComponent = getIconComponent(card.icon);
+                      return (
+                        <div key={index} className="bg-card rounded-lg p-5 shadow-elegant border border-border">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                              <IconComponent className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-bold text-card-foreground mb-1">{card.title}</h3>
+                              <p className="text-muted-foreground whitespace-pre-line">{card.content}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            }
-            
-            if (sectionKey === 'description' && (settings.descriptionTitle || settings.descriptionContent)) {
-              return (
-                <div key={sectionKey} className="bg-card rounded-lg p-6 shadow-elegant border border-border">
-                  {settings.descriptionTitle && <h2 className="text-2xl font-bold text-card-foreground mb-4">{settings.descriptionTitle}</h2>}
-                  {settings.descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{settings.descriptionContent}</p>}
-                </div>
-              );
-            }
-            
-            if (sectionKey === 'bottom_buttons' && settings.bottomButtons.length > 0) {
-              return (
-                <div key={sectionKey} className="grid grid-cols-2 gap-4">
-                  {settings.bottomButtons.map((button, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => navigate(button.link)}
-                      variant={button.variant as any || "outline"}
-                      className="h-12"
-                    >
-                      {button.text}
-                    </Button>
-                  ))}
-                </div>
-              );
-            }
-            
-            return null;
-          })}
-        </div>
-      </main>
+                      );
+                    })}
+                  </div>
+                );
+              }
+              
+              if (sectionKey === 'description' && (settings.descriptionTitle || settings.descriptionContent)) {
+                return (
+                  <div key={sectionKey} className="bg-card rounded-lg p-6 shadow-elegant border border-border">
+                    {settings.descriptionTitle && <h2 className="text-2xl font-bold text-card-foreground mb-4">{settings.descriptionTitle}</h2>}
+                    {settings.descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{settings.descriptionContent}</p>}
+                  </div>
+                );
+              }
+              
+              if (sectionKey === 'bottom_buttons' && settings.bottomButtons.length > 0) {
+                return (
+                  <div key={sectionKey} className="grid grid-cols-2 gap-4">
+                    {settings.bottomButtons.map((button, index) => (
+                      <Button
+                        key={index}
+                        onClick={() => navigate(button.link)}
+                        variant={button.variant as any || "outline"}
+                        className="h-12"
+                      >
+                        {button.text}
+                      </Button>
+                    ))}
+                  </div>
+                );
+              }
+              
+              return null;
+            })}
+          </div>
+        </main>
 
-      <MobileNavigation />
+        <MobileNavigation />
+      </div>
     </div>
   );
 };
