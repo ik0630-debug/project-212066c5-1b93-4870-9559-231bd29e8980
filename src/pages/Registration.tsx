@@ -179,6 +179,12 @@ const Registration = () => {
     trackMouse: false,
   });
 
+  // Prevent swipe on form elements
+  const preventSwipeHandlers = useSwipeable({
+    onSwiping: (e) => e.event.stopPropagation(),
+    trackMouse: false,
+  });
+
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <header 
@@ -194,7 +200,7 @@ const Registration = () => {
         </div>
       </header>
 
-      <main className="px-6 py-8">
+      <main className="px-6 py-8" {...preventSwipeHandlers}>
         <form onSubmit={handleSubmit} className="space-y-6">
           {fields.map((field) => (
             <div key={field.id} className="space-y-2">
