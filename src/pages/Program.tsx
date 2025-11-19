@@ -18,6 +18,7 @@ const Program = () => {
   const navigate = useNavigate();
   const [pageTitle, setPageTitle] = useState("프로그램");
   const [pageDescription, setPageDescription] = useState("");
+  const [headerColor, setHeaderColor] = useState("");
   const [programCards, setProgramCards] = useState<ProgramCard[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,9 +42,11 @@ const Program = () => {
         // Load page title and description
         const titleSetting = settings.find((s) => s.key === "page_title");
         const descSetting = settings.find((s) => s.key === "page_description");
+        const colorSetting = settings.find((s) => s.key === "header_color");
 
         if (titleSetting) setPageTitle(titleSetting.value);
         if (descSetting) setPageDescription(descSetting.value);
+        if (colorSetting) setHeaderColor(colorSetting.value);
 
         // Load program cards
         const cards = settings
@@ -77,7 +80,11 @@ const Program = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-gradient-primary text-primary-foreground py-8 px-6">
+      <header 
+        className="text-primary-foreground py-8 px-6"
+        style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
+        {...(!headerColor && { className: "bg-gradient-primary text-primary-foreground py-8 px-6" })}
+      >
         <Button
           variant="ghost"
           size="icon"

@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 const Location = () => {
   const navigate = useNavigate();
   const [headerImage, setHeaderImage] = useState<string>("");
+  const [headerColor, setHeaderColor] = useState("");
   const [pageTitle, setPageTitle] = useState("오시는 길");
   const [pageDescription, setPageDescription] = useState("행사 장소 안내");
   const [locationName, setLocationName] = useState("서울 컨벤션 센터");
@@ -36,6 +37,9 @@ const Location = () => {
           break;
         case 'location_page_description':
           setPageDescription(setting.value);
+          break;
+        case 'location_header_color':
+          setHeaderColor(setting.value);
           break;
         case 'location_name':
           setLocationName(setting.value);
@@ -106,10 +110,15 @@ const Location = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <header 
-        className="relative bg-gradient-primary text-primary-foreground py-8 px-6 bg-cover bg-center"
-        style={headerImage ? { backgroundImage: `url(${headerImage})` } : {}}
+        className="relative text-primary-foreground py-8 px-6 bg-cover bg-center"
+        style={{
+          ...(headerImage && { backgroundImage: `url(${headerImage})` }),
+          ...(headerColor && { backgroundColor: `hsl(${headerColor})` }),
+          ...(!headerColor && !headerImage && {})
+        }}
+        {...(!headerColor && !headerImage && { className: "relative bg-gradient-primary text-primary-foreground py-8 px-6 bg-cover bg-center" })}
       >
-        <div className="absolute inset-0 bg-gradient-primary/80" />
+        <div className="absolute inset-0 bg-gradient-primary/80" style={{ opacity: headerImage ? 1 : 0 }} />
         <div className="relative">
           <Button
             variant="ghost"

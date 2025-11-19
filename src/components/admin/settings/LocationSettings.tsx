@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableTransportCard from "@/components/SortableTransportCard";
+import { ColorPicker } from "@/components/ColorPicker";
 
 interface LocationSettingsProps {
   settings: any;
@@ -68,6 +69,13 @@ const LocationSettings = ({
               id="location_page_description"
               value={settings.location_page_description}
               onChange={(e) => onSettingChange("location_page_description", e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="location_header_color">헤더 배경색</Label>
+            <ColorPicker
+              value={settings.location_header_color || ""}
+              onChange={(color) => onSettingChange("location_header_color", color)}
             />
           </div>
         </div>
