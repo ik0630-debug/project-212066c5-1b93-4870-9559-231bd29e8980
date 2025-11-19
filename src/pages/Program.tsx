@@ -95,7 +95,7 @@ const Program = () => {
       <div className="max-w-[800px] mx-auto">
         {/* Header */}
         <header 
-          className={`text-primary-foreground py-4 px-6 text-center ${!headerColor ? 'bg-gradient-primary' : ''}`}
+          className={`sticky top-0 z-40 text-primary-foreground py-4 px-6 text-center ${!headerColor ? 'bg-gradient-primary' : ''}`}
           style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
         >
           <h1 className="text-2xl font-bold mb-1">{pageTitle}</h1>
