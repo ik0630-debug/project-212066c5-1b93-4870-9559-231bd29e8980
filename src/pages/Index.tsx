@@ -282,7 +282,7 @@ const Index = () => {
               );
             }
             
-            if (sectionKey === 'bottom_buttons') {
+            if (sectionKey === 'bottom_buttons' && displayButtons.length > 0) {
               return (
                 <div key={sectionKey} className="grid grid-cols-2 gap-4">
                   {displayButtons.map((button) => (
