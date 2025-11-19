@@ -47,7 +47,7 @@ const defaultSettings: HomeSettings = {
   heroButtonBgColor: "",
   heroButtonTextColor: "",
   heroButtonTextSize: "lg",
-  heroOverlayOpacity: "95",
+  heroOverlayOpacity: "0",
   descriptionTitle: "",
   descriptionContent: "",
   infoCards: [],
