@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Phone, User, Building, Calendar, CheckCircle2 } from "lucide-react";
 
@@ -27,6 +28,7 @@ const RegistrationCheck = () => {
   const [phone, setPhone] = useState("010-");
   const [isChecking, setIsChecking] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -115,6 +117,37 @@ const RegistrationCheck = () => {
     setRegistrationData(null);
   };
 
+  const handleCancel = async () => {
+    if (!registrationData) return;
+
+    try {
+      setIsCancelling(true);
+
+      const { error } = await supabase
+        .from("registrations")
+        .update({ status: "cancelled" })
+        .eq("id", registrationData.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "신청이 취소되었습니다",
+        description: "정상적으로 신청이 취소되었습니다.",
+      });
+
+      // 상태 초기화
+      handleReset();
+    } catch (error: any) {
+      toast({
+        title: "취소 실패",
+        description: error.message || "신청 취소 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-2xl mx-auto">
@@ -200,13 +233,45 @@ const RegistrationCheck = () => {
                     </div>
                   </div>
 
-                  <Button
-                    onClick={handleReset}
-                    variant="outline"
-                    className="w-full mt-4"
-                  >
-                    다시 조회하기
-                  </Button>
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      onClick={handleReset}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      다시 조회하기
+                    </Button>
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          className="flex-1"
+                          disabled={isCancelling}
+                        >
+                          신청 취소
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>신청을 취소하시겠습니까?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            이 작업은 되돌릴 수 없습니다. 신청을 취소하면 참가 신청 내역이 삭제됩니다.
+                            다시 참가하시려면 새로 신청해야 합니다.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>돌아가기</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleCancel}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            {isCancelling ? "취소 중..." : "신청 취소"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </CardContent>
               </Card>
             )}
