@@ -57,8 +57,8 @@ const SettingsTabs = ({
   const tabs = [
     { icon: Home, label: "홈 화면", value: "0" },
     { icon: FileText, label: "프로그램", value: "1" },
-    { icon: MapPin, label: "장소", value: "2" },
-    { icon: UserPlus, label: "참가 신청", value: "3" },
+    { icon: UserPlus, label: "참가 신청", value: "2" },
+    { icon: MapPin, label: "장소", value: "3" },
   ];
 
   const renderContent = () => {
@@ -89,20 +89,20 @@ const SettingsTabs = ({
         );
       case 2:
         return (
-          <LocationSettings
-            settings={settings}
-            transportCards={transportCards}
-            onSettingChange={onSettingChange}
-            onTransportCardsChange={onTransportCardsChange}
-          />
-        );
-      case 3:
-        return (
           <RegistrationSettings
             registrationSettings={registrationSettings}
             registrationFields={registrationFields}
             onRegistrationSettingsChange={onRegistrationSettingsChange}
             onRegistrationFieldsChange={onRegistrationFieldsChange}
+          />
+        );
+      case 3:
+        return (
+          <LocationSettings
+            settings={settings}
+            transportCards={transportCards}
+            onSettingChange={onSettingChange}
+            onTransportCardsChange={onTransportCardsChange}
           />
         );
       default:
@@ -156,8 +156,8 @@ const SettingsTabs = ({
               src={
                 activeTab === 0 ? "/" :
                 activeTab === 1 ? "/program" :
-                activeTab === 2 ? "/location" :
-                activeTab === 3 ? "/registration" :
+                activeTab === 2 ? "/registration" :
+                activeTab === 3 ? "/location" :
                 "/"
               }
               className="w-full h-full border-0"
