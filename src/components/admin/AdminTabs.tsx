@@ -9,6 +9,7 @@ interface AdminTabsProps {
   activeTab: 'registrations' | 'users' | 'settings';
   onTabChange: (tab: 'registrations' | 'users' | 'settings') => void;
   registrations: any[];
+  registrationFormFields: any[];
   users: any[];
   onDeleteRegistration: (id: string) => void;
   onToggleAdmin: (userId: string, isAdmin: boolean) => void;
@@ -21,6 +22,7 @@ const AdminTabs = ({
   activeTab,
   onTabChange,
   registrations,
+  registrationFormFields,
   users,
   onDeleteRegistration,
   onToggleAdmin,
@@ -46,7 +48,11 @@ const AdminTabs = ({
       </TabsList>
 
       <TabsContent value="registrations">
-        <RegistrationsTable registrations={registrations} onDelete={onDeleteRegistration} />
+        <RegistrationsTable 
+          registrations={registrations} 
+          registrationFormFields={registrationFormFields}
+          onDelete={onDeleteRegistration} 
+        />
       </TabsContent>
 
       <TabsContent value="users" className="space-y-8">

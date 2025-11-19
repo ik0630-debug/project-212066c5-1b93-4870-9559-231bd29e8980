@@ -2,8 +2,18 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+interface RegistrationField {
+  id: string;
+  label: string;
+  placeholder: string;
+  type: string;
+  required: boolean;
+  options?: string[];
+}
+
 export const useRegistrations = () => {
   const [registrations, setRegistrations] = useState<any[]>([]);
+  const [registrationFields, setRegistrationFields] = useState<RegistrationField[]>([]);
   const { toast } = useToast();
 
   const loadRegistrations = async () => {
@@ -14,8 +24,27 @@ export const useRegistrations = () => {
     setRegistrations(data || []);
   };
 
+  const loadRegistrationFields = async () => {
+    const { data } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("category", "registration")
+      .eq("key", "registration_fields")
+      .single();
+
+    if (data?.value) {
+      try {
+        const fields = JSON.parse(data.value);
+        setRegistrationFields(fields);
+      } catch (e) {
+        console.error("Failed to parse registration fields", e);
+      }
+    }
+  };
+
   useEffect(() => {
     loadRegistrations();
+    loadRegistrationFields();
 
     // 실시간 구독 설정
     const channel = supabase
@@ -82,6 +111,7 @@ export const useRegistrations = () => {
 
   return {
     registrations,
+    registrationFields,
     loadRegistrations,
     deleteRegistration,
   };
