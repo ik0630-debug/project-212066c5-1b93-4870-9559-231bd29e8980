@@ -30,6 +30,7 @@ const SortableFormField = ({ field, index, onFieldChange, onRemove }: SortableFo
     attributes,
     listeners,
     setNodeRef,
+    setActivatorNodeRef,
     transform,
     transition,
     isDragging,
@@ -50,6 +51,7 @@ const SortableFormField = ({ field, index, onFieldChange, onRemove }: SortableFo
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
+            ref={setActivatorNodeRef}
             type="button"
             className="cursor-grab active:cursor-grabbing touch-none"
             {...attributes}
