@@ -6,6 +6,7 @@ import * as LucideIcons from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
 import heroImage from "@/assets/hero-image.jpg";
 import { useHomeSettings } from "@/hooks/useHomeSettings";
+import { useSwipeable } from "react-swipeable";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -62,12 +63,17 @@ const Index = () => {
     );
   };
 
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => navigate('/program'),
+    trackMouse: false,
+  });
+
   if (loading) {
     return <div className="min-h-screen bg-background flex items-center justify-center">로딩 중...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <header className="flex flex-col items-center justify-center">
         <div className="relative w-full max-w-[1000px]">
           <div className="relative">

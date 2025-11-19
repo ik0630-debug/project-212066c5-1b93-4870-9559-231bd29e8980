@@ -174,8 +174,8 @@ const Registration = () => {
   };
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => navigate('/'),
-    onSwipedRight: () => navigate('/location'),
+    onSwipedLeft: () => navigate('/location'),
+    onSwipedRight: () => navigate('/program'),
     trackMouse: false,
   });
 
