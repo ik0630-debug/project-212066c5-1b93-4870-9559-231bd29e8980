@@ -114,36 +114,46 @@ const Registration = () => {
       }
     }
 
-    // Validate using zod schema
-    const registrationSchema = z.object({
-      name: z.string().trim().min(1, "이름을 입력해주세요").max(100, "이름은 100자 이내로 입력해주세요"),
-      email: z.string().trim().email("올바른 이메일 형식이 아닙니다").max(255, "이메일은 255자 이내로 입력해주세요"),
-      phone: z.string().trim().min(1, "연락처를 입력해주세요").max(20, "연락처는 20자 이내로 입력해주세요"),
-      company: z.string().trim().max(100, "회사명은 100자 이내로 입력해주세요").optional().or(z.literal("")),
-      message: z.string().trim().max(1000, "메시지는 1000자 이내로 입력해주세요").optional().or(z.literal("")),
+    // Build dynamic zod schema based on fields
+    const schemaShape: Record<string, z.ZodTypeAny> = {};
+    
+    fields.forEach(field => {
+      if (field.type === 'email') {
+        schemaShape[field.id] = field.required 
+          ? z.string().trim().email("올바른 이메일 형식이 아닙니다").max(255, `${field.label}은 255자 이내로 입력해주세요`)
+          : z.string().trim().email("올바른 이메일 형식이 아닙니다").max(255, `${field.label}은 255자 이내로 입력해주세요`).optional().or(z.literal(""));
+      } else if (field.type === 'tel') {
+        schemaShape[field.id] = field.required
+          ? z.string().trim().min(1, `${field.label}을 입력해주세요`).max(20, `${field.label}은 20자 이내로 입력해주세요`)
+          : z.string().trim().max(20, `${field.label}은 20자 이내로 입력해주세요`).optional().or(z.literal(""));
+      } else {
+        const maxLength = field.type === 'textarea' ? 1000 : 100;
+        schemaShape[field.id] = field.required
+          ? z.string().trim().min(1, `${field.label}을 입력해주세요`).max(maxLength, `${field.label}은 ${maxLength}자 이내로 입력해주세요`)
+          : z.string().trim().max(maxLength, `${field.label}은 ${maxLength}자 이내로 입력해주세요`).optional().or(z.literal(""));
+      }
     });
+
+    const registrationSchema = z.object(schemaShape);
 
     try {
       setIsSubmitting(true);
 
       // Validate form data
-      const validatedData = registrationSchema.parse({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        company: formData.company || "",
-        message: formData.message || "",
-      });
+      const validatedData = registrationSchema.parse(formData);
+
+      // Prepare data for database - ensure required fields exist
+      const insertData = {
+        name: validatedData.name || "",
+        email: validatedData.email || "",
+        phone: validatedData.phone || "",
+        company: validatedData.company && validatedData.company.trim() ? validatedData.company : null,
+        message: validatedData.message && validatedData.message.trim() ? validatedData.message : null,
+      };
 
       const { error } = await supabase
         .from("registrations")
-        .insert([{
-          name: validatedData.name,
-          email: validatedData.email,
-          phone: validatedData.phone,
-          company: validatedData.company || null,
-          message: validatedData.message || null,
-        }]);
+        .insert([insertData]);
 
       if (error) throw error;
 
