@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { Trash2, FileDown } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useToast } from "@/hooks/use-toast";
@@ -11,17 +14,44 @@ interface RegistrationsTableProps {
 
 const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps) => {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("all");
+
+  // 상태별로 신청 목록 필터링
+  const filteredRegistrations = registrations.filter((reg) => {
+    if (activeTab === "all") return true;
+    if (activeTab === "pending") return reg.status === "pending";
+    if (activeTab === "cancelled") return reg.status === "cancelled";
+    return true;
+  });
+
+  // 상태별 카운트
+  const counts = {
+    all: registrations.length,
+    pending: registrations.filter((r) => r.status === "pending").length,
+    cancelled: registrations.filter((r) => r.status === "cancelled").length,
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">대기중</Badge>;
+      case "cancelled":
+        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">취소됨</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
 
   const handleExportToExcel = () => {
     try {
-      // 데이터 변환
-      const exportData = registrations.map((reg) => ({
+      // 현재 필터된 데이터만 내보내기
+      const exportData = filteredRegistrations.map((reg) => ({
         이름: reg.name,
         이메일: reg.email,
         연락처: reg.phone,
         회사: reg.company || "-",
         특이사항: reg.message || "-",
-        상태: reg.status === "pending" ? "대기중" : reg.status,
+        상태: reg.status === "pending" ? "대기중" : reg.status === "cancelled" ? "취소됨" : reg.status,
         신청일: new Date(reg.created_at).toLocaleString("ko-KR"),
       }));
 
@@ -56,36 +86,63 @@ const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps
           엑셀 내보내기
         </Button>
       </div>
-      <div className="border rounded-lg overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>이름</TableHead>
-              <TableHead>이메일</TableHead>
-              <TableHead>연락처</TableHead>
-              <TableHead>회사</TableHead>
-              <TableHead>신청일</TableHead>
-              <TableHead>작업</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {registrations.map((reg) => (
-              <TableRow key={reg.id}>
-                <TableCell>{reg.name}</TableCell>
-                <TableCell>{reg.email}</TableCell>
-                <TableCell>{reg.phone}</TableCell>
-                <TableCell>{reg.company || "-"}</TableCell>
-                <TableCell>{new Date(reg.created_at).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  <Button variant="destructive" size="sm" onClick={() => onDelete(reg.id)}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="all">
+            전체 ({counts.all})
+          </TabsTrigger>
+          <TabsTrigger value="pending">
+            대기중 ({counts.pending})
+          </TabsTrigger>
+          <TabsTrigger value="cancelled">
+            취소됨 ({counts.cancelled})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={activeTab} className="mt-4">
+          <div className="border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>이름</TableHead>
+                  <TableHead>이메일</TableHead>
+                  <TableHead>연락처</TableHead>
+                  <TableHead>회사</TableHead>
+                  <TableHead>상태</TableHead>
+                  <TableHead>신청일</TableHead>
+                  <TableHead>작업</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredRegistrations.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      신청 내역이 없습니다.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredRegistrations.map((reg) => (
+                    <TableRow key={reg.id}>
+                      <TableCell>{reg.name}</TableCell>
+                      <TableCell>{reg.email}</TableCell>
+                      <TableCell>{reg.phone}</TableCell>
+                      <TableCell>{reg.company || "-"}</TableCell>
+                      <TableCell>{getStatusBadge(reg.status)}</TableCell>
+                      <TableCell>{new Date(reg.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Button variant="destructive" size="sm" onClick={() => onDelete(reg.id)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
