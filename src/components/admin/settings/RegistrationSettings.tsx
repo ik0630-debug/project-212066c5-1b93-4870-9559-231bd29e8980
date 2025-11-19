@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import IconPicker from "@/components/IconPicker";
 
 interface RegistrationField {
   id: string;
@@ -13,6 +14,7 @@ interface RegistrationField {
   placeholder: string;
   type: string;
   required: boolean;
+  icon?: string;
   options?: string[];
 }
 
@@ -60,6 +62,7 @@ const RegistrationSettings = ({
       placeholder: "",
       type: "text",
       required: false,
+      icon: "FileText",
     };
     onRegistrationFieldsChange([...registrationFields, newField]);
   };
@@ -153,6 +156,14 @@ const RegistrationSettings = ({
               </div>
               
               <div className="grid gap-3">
+                <div>
+                  <Label>아이콘</Label>
+                  <IconPicker
+                    value={field.icon || "FileText"}
+                    onValueChange={(icon) => handleFieldChange(index, "icon", icon)}
+                  />
+                </div>
+                
                 <div>
                   <Label>레이블</Label>
                   <Input
