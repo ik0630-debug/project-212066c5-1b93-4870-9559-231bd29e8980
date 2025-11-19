@@ -172,6 +172,21 @@ const HomeSettings = ({
                   onChange={(e) => onSettingChange("hero_subtitle", e.target.value)}
                 />
               </div>
+              <div>
+                <Label htmlFor="hero_overlay_opacity">배경 오버레이 투명도 (%)</Label>
+                <Input
+                  id="hero_overlay_opacity"
+                  type="number"
+                  value={settings.hero_overlay_opacity || "95"}
+                  onChange={(e) => onSettingChange("hero_overlay_opacity", e.target.value)}
+                  placeholder="95"
+                  min="0"
+                  max="100"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  0 (투명) ~ 100 (불투명)
+                </p>
+              </div>
               <Separator />
               <h4 className="font-medium">히어로 버튼 설정</h4>
               <div>
