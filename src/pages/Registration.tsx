@@ -10,9 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Phone, Building, Upload } from "lucide-react";
-import { z } from "zod";
 import { useSwipeable } from "react-swipeable";
+import * as LucideIcons from "lucide-react";
+import { z } from "zod";
 
 interface RegistrationField {
   id: string;
@@ -21,6 +21,7 @@ interface RegistrationField {
   type: string;
   required: boolean;
   options?: string[];
+  icon?: string;
 }
 
 const Registration = () => {
@@ -252,57 +253,58 @@ const Registration = () => {
 
       <main className="px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {fields.map((field) => (
-            <div key={field.id} className="space-y-2">
-              <Label htmlFor={field.id} className="flex items-center gap-2">
-                {field.type === "text" && field.id === "name" && <User className="w-4 h-4 text-primary" />}
-                {field.type === "email" && <Mail className="w-4 h-4 text-primary" />}
-                {field.type === "tel" && <Phone className="w-4 h-4 text-primary" />}
-                {field.id === "company" && <Building className="w-4 h-4 text-primary" />}
-                {field.label} {field.required && "*"}
-              </Label>
-              {field.type === "textarea" ? (
-                <Textarea
-                  id={field.id}
-                  name={field.id}
-                  value={formData[field.id] || ""}
-                  onChange={handleChange}
-                  placeholder={field.placeholder}
-                  required={field.required}
-                  rows={4}
-                  className="resize-none"
-                />
-              ) : field.type === "select" ? (
-                <Select
-                  value={formData[field.id] || ""}
-                  onValueChange={(value) => setFormData({ ...formData, [field.id]: value })}
-                >
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder={field.placeholder} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(field.options || []).map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Input
-                  id={field.id}
-                  name={field.id}
-                  type={field.type === "tel" ? "tel" : field.type}
-                  value={formData[field.id] || (field.id === "phone" ? "010-" : "")}
-                  onChange={handleChange}
-                  placeholder={field.placeholder}
-                  required={field.required}
-                  className="h-12"
-                  maxLength={field.id === "phone" ? 13 : undefined}
-                />
-              )}
-            </div>
-          ))}
+          {fields.map((field) => {
+            const IconComponent = field.icon ? (LucideIcons as any)[field.icon] : null;
+            
+            return (
+              <div key={field.id} className="space-y-2">
+                <Label htmlFor={field.id} className="flex items-center gap-2">
+                  {IconComponent && <IconComponent className="w-4 h-4 text-primary" />}
+                  {field.label} {field.required && "*"}
+                </Label>
+                {field.type === "textarea" ? (
+                  <Textarea
+                    id={field.id}
+                    name={field.id}
+                    value={formData[field.id] || ""}
+                    onChange={handleChange}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    rows={4}
+                    className="resize-none"
+                  />
+                ) : field.type === "select" ? (
+                  <Select
+                    value={formData[field.id] || ""}
+                    onValueChange={(value) => setFormData({ ...formData, [field.id]: value })}
+                  >
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder={field.placeholder} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(field.options || []).map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    id={field.id}
+                    name={field.id}
+                    type={field.type === "tel" ? "tel" : field.type}
+                    value={formData[field.id] || (field.id === "phone" ? "010-" : "")}
+                    onChange={handleChange}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    className="h-12"
+                    maxLength={field.id === "phone" ? 13 : undefined}
+                  />
+                )}
+              </div>
+            );
+          })}
 
           {/* 개인정보 동의 체크박스 */}
           <div className="flex items-start gap-3 pt-4 border-t border-border">
