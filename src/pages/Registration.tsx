@@ -56,7 +56,8 @@ const Registration = () => {
               setFields(parsedFields);
               const initialFormData: Record<string, string> = {};
               parsedFields.forEach((field: any) => {
-                initialFormData[field.id] = "";
+                // 전화번호 필드는 기본값으로 "010-" 설정
+                initialFormData[field.id] = field.id === "phone" ? "010-" : "";
               });
               setFormData(initialFormData);
             } catch (e) {
@@ -156,10 +157,48 @@ const Registration = () => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    
+    // 전화번호 필드 특수 처리
+    if (name === "phone") {
+      // 숫자만 추출
+      const numbers = value.replace(/[^\d]/g, "");
+      
+      // 010으로 시작하지 않으면 010 추가
+      let formatted = "";
+      if (numbers.length === 0) {
+        formatted = "010-";
+      } else if (numbers.startsWith("010")) {
+        // 010-XXXX-XXXX 또는 010-XXX-XXXX 형식으로 포맷
+        const rest = numbers.slice(3);
+        if (rest.length <= 3) {
+          formatted = `010-${rest}`;
+        } else if (rest.length <= 7) {
+          formatted = `010-${rest.slice(0, 3)}-${rest.slice(3)}`;
+        } else {
+          formatted = `010-${rest.slice(0, 4)}-${rest.slice(4, 8)}`;
+        }
+      } else {
+        // 010이 아닌 경우 010을 앞에 붙임
+        if (numbers.length <= 3) {
+          formatted = `010-${numbers}`;
+        } else if (numbers.length <= 7) {
+          formatted = `010-${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+        } else {
+          formatted = `010-${numbers.slice(0, 4)}-${numbers.slice(4, 8)}`;
+        }
+      }
+      
+      setFormData({
+        ...formData,
+        [name]: formatted,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -237,12 +276,13 @@ const Registration = () => {
                 <Input
                   id={field.id}
                   name={field.id}
-                  type={field.type}
-                  value={formData[field.id] || ""}
+                  type={field.type === "tel" ? "tel" : field.type}
+                  value={formData[field.id] || (field.id === "phone" ? "010-" : "")}
                   onChange={handleChange}
                   placeholder={field.placeholder}
                   required={field.required}
                   className="h-12"
+                  maxLength={field.id === "phone" ? 13 : undefined}
                 />
               )}
             </div>
