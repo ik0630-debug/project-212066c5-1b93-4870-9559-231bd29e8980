@@ -38,8 +38,9 @@ const Admin = () => {
   } = useSettings();
 
   useEffect(() => {
+    console.log('Admin: Loading settings...');
     loadSettings();
-  }, []);
+  }, [loadSettings]);
 
   if (loading) {
     return (
