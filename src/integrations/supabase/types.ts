@@ -69,33 +69,39 @@ export type Database = {
         Row: {
           company: string | null
           created_at: string
+          department: string | null
           email: string
           id: string
           message: string | null
           name: string
           phone: string
+          position: string | null
           status: string
           updated_at: string
         }
         Insert: {
           company?: string | null
           created_at?: string
+          department?: string | null
           email: string
           id?: string
           message?: string | null
           name: string
           phone: string
+          position?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
           company?: string | null
           created_at?: string
+          department?: string | null
           email?: string
           id?: string
           message?: string | null
           name?: string
           phone?: string
+          position?: string | null
           status?: string
           updated_at?: string
         }

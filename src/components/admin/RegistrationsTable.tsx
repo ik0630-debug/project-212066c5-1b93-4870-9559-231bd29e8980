@@ -14,20 +14,18 @@ interface RegistrationsTableProps {
 
 const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps) => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("active");
 
-  // 상태별로 신청 목록 필터링
+  // 활성/취소 신청 목록 필터링
   const filteredRegistrations = registrations.filter((reg) => {
-    if (activeTab === "all") return true;
-    if (activeTab === "pending") return reg.status === "pending";
+    if (activeTab === "active") return reg.status !== "cancelled";
     if (activeTab === "cancelled") return reg.status === "cancelled";
     return true;
   });
 
   // 상태별 카운트
   const counts = {
-    all: registrations.length,
-    pending: registrations.filter((r) => r.status === "pending").length,
+    active: registrations.filter((r) => r.status !== "cancelled").length,
     cancelled: registrations.filter((r) => r.status === "cancelled").length,
   };
 
@@ -47,11 +45,13 @@ const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps
       // 현재 필터된 데이터만 내보내기
       const exportData = filteredRegistrations.map((reg) => ({
         이름: reg.name,
-        이메일: reg.email,
+        소속: reg.company || "-",
+        부서: reg.department || "-",
+        직함: reg.position || "-",
         연락처: reg.phone,
-        회사: reg.company || "-",
+        이메일: reg.email,
         특이사항: reg.message || "-",
-        상태: reg.status === "pending" ? "대기중" : reg.status === "cancelled" ? "취소됨" : reg.status,
+        상태: reg.status === "cancelled" ? "취소됨" : "신청완료",
         신청일: new Date(reg.created_at).toLocaleString("ko-KR"),
       }));
 
@@ -89,11 +89,8 @@ const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="all">
-            전체 ({counts.all})
-          </TabsTrigger>
-          <TabsTrigger value="pending">
-            대기중 ({counts.pending})
+          <TabsTrigger value="active">
+            신청 목록 ({counts.active})
           </TabsTrigger>
           <TabsTrigger value="cancelled">
             취소됨 ({counts.cancelled})
@@ -106,10 +103,11 @@ const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps
               <TableHeader>
                 <TableRow>
                   <TableHead>이름</TableHead>
-                  <TableHead>이메일</TableHead>
+                  <TableHead>소속</TableHead>
+                  <TableHead>부서</TableHead>
+                  <TableHead>직함</TableHead>
                   <TableHead>연락처</TableHead>
-                  <TableHead>회사</TableHead>
-                  <TableHead>상태</TableHead>
+                  <TableHead>이메일</TableHead>
                   <TableHead>신청일</TableHead>
                   <TableHead>작업</TableHead>
                 </TableRow>
@@ -117,19 +115,20 @@ const RegistrationsTable = ({ registrations, onDelete }: RegistrationsTableProps
               <TableBody>
                 {filteredRegistrations.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       신청 내역이 없습니다.
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredRegistrations.map((reg) => (
                     <TableRow key={reg.id}>
-                      <TableCell>{reg.name}</TableCell>
-                      <TableCell>{reg.email}</TableCell>
-                      <TableCell>{reg.phone}</TableCell>
+                      <TableCell className="font-medium">{reg.name || "-"}</TableCell>
                       <TableCell>{reg.company || "-"}</TableCell>
-                      <TableCell>{getStatusBadge(reg.status)}</TableCell>
-                      <TableCell>{new Date(reg.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>{reg.department || "-"}</TableCell>
+                      <TableCell>{reg.position || "-"}</TableCell>
+                      <TableCell>{reg.phone || "-"}</TableCell>
+                      <TableCell>{reg.email || "-"}</TableCell>
+                      <TableCell>{new Date(reg.created_at).toLocaleDateString("ko-KR")}</TableCell>
                       <TableCell>
                         <Button variant="destructive" size="sm" onClick={() => onDelete(reg.id)}>
                           <Trash2 className="w-4 h-4" />
