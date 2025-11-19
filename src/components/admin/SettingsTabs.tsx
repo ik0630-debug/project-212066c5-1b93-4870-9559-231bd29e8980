@@ -54,6 +54,16 @@ const SettingsTabs = ({
 }: SettingsTabsProps) => {
   const [previewKey, setPreviewKey] = useState(0);
 
+  // Auto-save when settings change (debounced)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSave();
+      // Refresh preview after save
+      setTimeout(() => setPreviewKey(prev => prev + 1), 300);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [settings, infoCards, bottomButtons, programCards, transportCards, sectionOrder]);
+
   const tabs = [
     { icon: Home, label: "홈 화면", value: "0" },
     { icon: FileText, label: "프로그램", value: "1" },
