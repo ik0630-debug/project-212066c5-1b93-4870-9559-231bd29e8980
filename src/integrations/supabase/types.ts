@@ -70,7 +70,7 @@ export type Database = {
           company: string | null
           created_at: string
           department: string | null
-          email: string
+          email: string | null
           id: string
           message: string | null
           name: string
@@ -83,7 +83,7 @@ export type Database = {
           company?: string | null
           created_at?: string
           department?: string | null
-          email: string
+          email?: string | null
           id?: string
           message?: string | null
           name: string
@@ -96,7 +96,7 @@ export type Database = {
           company?: string | null
           created_at?: string
           department?: string | null
-          email?: string
+          email?: string | null
           id?: string
           message?: string | null
           name?: string
