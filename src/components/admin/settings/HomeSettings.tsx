@@ -296,6 +296,23 @@ const HomeSettings = ({
                       </div>
                     </div>
                   )}
+                  
+                  <div>
+                    <Label htmlFor="hero_button_font_size">폰트 크기</Label>
+                    <select
+                      id="hero_button_font_size"
+                      value={settings.hero_button_font_size || "text-base"}
+                      onChange={(e) => onSettingChange("hero_button_font_size", e.target.value)}
+                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                    >
+                      <option value="text-xs">아주 작게 (xs)</option>
+                      <option value="text-sm">작게 (sm)</option>
+                      <option value="text-base">보통 (base)</option>
+                      <option value="text-lg">크게 (lg)</option>
+                      <option value="text-xl">아주 크게 (xl)</option>
+                      <option value="text-2xl">매우 크게 (2xl)</option>
+                    </select>
+                  </div>
                 </div>
               )}
             </div>

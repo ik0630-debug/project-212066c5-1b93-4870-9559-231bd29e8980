@@ -42,6 +42,17 @@ const Index = () => {
   const HeroButton = () => {
     if (settings.heroUseButton !== "true" || !settings.heroButtonText || !settings.heroButtonUrl) return null;
     
+    const buttonSize = settings.heroButtonSizeType === "custom" ? undefined : (settings.heroButtonSizeType as any || "lg");
+    const customStyle: any = {
+      backgroundColor: settings.heroButtonBgColor ? `hsl(${settings.heroButtonBgColor})` : undefined,
+      color: settings.heroButtonTextColor ? `hsl(${settings.heroButtonTextColor})` : undefined,
+    };
+    
+    if (settings.heroButtonSizeType === "custom") {
+      if (settings.heroButtonCustomWidth) customStyle.width = `${settings.heroButtonCustomWidth}px`;
+      if (settings.heroButtonCustomHeight) customStyle.height = `${settings.heroButtonCustomHeight}px`;
+    }
+    
     return (
       <Button
         onClick={() => {
@@ -51,12 +62,9 @@ const Index = () => {
             navigate(settings.heroButtonUrl);
           }
         }}
-        size={settings.heroButtonTextSize as any || "lg"}
-        style={{
-          backgroundColor: settings.heroButtonBgColor ? `hsl(${settings.heroButtonBgColor})` : undefined,
-          color: settings.heroButtonTextColor ? `hsl(${settings.heroButtonTextColor})` : undefined,
-        }}
-        className="shadow-xl hover:shadow-2xl transition-all"
+        size={buttonSize}
+        style={customStyle}
+        className={`shadow-xl hover:shadow-2xl transition-all ${settings.heroButtonFontSize || "text-base"}`}
       >
         {settings.heroButtonText}
       </Button>
