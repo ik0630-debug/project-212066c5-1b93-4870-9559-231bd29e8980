@@ -160,12 +160,6 @@ const Registration = () => {
       });
       
       console.log("4. insertData:", insertData);
-      
-      // 필수 필드 확인 (name, email, phone은 반드시 있어야 함)
-      if (!insertData.name || !insertData.email || !insertData.phone) {
-        console.error("필수 필드 누락:", { name: insertData.name, email: insertData.email, phone: insertData.phone });
-        throw new Error("필수 필드가 누락되었습니다.");
-      }
 
       const { error } = await supabase
         .from("registrations")
