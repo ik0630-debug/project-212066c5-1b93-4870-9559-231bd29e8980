@@ -29,7 +29,10 @@ interface HomeSettings {
   heroButtonUrl: string;
   heroButtonBgColor: string;
   heroButtonTextColor: string;
-  heroButtonTextSize: string;
+  heroButtonSizeType: string;
+  heroButtonCustomWidth: string;
+  heroButtonCustomHeight: string;
+  heroButtonFontSize: string;
   heroOverlayOpacity: string;
   descriptionTitle: string;
   descriptionContent: string;
@@ -48,7 +51,10 @@ const defaultSettings: HomeSettings = {
   heroButtonUrl: "",
   heroButtonBgColor: "",
   heroButtonTextColor: "",
-  heroButtonTextSize: "lg",
+  heroButtonSizeType: "lg",
+  heroButtonCustomWidth: "",
+  heroButtonCustomHeight: "",
+  heroButtonFontSize: "text-base",
   heroOverlayOpacity: "0",
   descriptionTitle: "",
   descriptionContent: "",
@@ -88,7 +94,10 @@ export const useHomeSettings = () => {
           hero_button_url: 'heroButtonUrl',
           hero_button_bg_color: 'heroButtonBgColor',
           hero_button_text_color: 'heroButtonTextColor',
-          hero_button_text_size: 'heroButtonTextSize',
+          hero_button_size_type: 'heroButtonSizeType',
+          hero_button_custom_width: 'heroButtonCustomWidth',
+          hero_button_custom_height: 'heroButtonCustomHeight',
+          hero_button_font_size: 'heroButtonFontSize',
           hero_overlay_opacity: 'heroOverlayOpacity',
           description_title: 'descriptionTitle',
           description_content: 'descriptionContent',
