@@ -13,12 +13,13 @@ import { ArrowLeft, Phone, User, Building, Calendar, CheckCircle2 } from "lucide
 interface RegistrationData {
   id: string;
   name: string;
-  email: string;
-  phone: string;
+  email: string | null;
+  phone: string | null;
   company: string | null;
   message: string | null;
   status: string;
   created_at: string;
+  form_data: any;
 }
 
 const RegistrationCheck = () => {
@@ -77,18 +78,23 @@ const RegistrationCheck = () => {
     try {
       setIsChecking(true);
 
-      // 이름과 전화번호로 등록 확인
+      // 이름으로 등록 확인 후 form_data에서 전화번호 매칭
       const { data, error } = await supabase
         .from("registrations")
         .select("*")
-        .eq("name", name.trim())
-        .eq("phone", phone)
-        .maybeSingle();
+        .eq("name", name.trim());
 
       if (error) throw error;
 
-      if (data) {
-        setRegistrationData(data);
+      // form_data에서 전화번호 매칭
+      const matchedRegistration = data?.find(reg => {
+        const formData = reg.form_data as any;
+        const regPhone = formData?.phone || reg.phone;
+        return regPhone === phone;
+      });
+
+      if (matchedRegistration) {
+        setRegistrationData(matchedRegistration);
         toast({
           title: "✓ 정상적으로 등록이 되었습니다.",
         });
@@ -202,17 +208,17 @@ const RegistrationCheck = () => {
                     <div>
                       <p className="text-sm text-muted-foreground">연락처</p>
                       <p className="font-medium text-foreground">
-                        {registrationData.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3")}
+                        {((registrationData.form_data as any)?.phone || registrationData.phone || "").replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3")}
                       </p>
                     </div>
                   </div>
 
-                  {registrationData.company && (
+                  {((registrationData.form_data as any)?.company || registrationData.company) && (
                     <div className="flex items-start gap-3">
                       <Building className="w-5 h-5 text-muted-foreground mt-0.5" />
                       <div>
                         <p className="text-sm text-muted-foreground">회사</p>
-                        <p className="font-medium text-foreground">{registrationData.company}</p>
+                        <p className="font-medium text-foreground">{(registrationData.form_data as any)?.company || registrationData.company}</p>
                       </div>
                     </div>
                   )}
