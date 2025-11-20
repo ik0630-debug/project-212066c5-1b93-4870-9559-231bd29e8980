@@ -54,9 +54,9 @@ const RegistrationsTable = ({ registrations, registrationFormFields, onDelete }:
       const exportData = filteredRegistrations.map((reg) => {
         const row: Record<string, any> = {};
         
-        // 동적 필드에 따라 데이터 구성
+        // form_data에서 동적 필드 값 가져오기
         registrationFormFields.forEach(field => {
-          row[field.label] = reg[field.id] || "-";
+          row[field.label] = reg.form_data?.[field.id] || reg[field.id] || "-";
         });
         
         row["상태"] = reg.status === "cancelled" ? "취소됨" : "신청완료";
@@ -131,9 +131,10 @@ const RegistrationsTable = ({ registrations, registrationFormFields, onDelete }:
                     <TableRow key={reg.id}>
                       {registrationFormFields.map((field) => (
                         <TableCell key={field.id} className={field.id === 'name' ? 'font-medium' : ''}>
-                          {reg[field.id] || "-"}
+                          {reg.form_data?.[field.id] || reg[field.id] || "-"}
                         </TableCell>
                       ))}
+
                       <TableCell>{new Date(reg.created_at).toLocaleDateString("ko-KR")}</TableCell>
                       <TableCell>
                         <Button variant="destructive" size="sm" onClick={() => onDelete(reg.id)}>
