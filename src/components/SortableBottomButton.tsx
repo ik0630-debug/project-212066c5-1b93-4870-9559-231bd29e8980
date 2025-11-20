@@ -114,6 +114,54 @@ const SortableBottomButton = ({
           </SelectContent>
         </Select>
       </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label>버튼 크기</Label>
+          <Select
+            value={buttonData.size || "default"}
+            onValueChange={(value) =>
+              onUpdate(button.id, {
+                ...buttonData,
+                size: value,
+              })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-popover z-50">
+              <SelectItem value="sm">작게</SelectItem>
+              <SelectItem value="default">보통</SelectItem>
+              <SelectItem value="lg">크게</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label>폰트 크기</Label>
+          <Select
+            value={buttonData.fontSize || "text-sm"}
+            onValueChange={(value) =>
+              onUpdate(button.id, {
+                ...buttonData,
+                fontSize: value,
+              })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-popover z-50">
+              <SelectItem value="text-xs">아주 작게</SelectItem>
+              <SelectItem value="text-sm">작게</SelectItem>
+              <SelectItem value="text-base">보통</SelectItem>
+              <SelectItem value="text-lg">크게</SelectItem>
+              <SelectItem value="text-xl">아주 크게</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </div>
   );
 };

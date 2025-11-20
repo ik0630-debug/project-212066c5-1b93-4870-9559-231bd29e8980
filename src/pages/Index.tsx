@@ -157,7 +157,8 @@ const Index = () => {
                         key={index}
                         onClick={() => navigate(button.link)}
                         variant={button.variant as any || "outline"}
-                        className="h-12"
+                        size={button.size as any || "default"}
+                        className={button.fontSize || "text-sm"}
                       >
                         {button.text}
                       </Button>
