@@ -143,7 +143,7 @@ const Index = () => {
               if (sectionKey === 'description' && (settings.descriptionTitle || settings.descriptionContent)) {
                 return (
                   <div key={sectionKey} className="bg-card rounded-lg p-6 shadow-elegant border border-border">
-                    {settings.descriptionTitle && <h2 className="text-2xl font-bold text-card-foreground mb-4">{settings.descriptionTitle}</h2>}
+                    {settings.descriptionTitle && <h2 className="font-bold text-card-foreground mb-4">{settings.descriptionTitle}</h2>}
                     {settings.descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{settings.descriptionContent}</p>}
                   </div>
                 );
