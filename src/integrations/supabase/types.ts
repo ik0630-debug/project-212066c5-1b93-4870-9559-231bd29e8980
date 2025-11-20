@@ -71,6 +71,7 @@ export type Database = {
           created_at: string
           department: string | null
           email: string | null
+          form_data: Json | null
           id: string
           message: string | null
           name: string
@@ -84,6 +85,7 @@ export type Database = {
           created_at?: string
           department?: string | null
           email?: string | null
+          form_data?: Json | null
           id?: string
           message?: string | null
           name: string
@@ -97,6 +99,7 @@ export type Database = {
           created_at?: string
           department?: string | null
           email?: string | null
+          form_data?: Json | null
           id?: string
           message?: string | null
           name?: string

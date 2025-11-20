@@ -136,15 +136,11 @@ const Registration = () => {
       console.log("2. validatedData:", validatedData);
       console.log("3. fields:", fields);
 
-      // Prepare data for database - 동적 필드 기반으로 데이터 구성
-      const insertData: any = {};
-      
-      fields.forEach(field => {
-        const value = validatedData[field.id];
-        console.log(`필드 ${field.id}: "${value}" -> ${(value && value.trim()) ? `"${value}"` : 'null'}`);
-        // 빈 문자열이 아닌 값만 저장, 없으면 null
-        insertData[field.id] = (value && value.trim()) ? value : null;
-      });
+      // Prepare data for database - form_data에 모든 필드 저장
+      const insertData: any = {
+        name: validatedData.name || null,
+        form_data: validatedData
+      };
       
       console.log("4. insertData:", insertData);
 
