@@ -62,8 +62,7 @@ const Registration = () => {
               setFields(parsedFields);
               const initialFormData: Record<string, string> = {};
               parsedFields.forEach((field: any) => {
-                // 전화번호 필드는 기본값으로 "010-" 설정
-                initialFormData[field.id] = field.id === "phone" ? "010-" : "";
+                initialFormData[field.id] = "";
               });
               console.log("=== 초기 formData ===", initialFormData);
               setFormData(initialFormData);
@@ -175,7 +174,7 @@ const Registration = () => {
       // 폼 초기화 - 동적 필드 기반
       const resetFormData: Record<string, string> = {};
       fields.forEach(field => {
-        resetFormData[field.id] = field.id === "phone" ? "010-" : "";
+        resetFormData[field.id] = "";
       });
       setFormData(resetFormData);
       setAgreedToPrivacy(false);
@@ -204,34 +203,20 @@ const Registration = () => {
     const { name, value } = e.target;
     console.log(`=== handleChange: ${name} = "${value}" ===`);
     
-    // 전화번호 필드 특수 처리
-    if (name === "phone") {
+    // 전화번호 타입 필드 포맷팅 (자동으로 - 추가)
+    const field = fields.find(f => f.id === name);
+    if (field?.type === "tel") {
       // 숫자만 추출
       const numbers = value.replace(/[^\d]/g, "");
       
-      // 010으로 시작하지 않으면 010 추가
+      // 포맷팅: 010-1234-5678 형식
       let formatted = "";
-      if (numbers.length === 0) {
-        formatted = "010-";
-      } else if (numbers.startsWith("010")) {
-        // 010-XXXX-XXXX 또는 010-XXX-XXXX 형식으로 포맷
-        const rest = numbers.slice(3);
-        if (rest.length <= 3) {
-          formatted = `010-${rest}`;
-        } else if (rest.length <= 7) {
-          formatted = `010-${rest.slice(0, 3)}-${rest.slice(3)}`;
-        } else {
-          formatted = `010-${rest.slice(0, 4)}-${rest.slice(4, 8)}`;
-        }
+      if (numbers.length <= 3) {
+        formatted = numbers;
+      } else if (numbers.length <= 7) {
+        formatted = `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
       } else {
-        // 010이 아닌 경우 010을 앞에 붙임
-        if (numbers.length <= 3) {
-          formatted = `010-${numbers}`;
-        } else if (numbers.length <= 7) {
-          formatted = `010-${numbers.slice(0, 3)}-${numbers.slice(3)}`;
-        } else {
-          formatted = `010-${numbers.slice(0, 4)}-${numbers.slice(4, 8)}`;
-        }
+        formatted = `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
       }
       
       setFormData({
@@ -284,10 +269,7 @@ const Registration = () => {
           {fields.map((field) => (
             <div key={field.id} className="space-y-2">
               <Label htmlFor={field.id} className="flex items-center gap-2">
-                {field.type === "text" && field.id === "name" && <User className="w-4 h-4 text-primary" />}
-                {field.type === "email" && <Mail className="w-4 h-4 text-primary" />}
-                {field.type === "tel" && <Phone className="w-4 h-4 text-primary" />}
-                {field.id === "company" && <Building className="w-4 h-4 text-primary" />}
+                {field.id === "name" && <User className="w-4 h-4 text-primary" />}
                 {field.label} {field.required && "*"}
               </Label>
               {field.type === "textarea" ? (
@@ -321,13 +303,13 @@ const Registration = () => {
                 <Input
                   id={field.id}
                   name={field.id}
-                  type={field.type === "tel" ? "tel" : field.type}
-                  value={formData[field.id] || (field.id === "phone" ? "010-" : "")}
+                  type={field.type}
+                  value={formData[field.id] || ""}
                   onChange={handleChange}
                   placeholder={field.placeholder}
                   required={field.required}
                   className="h-12"
-                  maxLength={field.id === "phone" ? 13 : undefined}
+                  maxLength={field.type === "tel" ? 13 : undefined}
                 />
               )}
             </div>
