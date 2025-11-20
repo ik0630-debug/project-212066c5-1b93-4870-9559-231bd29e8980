@@ -338,10 +338,11 @@ const HomeSettings = ({
             <div className="grid gap-4">
               <div>
                 <Label htmlFor="description_title">제목</Label>
-                <Input
+                <Textarea
                   id="description_title"
                   value={settings.description_title}
                   onChange={(e) => onSettingChange("description_title", e.target.value)}
+                  rows={2}
                 />
               </div>
               <div>
