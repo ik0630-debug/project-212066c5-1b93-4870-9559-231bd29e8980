@@ -14,6 +14,8 @@ interface BottomButton {
   text: string;
   link: string;
   variant: string;
+  size?: string;
+  fontSize?: string;
   order: number;
 }
 
