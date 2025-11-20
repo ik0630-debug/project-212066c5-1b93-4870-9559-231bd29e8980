@@ -103,18 +103,6 @@ const Registration = () => {
       return;
     }
 
-    // Validate required fields
-    for (const field of fields) {
-      if (field.required && !formData[field.id]?.trim()) {
-        toast({
-          title: "필수 항목을 입력해주세요",
-          description: `${field.label}은(는) 필수 항목입니다.`,
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-
     // Build dynamic zod schema based on fields
     const schemaShape: Record<string, z.ZodTypeAny> = {};
     
