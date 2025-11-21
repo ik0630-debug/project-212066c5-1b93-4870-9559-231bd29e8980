@@ -14,6 +14,7 @@ interface AdminTabsProps {
   users: any[];
   onDeleteRegistration: (id: string) => void;
   onToggleAdmin: (userId: string, isAdmin: boolean) => void;
+  onToggleRegistrationManager: (userId: string, isManager: boolean) => void;
   onApproveUser: (userId: string) => void;
   onRejectUser: (userId: string) => void;
   settingsTabProps: any;
@@ -27,6 +28,7 @@ const AdminTabs = ({
   users,
   onDeleteRegistration,
   onToggleAdmin,
+  onToggleRegistrationManager,
   onApproveUser,
   onRejectUser,
   settingsTabProps,
@@ -63,7 +65,7 @@ const AdminTabs = ({
           onApprove={onApproveUser}
           onReject={onRejectUser}
         />
-        <UsersTable users={users} onToggleAdmin={onToggleAdmin} />
+        <UsersTable users={users} onToggleAdmin={onToggleAdmin} onToggleRegistrationManager={onToggleRegistrationManager} />
       </TabsContent>
 
       <TabsContent value="page-settings">
