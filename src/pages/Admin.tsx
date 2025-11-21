@@ -14,7 +14,7 @@ const Admin = () => {
   const [activeSettingsTab, setActiveSettingsTab] = useState(0);
 
   const { registrations, registrationFields: registrationFormFields, deleteRegistration } = useRegistrations();
-  const { users, toggleAdmin, approveUser, rejectUser } = useUsers();
+  const { users, toggleAdmin, toggleRegistrationManager, approveUser, rejectUser } = useUsers();
   const {
     settings,
     registrationSettings,
@@ -63,6 +63,7 @@ const Admin = () => {
           users={users}
           onDeleteRegistration={deleteRegistration}
           onToggleAdmin={toggleAdmin}
+          onToggleRegistrationManager={toggleRegistrationManager}
           onApproveUser={approveUser}
           onRejectUser={rejectUser}
           settingsTabProps={{

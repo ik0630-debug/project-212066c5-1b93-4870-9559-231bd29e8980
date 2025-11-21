@@ -26,8 +26,8 @@ export const useAdminAuth = () => {
         .from("user_roles")
         .select("role")
         .eq("user_id", session.user.id)
-        .eq("role", "admin")
-        .single();
+        .in("role", ["admin", "registration_manager"])
+        .maybeSingle();
       
       if (!roleData) {
         navigate("/");
