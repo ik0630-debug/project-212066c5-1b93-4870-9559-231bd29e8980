@@ -30,7 +30,7 @@ const UsersTable = ({ users, onToggleAdmin, onToggleRegistrationManager }: Users
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.organization}</TableCell>
                 <TableCell>
-                  {user.is_admin ? "관리자" : user.is_registration_manager ? "등록 관리자" : "일반"}
+                  {user.is_admin ? "전체 관리자" : user.is_registration_manager ? "등록 관리자" : "일반"}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
@@ -42,12 +42,12 @@ const UsersTable = ({ users, onToggleAdmin, onToggleRegistrationManager }: Users
                       {user.is_admin ? (
                         <>
                           <ShieldOff className="w-4 h-4 mr-2" />
-                          관리자 해제
+                          전체 관리자 해제
                         </>
                       ) : (
                         <>
                           <Shield className="w-4 h-4 mr-2" />
-                          관리자
+                          전체 관리자
                         </>
                       )}
                     </Button>
@@ -56,7 +56,7 @@ const UsersTable = ({ users, onToggleAdmin, onToggleRegistrationManager }: Users
                       size="sm"
                       onClick={() => onToggleRegistrationManager(user.user_id, user.is_registration_manager)}
                     >
-                      {user.is_registration_manager ? "등록관리 해제" : "등록관리"}
+                      {user.is_registration_manager ? "등록 관리자 해제" : "등록 관리자"}
                     </Button>
                   </div>
                 </TableCell>

@@ -9,7 +9,7 @@ import { useSettings } from "@/hooks/admin/useSettings";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { loading, signOut } = useAdminAuth();
+  const { userRole, loading, signOut } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'page-settings' | 'config'>('registrations');
   const [activeSettingsTab, setActiveSettingsTab] = useState(0);
 
@@ -56,6 +56,7 @@ const Admin = () => {
       
       <main className="px-6 py-8">
         <AdminTabs
+          userRole={userRole}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           registrations={registrations}

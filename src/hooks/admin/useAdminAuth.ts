@@ -6,6 +6,7 @@ import { User } from "@supabase/supabase-js";
 export const useAdminAuth = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<'admin' | 'registration_manager' | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,6 +34,8 @@ export const useAdminAuth = () => {
         navigate("/");
         return;
       }
+      
+      setUserRole(roleData.role as 'admin' | 'registration_manager');
     } catch (error) {
       navigate("/auth");
     } finally {
@@ -45,5 +48,5 @@ export const useAdminAuth = () => {
     navigate("/auth");
   };
 
-  return { user, loading, signOut };
+  return { user, userRole, loading, signOut };
 };

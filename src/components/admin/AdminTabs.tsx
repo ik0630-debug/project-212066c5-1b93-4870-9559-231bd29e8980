@@ -7,6 +7,7 @@ import SettingsTabs from "./SettingsTabs";
 import ConfigSettings from "./settings/ConfigSettings";
 
 interface AdminTabsProps {
+  userRole: 'admin' | 'registration_manager' | null;
   activeTab: 'registrations' | 'users' | 'page-settings' | 'config';
   onTabChange: (tab: 'registrations' | 'users' | 'page-settings' | 'config') => void;
   registrations: any[];
@@ -21,6 +22,7 @@ interface AdminTabsProps {
 }
 
 const AdminTabs = ({
+  userRole,
   activeTab,
   onTabChange,
   registrations,
@@ -33,12 +35,17 @@ const AdminTabs = ({
   onRejectUser,
   settingsTabProps,
 }: AdminTabsProps) => {
-  const tabs = [
+  const allTabs = [
     { icon: FileText, label: "신청 관리", value: "registrations" as const },
     { icon: Users, label: "사용자 관리", value: "users" as const },
     { icon: Settings, label: "페이지 설정", value: "page-settings" as const },
     { icon: Wrench, label: "설정", value: "config" as const },
   ];
+
+  // 등록 관리자는 신청 관리 탭만 표시
+  const tabs = userRole === 'registration_manager' 
+    ? allTabs.filter(tab => tab.value === 'registrations')
+    : allTabs;
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange}>
