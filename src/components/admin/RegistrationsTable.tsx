@@ -112,11 +112,20 @@ const RegistrationsTable = ({ registrations, registrationFormFields, onDelete }:
             <Table>
               <TableHeader>
                 <TableRow>
-                  {registrationFormFields.map((field) => (
-                    <TableHead key={field.id}>{field.label}</TableHead>
-                  ))}
-                  <TableHead>신청일</TableHead>
-                  <TableHead>작업</TableHead>
+                  {registrationFormFields.map((field) => {
+                    // 각 필드별 너비 지정
+                    let width = '';
+                    if (field.id === 'name') width = 'w-24';
+                    else if (field.id === 'age_group') width = 'w-28';
+                    else if (field.id === 'gender') width = 'w-20';
+                    else if (field.id === 'phone') width = 'w-36';
+                    
+                    return (
+                      <TableHead key={field.id} className={width}>{field.label}</TableHead>
+                    );
+                  })}
+                  <TableHead className="w-32">신청일</TableHead>
+                  <TableHead className="w-20">작업</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -129,14 +138,26 @@ const RegistrationsTable = ({ registrations, registrationFormFields, onDelete }:
                 ) : (
                   filteredRegistrations.map((reg) => (
                     <TableRow key={reg.id}>
-                      {registrationFormFields.map((field) => (
-                        <TableCell key={field.id} className={field.id === 'name' ? 'font-medium' : ''}>
-                          {reg.form_data?.[field.id] || reg[field.id] || "-"}
-                        </TableCell>
-                      ))}
+                      {registrationFormFields.map((field) => {
+                        // 각 필드별 너비 지정
+                        let width = '';
+                        if (field.id === 'name') width = 'w-24';
+                        else if (field.id === 'age_group') width = 'w-28';
+                        else if (field.id === 'gender') width = 'w-20';
+                        else if (field.id === 'phone') width = 'w-36';
+                        
+                        return (
+                          <TableCell 
+                            key={field.id} 
+                            className={`${field.id === 'name' ? 'font-medium' : ''} ${width} whitespace-nowrap`}
+                          >
+                            {reg.form_data?.[field.id] || reg[field.id] || "-"}
+                          </TableCell>
+                        );
+                      })}
 
-                      <TableCell>{new Date(reg.created_at).toLocaleDateString("ko-KR")}</TableCell>
-                      <TableCell>
+                      <TableCell className="w-32 whitespace-nowrap">{new Date(reg.created_at).toLocaleDateString("ko-KR")}</TableCell>
+                      <TableCell className="w-20">
                         <Button variant="destructive" size="sm" onClick={() => onDelete(reg.id)}>
                           <Trash2 className="w-4 h-4" />
                         </Button>
