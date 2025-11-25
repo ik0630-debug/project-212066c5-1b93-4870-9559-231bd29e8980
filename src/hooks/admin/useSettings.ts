@@ -24,6 +24,8 @@ export const useSettings = () => {
   ]);
   
   const [settings, setSettings] = useState<any>({
+    // Home settings
+    hero_image_url: "",
     hero_use_text: "true",
     hero_text_content: "",
     hero_use_button: "true",
@@ -32,14 +34,19 @@ export const useSettings = () => {
     hero_button_url: "",
     hero_button_bg_color: "",
     hero_button_text_color: "",
-    hero_button_text_size: "",
+    hero_button_size_type: "lg",
+    hero_button_custom_width: "",
+    hero_button_custom_height: "",
+    hero_button_font_size: "text-base",
     hero_overlay_opacity: "0",
     description_title: "",
     description_content: "",
+    // Program settings
     program_title: "",
     program_description: "",
     program_header_color: "220 70% 25%",
     program_enabled: "true",
+    // Location settings
     location_page_title: "",
     location_page_description: "",
     location_header_image: "",
@@ -66,7 +73,7 @@ export const useSettings = () => {
     location_description_title: "",
     location_description_content: "",
     location_description_bg_color: "",
-    location_content_order: "description_first", // "description_first" or "buttons_first"
+    location_content_order: "description_first",
   });
 
   const [registrationSettings, setRegistrationSettings] = useState({
@@ -87,7 +94,12 @@ export const useSettings = () => {
 
   const loadSettings = useCallback(async () => {
     console.log('useSettings: Loading settings from database...');
-    const { data } = await supabase.from("site_settings").select("*");
+    const { data, error } = await supabase.from("site_settings").select("*");
+    
+    if (error) {
+      console.error('useSettings: Error loading settings:', error);
+      return;
+    }
     
     console.log('useSettings: Loaded data:', data?.length, 'records');
     
@@ -99,115 +111,66 @@ export const useSettings = () => {
     const loadedLocationBottomButtons: any = {};
     const registrationSettingsData: any = {};
 
-    data?.forEach(({ key, value }) => {
-      const keyParts = key.split("_");
-      
-      switch (keyParts[0]) {
-        case "home":
-          if (key.startsWith("home_info_card_")) {
-            try {
-              const parsed = JSON.parse(value);
-              const index = parsed.order || 0;
-              loadedInfoCards[index] = parsed;
-            } catch {}
-          } else if (key.startsWith("home_bottom_button_")) {
-            try {
-              const parsed = JSON.parse(value);
-              const index = parsed.order || 0;
-              loadedBottomButtons[index] = parsed;
-            } catch {}
-          } else if (key === "section_order") {
-            try {
-              setSectionOrder(JSON.parse(value));
-            } catch {}
-          } else if (key === "location_section_order") {
-            try {
-              setLocationSectionOrder(JSON.parse(value));
-            } catch {}
-          } else {
-            settingsMap[key] = value;
-          }
-          break;
-        case "program":
-          if (key.startsWith("program_card_")) {
-            try {
-              const parsed = JSON.parse(value);
-              const index = parsed.order || 0;
-              loadedProgramCards[index] = parsed;
-            } catch {}
-          } else {
-            settingsMap[key] = value;
-          }
-          break;
-        case "location":
-          if (key.startsWith("transport_card_")) {
-            try {
-              const parsed = JSON.parse(value);
-              const index = parsed.order || 0;
-              loadedTransportCards[index] = parsed;
-            } catch {}
-          } else if (key.startsWith("location_bottom_button_")) {
-            try {
-              const parsed = JSON.parse(value);
-              const index = parsed.order || 0;
-              loadedLocationBottomButtons[index] = parsed;
-            } catch {}
-          } else {
-            settingsMap[key] = value;
-          }
-          break;
-        case "registration":
-          if (key === "registration_fields") {
-            try {
-              setRegistrationFields(JSON.parse(value));
-            } catch (e) {
-              console.error("Failed to parse registration fields", e);
-            }
-          } else {
-            registrationSettingsData[key] = value;
-          }
-          break;
-        default:
-          settingsMap[key] = value;
+    data?.forEach(({ category, key, value }) => {
+      // Parse cards and buttons
+      if (key.startsWith("home_info_card_")) {
+        try {
+          const parsed = JSON.parse(value);
+          loadedInfoCards[parsed.order || 0] = parsed;
+        } catch (e) { console.error('Failed to parse info card:', e); }
+      } else if (key.startsWith("home_bottom_button_")) {
+        try {
+          const parsed = JSON.parse(value);
+          loadedBottomButtons[parsed.order || 0] = parsed;
+        } catch (e) { console.error('Failed to parse bottom button:', e); }
+      } else if (key.startsWith("program_card_")) {
+        try {
+          const parsed = JSON.parse(value);
+          loadedProgramCards[parsed.order || 0] = parsed;
+        } catch (e) { console.error('Failed to parse program card:', e); }
+      } else if (key.startsWith("transport_card_")) {
+        try {
+          const parsed = JSON.parse(value);
+          loadedTransportCards[parsed.order || 0] = parsed;
+        } catch (e) { console.error('Failed to parse transport card:', e); }
+      } else if (key.startsWith("location_bottom_button_")) {
+        try {
+          const parsed = JSON.parse(value);
+          loadedLocationBottomButtons[parsed.order || 0] = parsed;
+        } catch (e) { console.error('Failed to parse location button:', e); }
+      } else if (key === "section_order") {
+        try {
+          setSectionOrder(JSON.parse(value));
+        } catch (e) { console.error('Failed to parse section order:', e); }
+      } else if (key === "location_section_order") {
+        try {
+          setLocationSectionOrder(JSON.parse(value));
+        } catch (e) { console.error('Failed to parse location section order:', e); }
+      } else if (key === "registration_fields") {
+        try {
+          setRegistrationFields(JSON.parse(value));
+        } catch (e) { console.error('Failed to parse registration fields:', e); }
+      } else if (category === "registration") {
+        registrationSettingsData[key] = value;
+      } else {
+        settingsMap[key] = value;
       }
     });
 
-    const cards = Object.values(loadedInfoCards).filter((card: any) => card.title);
-    const buttons = Object.values(loadedBottomButtons).filter((btn: any) => btn.text);
-    const locationButtons = Object.values(loadedLocationBottomButtons).filter((btn: any) => btn.text);
+    // Set cards and buttons
+    setInfoCards(Object.values(loadedInfoCards).filter((card: any) => card?.title));
+    setBottomButtons(Object.values(loadedBottomButtons).filter((btn: any) => btn?.text));
+    setLocationBottomButtons(Object.values(loadedLocationBottomButtons).filter((btn: any) => btn?.text));
+    setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card?.title));
     
-    console.log('useSettings: Loaded info cards:', cards.length);
-    console.log('useSettings: Loaded bottom buttons:', buttons.length);
-    console.log('useSettings: Loaded location bottom buttons:', locationButtons.length);
+    const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card?.title);
+    setTransportCards(loadedTransportCardsArray.length > 0 ? loadedTransportCardsArray : [
+      { icon: "Train", title: "지하철", description: "2호선 강남역 5번 출구에서 도보 5분" },
+      { icon: "Bus", title: "버스", description: "146, 360, 440, 1100번 - 강남역 하차" },
+      { icon: "Car", title: "자가용", description: "건물 지하 1~3층 주차 가능 (3시간 무료)" },
+    ]);
     
-    setInfoCards(cards);
-    setBottomButtons(buttons);
-    setLocationBottomButtons(locationButtons);
-    setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
-    
-    const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card.title && card.description);
-    if (loadedTransportCardsArray.length > 0) {
-      setTransportCards(loadedTransportCardsArray);
-    } else {
-      setTransportCards([
-        {
-          icon: "Train",
-          title: "지하철",
-          description: "2호선 강남역 5번 출구에서 도보 5분",
-        },
-        {
-          icon: "Bus",
-          title: "버스",
-          description: "146, 360, 440, 1100번 - 강남역 하차",
-        },
-        {
-          icon: "Car",
-          title: "자가용",
-          description: "건물 지하 1~3층 주차 가능 (3시간 무료)",
-        },
-      ]);
-    }
-    
+    console.log('useSettings: Parsed settings:', Object.keys(settingsMap).length, 'items');
     setSettings(prev => ({ ...prev, ...settingsMap }));
     setRegistrationSettings(prev => ({ ...prev, ...registrationSettingsData }));
   }, []);
@@ -340,12 +303,11 @@ export const useSettings = () => {
 
   const saveSectionOrder = async (order: string[]) => {
     try {
-      await supabase.from("site_settings").delete().eq("key", "section_order");
-      await supabase.from("site_settings").insert({
+      await supabase.from("site_settings").upsert({
         category: "home",
         key: "section_order",
         value: JSON.stringify(order),
-      });
+      }, { onConflict: 'category,key' });
     } catch (error) {
       console.error("Error saving section order:", error);
     }
@@ -353,12 +315,11 @@ export const useSettings = () => {
 
   const saveLocationSectionOrder = async (order: string[]) => {
     try {
-      await supabase.from("site_settings").delete().eq("key", "location_section_order");
-      await supabase.from("site_settings").insert({
+      await supabase.from("site_settings").upsert({
         category: "location",
         key: "location_section_order",
         value: JSON.stringify(order),
-      });
+      }, { onConflict: 'category,key' });
     } catch (error) {
       console.error("Error saving location section order:", error);
     }
