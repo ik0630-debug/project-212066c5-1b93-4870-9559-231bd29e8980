@@ -225,11 +225,13 @@ export const useSettings = () => {
   const saveSettings = async (options?: { silent?: boolean }) => {
     try {
       const settingsToSave = [
-        ...Object.entries(settings).map(([key, value]) => ({
-          category: getCategoryFromKey(key),
-          key,
-          value: value.toString(),
-        })),
+        ...Object.entries(settings)
+          .filter(([key]) => key !== 'section_order' && key !== 'location_section_order')
+          .map(([key, value]) => ({
+            category: getCategoryFromKey(key),
+            key,
+            value: value.toString(),
+          })),
         ...Object.entries(registrationSettings).map(([key, value]) => ({
           category: "registration",
           key,
