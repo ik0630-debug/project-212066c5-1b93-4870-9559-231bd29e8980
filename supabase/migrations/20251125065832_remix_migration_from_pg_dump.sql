@@ -191,6 +191,14 @@ ALTER TABLE ONLY public.site_settings
 
 
 --
+-- Name: site_settings site_settings_category_key_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.site_settings
+    ADD CONSTRAINT site_settings_category_key_unique UNIQUE (category, key);
+
+
+--
 -- Name: site_settings site_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
