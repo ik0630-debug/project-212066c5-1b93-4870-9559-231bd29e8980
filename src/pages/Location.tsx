@@ -332,7 +332,7 @@ const Location = () => {
           <img 
             src={headerImage} 
             alt="Location header" 
-            className="w-full h-[50vh] min-h-[300px] max-h-[600px] object-cover"
+            className="w-full h-auto"
           />
         </div>
       )}
