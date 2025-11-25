@@ -17,6 +17,7 @@ interface SettingsTabsProps {
   bottomButtons: any[];
   programCards: any[];
   transportCards: any[];
+  locationBottomButtons: any[];
   sectionOrder: string[];
   onSettingChange: (key: string, value: string) => void;
   onRegistrationSettingsChange: (settings: any) => void;
@@ -25,6 +26,7 @@ interface SettingsTabsProps {
   onBottomButtonsChange: (buttons: any[]) => void;
   onProgramCardsChange: (cards: any[]) => void;
   onTransportCardsChange: (cards: any[]) => void;
+  onLocationBottomButtonsChange: (buttons: any[]) => void;
   onSectionOrderChange: (order: string[]) => void;
   onSaveSectionOrder: (order: string[]) => void;
   onSave: (options?: { silent?: boolean }) => void;
@@ -40,6 +42,7 @@ const SettingsTabs = ({
   bottomButtons,
   programCards,
   transportCards,
+  locationBottomButtons,
   sectionOrder,
   onSettingChange,
   onRegistrationSettingsChange,
@@ -48,6 +51,7 @@ const SettingsTabs = ({
   onBottomButtonsChange,
   onProgramCardsChange,
   onTransportCardsChange,
+  onLocationBottomButtonsChange,
   onSectionOrderChange,
   onSaveSectionOrder,
   onSave,
@@ -101,8 +105,10 @@ const SettingsTabs = ({
           <LocationSettings
             settings={settings}
             transportCards={transportCards}
+            bottomButtons={locationBottomButtons}
             onSettingChange={onSettingChange}
             onTransportCardsChange={onTransportCardsChange}
+            onBottomButtonsChange={onLocationBottomButtonsChange}
           />
         );
       default:

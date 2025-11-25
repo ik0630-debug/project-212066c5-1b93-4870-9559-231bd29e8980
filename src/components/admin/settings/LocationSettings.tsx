@@ -8,20 +8,25 @@ import { Plus } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableTransportCard from "@/components/SortableTransportCard";
+import SortableBottomButton from "@/components/SortableBottomButton";
 import { ColorPicker } from "@/components/ColorPicker";
 
 interface LocationSettingsProps {
   settings: any;
   transportCards: any[];
+  bottomButtons: any[];
   onSettingChange: (key: string, value: string) => void;
   onTransportCardsChange: (cards: any[]) => void;
+  onBottomButtonsChange: (buttons: any[]) => void;
 }
 
 const LocationSettings = ({
   settings,
   transportCards,
+  bottomButtons,
   onSettingChange,
   onTransportCardsChange,
+  onBottomButtonsChange,
 }: LocationSettingsProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -49,6 +54,30 @@ const LocationSettings = ({
       const oldIndex = transportCards.findIndex((_, i) => i.toString() === active.id);
       const newIndex = transportCards.findIndex((_, i) => i.toString() === over.id);
       onTransportCardsChange(arrayMove(transportCards, oldIndex, newIndex));
+    }
+  };
+
+  const handleAddBottomButton = () => {
+    onBottomButtonsChange([...bottomButtons, { text: "새 버튼", link: "/", variant: "outline", size: "default", fontSize: "text-sm" }]);
+  };
+
+  const handleUpdateBottomButton = (id: string, data: any) => {
+    const index = parseInt(id);
+    const newButtons = [...bottomButtons];
+    newButtons[index] = { ...newButtons[index], ...data };
+    onBottomButtonsChange(newButtons);
+  };
+
+  const handleDeleteBottomButton = (index: number) => {
+    onBottomButtonsChange(bottomButtons.filter((_, i) => i !== index));
+  };
+
+  const handleDragEndBottomButtons = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = bottomButtons.findIndex((_, i) => i.toString() === active.id);
+      const newIndex = bottomButtons.findIndex((_, i) => i.toString() === over.id);
+      onBottomButtonsChange(arrayMove(bottomButtons, oldIndex, newIndex));
     }
   };
 
@@ -93,6 +122,68 @@ const LocationSettings = ({
             />
           </div>
         </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">안내 메시지</h3>
+        <div className="grid gap-4">
+          <div>
+            <Label htmlFor="location_description_title">제목</Label>
+            <Input
+              id="location_description_title"
+              value={settings.location_description_title || ""}
+              onChange={(e) => onSettingChange("location_description_title", e.target.value)}
+              placeholder="행사 소개"
+            />
+          </div>
+          <div>
+            <Label htmlFor="location_description_content">내용</Label>
+            <Textarea
+              id="location_description_content"
+              value={settings.location_description_content || ""}
+              onChange={(e) => onSettingChange("location_description_content", e.target.value)}
+              rows={4}
+              placeholder="행사 안내 메시지를 입력하세요"
+            />
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">하단 버튼</h3>
+          <Button onClick={handleAddBottomButton} size="sm">
+            <Plus className="w-4 h-4 mr-2" />
+            버튼 추가
+          </Button>
+        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEndBottomButtons}
+        >
+          <SortableContext
+            items={bottomButtons.map((_, i) => i.toString())}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-4">
+              {bottomButtons.map((button, i) => (
+                <SortableBottomButton
+                  key={i}
+                  id={i.toString()}
+                  button={{ id: i.toString() }}
+                  buttonData={button}
+                  onUpdate={(id, data) => handleUpdateBottomButton(id, data)}
+                  onDelete={(id) => handleDeleteBottomButton(parseInt(id))}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       </div>
 
       <Separator />
