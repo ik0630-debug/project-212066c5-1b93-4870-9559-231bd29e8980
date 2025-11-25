@@ -7,6 +7,7 @@ import MobileNavigation from "@/components/MobileNavigation";
 import heroImage from "@/assets/hero-image.jpg";
 import { useHomeSettings } from "@/hooks/useHomeSettings";
 import { useSwipeable } from "react-swipeable";
+import { getNextEnabledPage } from "@/utils/pageNavigation";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -72,7 +73,10 @@ const Index = () => {
   };
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => navigate('/program'),
+    onSwipedLeft: async () => {
+      const nextPage = await getNextEnabledPage('/', 'left');
+      navigate(nextPage);
+    },
     trackMouse: false,
   });
 

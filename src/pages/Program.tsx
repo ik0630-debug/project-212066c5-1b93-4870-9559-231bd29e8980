@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import * as LucideIcons from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
 import { useSwipeable } from "react-swipeable";
+import { getNextEnabledPage } from "@/utils/pageNavigation";
 
 interface ProgramCard {
   id: string;
@@ -80,8 +81,14 @@ const Program = () => {
   };
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => navigate('/registration'),
-    onSwipedRight: () => navigate('/'),
+    onSwipedLeft: async () => {
+      const nextPage = await getNextEnabledPage('/program', 'left');
+      navigate(nextPage);
+    },
+    onSwipedRight: async () => {
+      const nextPage = await getNextEnabledPage('/program', 'right');
+      navigate(nextPage);
+    },
     trackMouse: false,
   });
 

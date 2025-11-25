@@ -5,6 +5,7 @@ import { MapPin, Train, Bus, Car, Navigation, Upload, Plane, Ship } from "lucide
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useSwipeable } from "react-swipeable";
+import { getNextEnabledPage } from "@/utils/pageNavigation";
 
 const Location = () => {
   const navigate = useNavigate();
@@ -179,7 +180,13 @@ const Location = () => {
                 {bottomButtons.map((button, index) => (
                   <Button
                     key={index}
-                    onClick={() => navigate(button.link)}
+                    onClick={() => {
+                      if (button.link.startsWith('/') || button.link.startsWith('#')) {
+                        navigate(button.link);
+                      } else {
+                        window.open(button.link, '_blank', 'noopener,noreferrer');
+                      }
+                    }}
                     variant={button.variant as any || "outline"}
                     size={button.size as any || "default"}
                     className={button.fontSize || "text-sm"}
@@ -277,7 +284,10 @@ const Location = () => {
   };
 
   const swipeHandlers = useSwipeable({
-    onSwipedRight: () => navigate('/registration'),
+    onSwipedRight: async () => {
+      const nextPage = await getNextEnabledPage('/location', 'right');
+      navigate(nextPage);
+    },
     trackMouse: false,
   });
 

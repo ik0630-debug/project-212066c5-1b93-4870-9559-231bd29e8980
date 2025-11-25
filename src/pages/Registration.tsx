@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, Building, Upload } from "lucide-react";
 import { z } from "zod";
 import { useSwipeable } from "react-swipeable";
+import { getNextEnabledPage } from "@/utils/pageNavigation";
 
 interface RegistrationField {
   id: string;
@@ -235,10 +236,16 @@ const Registration = () => {
   };
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => navigate('/location'),
-    onSwipedRight: () => navigate('/program'),
+    onSwipedLeft: async () => {
+      const nextPage = await getNextEnabledPage('/registration', 'left');
+      navigate(nextPage);
+    },
+    onSwipedRight: async () => {
+      const nextPage = await getNextEnabledPage('/registration', 'right');
+      navigate(nextPage);
+    },
     trackMouse: false,
-    delta: 100, // 스와이프 감지를 위한 최소 이동 거리 (기본값 10px → 100px)
+    delta: 100,
   });
 
   if (loading) {
