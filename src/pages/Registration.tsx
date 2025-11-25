@@ -14,6 +14,7 @@ import { User, Mail, Phone, Building, Upload } from "lucide-react";
 import { z } from "zod";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
+import { usePageSettings } from "@/hooks/usePageSettings";
 
 interface RegistrationField {
   id: string;
@@ -32,8 +33,9 @@ const Registration = () => {
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [privacyContent, setPrivacyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isPageEnabled, setIsPageEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
+  const { settings: enabledPages } = usePageSettings();
+  const isPageEnabled = enabledPages?.registration ?? true;
   const [pageSettings, setPageSettings] = useState({
     pageTitle: "참가 신청",
     pageDescription: "아래 양식을 작성해주세요",
@@ -83,8 +85,6 @@ const Registration = () => {
             newSettings.successDescription = value;
           } else if (key === "registration_privacy_content") {
             setPrivacyContent(value);
-          } else if (key === "registration_enabled") {
-            setIsPageEnabled(value === "true");
           }
         });
         setPageSettings(newSettings);
