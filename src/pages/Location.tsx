@@ -17,6 +17,9 @@ const Location = () => {
   const [locationMapUrl, setLocationMapUrl] = useState("");
   const [locationPhone, setLocationPhone] = useState("");
   const [locationEmail, setLocationEmail] = useState("");
+  const [descriptionTitle, setDescriptionTitle] = useState("");
+  const [descriptionContent, setDescriptionContent] = useState("");
+  const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
   const [isPageEnabled, setIsPageEnabled] = useState(true);
 
@@ -61,6 +64,12 @@ const Location = () => {
         case 'location_email':
           setLocationEmail(setting.value);
           break;
+        case 'location_description_title':
+          setDescriptionTitle(setting.value);
+          break;
+        case 'location_description_content':
+          setDescriptionContent(setting.value);
+          break;
       }
     });
 
@@ -72,6 +81,17 @@ const Location = () => {
         return null;
       }
     }).filter(Boolean).sort((a: any, b: any) => a.order - b.order);
+
+    const locationButtonsSettings = settings.filter(s => s.key.startsWith('location_bottom_button_'));
+    const buttons = locationButtonsSettings.map(s => {
+      try {
+        return JSON.parse(s.value);
+      } catch {
+        return null;
+      }
+    }).filter(Boolean).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+
+    setBottomButtons(buttons);
 
     if (cards.length > 0) {
       setTransportations(cards);
@@ -201,6 +221,31 @@ const Location = () => {
             })}
           </div>
         </div>
+
+        {/* Description Section */}
+        {(descriptionTitle || descriptionContent) && (
+          <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
+            {descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{descriptionTitle}</h2>}
+            {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
+          </div>
+        )}
+
+        {/* Bottom Buttons */}
+        {bottomButtons.length > 0 && (
+          <div className="grid grid-cols-2 gap-4">
+            {bottomButtons.map((button, index) => (
+              <Button
+                key={index}
+                onClick={() => navigate(button.link)}
+                variant={button.variant as any || "outline"}
+                size={button.size as any || "default"}
+                className={button.fontSize || "text-sm"}
+              >
+                {button.text}
+              </Button>
+            ))}
+          </div>
+        )}
 
         {/* Contact */}
         <div className="bg-primary/5 rounded-lg p-6 border border-primary/10">

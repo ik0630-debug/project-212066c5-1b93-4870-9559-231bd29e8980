@@ -9,6 +9,7 @@ export const useSettings = () => {
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [programCards, setProgramCards] = useState<any[]>([]);
   const [transportCards, setTransportCards] = useState<any[]>([]);
+  const [locationBottomButtons, setLocationBottomButtons] = useState<any[]>([]);
   const [sectionOrder, setSectionOrder] = useState<string[]>([
     "hero_section",
     "description",
@@ -42,6 +43,8 @@ export const useSettings = () => {
     location_map_url: "",
     location_phone: "",
     location_email: "",
+    location_description_title: "",
+    location_description_content: "",
   });
 
   const [registrationSettings, setRegistrationSettings] = useState({
@@ -71,6 +74,7 @@ export const useSettings = () => {
     const loadedBottomButtons: any = {};
     const loadedProgramCards: any = {};
     const loadedTransportCards: any = {};
+    const loadedLocationBottomButtons: any = {};
     const registrationSettingsData: any = {};
 
     data?.forEach(({ key, value }) => {
@@ -116,6 +120,12 @@ export const useSettings = () => {
               const index = parsed.order || 0;
               loadedTransportCards[index] = parsed;
             } catch {}
+          } else if (key.startsWith("location_bottom_button_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedLocationBottomButtons[index] = parsed;
+            } catch {}
           } else {
             settingsMap[key] = value;
           }
@@ -138,12 +148,15 @@ export const useSettings = () => {
 
     const cards = Object.values(loadedInfoCards).filter((card: any) => card.title);
     const buttons = Object.values(loadedBottomButtons).filter((btn: any) => btn.text);
+    const locationButtons = Object.values(loadedLocationBottomButtons).filter((btn: any) => btn.text);
     
     console.log('useSettings: Loaded info cards:', cards.length);
     console.log('useSettings: Loaded bottom buttons:', buttons.length);
+    console.log('useSettings: Loaded location bottom buttons:', locationButtons.length);
     
     setInfoCards(cards);
     setBottomButtons(buttons);
+    setLocationBottomButtons(locationButtons);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
     
     const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card.title && card.description);
@@ -225,6 +238,12 @@ export const useSettings = () => {
           key: `transport_card_${index}`,
           value: JSON.stringify({ ...card, order: index }),
         })),
+        // Save location bottom buttons
+        ...locationBottomButtons.map((button, index) => ({
+          category: "location",
+          key: `location_bottom_button_${index}`,
+          value: JSON.stringify({ ...button, order: index }),
+        })),
       ];
 
       await supabase.from("site_settings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
@@ -273,6 +292,7 @@ export const useSettings = () => {
     bottomButtons,
     programCards,
     transportCards,
+    locationBottomButtons,
     sectionOrder,
     
     // Setters
@@ -283,6 +303,7 @@ export const useSettings = () => {
     setBottomButtons,
     setProgramCards,
     setTransportCards,
+    setLocationBottomButtons,
     setSectionOrder,
     
     // Functions
