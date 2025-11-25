@@ -150,10 +150,10 @@ const Program = () => {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-baseline gap-2 mb-2">
-                        <span className="text-sm font-semibold text-primary">
+                        <span className="text-sm font-semibold text-primary whitespace-pre-line">
                           {card.time}
                         </span>
-                        <h3 className="text-lg font-bold text-card-foreground">
+                        <h3 className="text-lg font-bold text-card-foreground whitespace-pre-line">
                           {card.title}
                         </h3>
                       </div>
