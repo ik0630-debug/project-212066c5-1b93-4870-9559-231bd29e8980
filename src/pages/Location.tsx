@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
-import { MapPin, Train, Bus, Car, Navigation, Upload, Plane, Ship } from "lucide-react";
+import { MapPin, Train, Bus, Car, Navigation, Upload, Plane, Ship, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useSwipeable } from "react-swipeable";
@@ -22,6 +22,8 @@ const Location = () => {
   const [descriptionTitle, setDescriptionTitle] = useState("");
   const [descriptionContent, setDescriptionContent] = useState("");
   const [descriptionBgColor, setDescriptionBgColor] = useState("");
+  const [downloadFileUrl, setDownloadFileUrl] = useState("");
+  const [downloadFileName, setDownloadFileName] = useState("");
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,6 +87,12 @@ const Location = () => {
           break;
         case 'location_description_bg_color':
           setDescriptionBgColor(setting.value);
+          break;
+        case 'location_download_file_url':
+          setDownloadFileUrl(setting.value);
+          break;
+        case 'location_download_file_name':
+          setDownloadFileName(setting.value);
           break;
         case 'location_section_order':
           try {
@@ -171,6 +179,21 @@ const Location = () => {
               >
                 {descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{descriptionTitle}</h2>}
                 {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
+              </div>
+            )}
+
+            {/* Download Button */}
+            {downloadFileUrl && (
+              <div className="flex justify-center">
+                <Button
+                  onClick={() => window.open(downloadFileUrl, '_blank', 'noopener,noreferrer')}
+                  variant="outline"
+                  size="lg"
+                  className="gap-2"
+                >
+                  <Download className="w-5 h-5" />
+                  {downloadFileName || "파일 다운로드"}
+                </Button>
               </div>
             )}
 

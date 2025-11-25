@@ -10,9 +10,10 @@ interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
   label: string;
+  accept?: string;
 }
 
-const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
+const ImageUpload = ({ value, onChange, label, accept }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(value);
 
@@ -20,11 +21,13 @@ const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!validTypes.includes(file.type)) {
-      toast.error("지원되지 않는 파일 형식입니다. JPG, PNG, WEBP, GIF만 업로드 가능합니다.");
-      return;
+    // Validate file type (only for images)
+    if (!accept || accept.startsWith('image/')) {
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        toast.error("지원되지 않는 파일 형식입니다. JPG, PNG, WEBP, GIF만 업로드 가능합니다.");
+        return;
+      }
     }
 
 
@@ -33,7 +36,8 @@ const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `hero/${fileName}`;
+      const folder = accept === '*' ? 'files' : 'hero';
+      const filePath = `${folder}/${fileName}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from('site-images')
@@ -52,7 +56,7 @@ const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
 
       setPreview(publicUrl);
       onChange(publicUrl);
-      toast.success("이미지가 성공적으로 업로드되었습니다.");
+      toast.success(accept === '*' ? "파일이 성공적으로 업로드되었습니다." : "이미지가 성공적으로 업로드되었습니다.");
     } catch (error: any) {
       console.error("Error uploading image:", error);
       toast.error("이미지 업로드 중 오류가 발생했습니다.");
@@ -70,7 +74,7 @@ const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
     <div className="space-y-2">
       <Label>{label}</Label>
       
-      {preview && (
+      {preview && (!accept || accept.startsWith('image/')) && (
         <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border">
           <img
             src={preview}
@@ -88,12 +92,26 @@ const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
           </Button>
         </div>
       )}
+      
+      {preview && accept === '*' && (
+        <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/50">
+          <span className="text-sm text-muted-foreground">파일이 업로드되었습니다</span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleRemove}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       <div className="flex gap-2">
         <div className="flex-1">
           <Input
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
+            accept={accept || "image/jpeg,image/png,image/webp,image/gif"}
             onChange={handleFileUpload}
             disabled={uploading}
             className="cursor-pointer"
@@ -122,7 +140,7 @@ const ImageUpload = ({ value, onChange, label }: ImageUploadProps) => {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        JPG, PNG, WEBP, GIF 형식 지원
+        {accept === '*' ? '모든 파일 형식 지원' : 'JPG, PNG, WEBP, GIF 형식 지원'}
       </p>
     </div>
   );
