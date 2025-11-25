@@ -324,19 +324,21 @@ const Location = () => {
             </p>
           )}
         </header>
+      </div>
 
-        {/* Header Image - Full width hero style */}
-        {isPageEnabled && headerImage && (
-          <div className="w-full">
-            <img 
-              src={headerImage} 
-              alt="Location header" 
-              className="w-full h-[50vh] min-h-[300px] max-h-[600px] object-cover"
-            />
-          </div>
-        )}
+      {/* Header Image - Full width hero style */}
+      {isPageEnabled && headerImage && (
+        <div className="w-full">
+          <img 
+            src={headerImage} 
+            alt="Location header" 
+            className="w-full h-[50vh] min-h-[300px] max-h-[600px] object-cover"
+          />
+        </div>
+      )}
 
-      <main className="px-6 py-8 space-y-8">
+      <div className="max-w-[800px] mx-auto">
+        <main className="px-6 py-8 space-y-8">
         {!isPageEnabled ? (
           <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center space-y-4">
             <h2 className="text-xl font-bold text-foreground">
@@ -353,7 +355,7 @@ const Location = () => {
             ))}
           </>
         )}
-      </main>
+        </main>
 
         <MobileNavigation />
       </div>
