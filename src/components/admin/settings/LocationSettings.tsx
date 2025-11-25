@@ -9,6 +9,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableTransportCard from "@/components/SortableTransportCard";
 import SortableBottomButton from "@/components/SortableBottomButton";
+import SortableDownloadFile from "@/components/SortableDownloadFile";
 import { ColorPicker } from "@/components/ColorPicker";
 import ImageUpload from "@/components/ImageUpload";
 
@@ -16,10 +17,12 @@ interface LocationSettingsProps {
   settings: any;
   transportCards: any[];
   bottomButtons: any[];
+  downloadFiles: any[];
   sectionOrder: string[];
   onSettingChange: (key: string, value: string) => void;
   onTransportCardsChange: (cards: any[]) => void;
   onBottomButtonsChange: (buttons: any[]) => void;
+  onDownloadFilesChange: (files: any[]) => void;
   onSectionOrderChange: (order: string[]) => void;
   onSaveSectionOrder: (order: string[]) => void;
 }
@@ -28,10 +31,12 @@ const LocationSettings = ({
   settings,
   transportCards,
   bottomButtons,
+  downloadFiles,
   sectionOrder,
   onSettingChange,
   onTransportCardsChange,
   onBottomButtonsChange,
+  onDownloadFilesChange,
   onSectionOrderChange,
   onSaveSectionOrder,
 }: LocationSettingsProps) => {
@@ -85,6 +90,29 @@ const LocationSettings = ({
       const oldIndex = bottomButtons.findIndex((_, i) => i.toString() === active.id);
       const newIndex = bottomButtons.findIndex((_, i) => i.toString() === over.id);
       onBottomButtonsChange(arrayMove(bottomButtons, oldIndex, newIndex));
+    }
+  };
+
+  const handleAddDownloadFile = () => {
+    onDownloadFilesChange([...downloadFiles, { name: "새 파일", url: "" }]);
+  };
+
+  const handleUpdateDownloadFile = (index: number, data: any) => {
+    const newFiles = [...downloadFiles];
+    newFiles[index] = data;
+    onDownloadFilesChange(newFiles);
+  };
+
+  const handleDeleteDownloadFile = (index: number) => {
+    onDownloadFilesChange(downloadFiles.filter((_, i) => i !== index));
+  };
+
+  const handleDragEndDownloadFiles = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = downloadFiles.findIndex((_, i) => i.toString() === active.id);
+      const newIndex = downloadFiles.findIndex((_, i) => i.toString() === over.id);
+      onDownloadFilesChange(arrayMove(downloadFiles, oldIndex, newIndex));
     }
   };
 
@@ -165,22 +193,35 @@ const LocationSettings = ({
               </div>
               <Separator />
               <div className="space-y-4">
-                <Label>다운로드 파일</Label>
-                <div>
-                  <Label htmlFor="location_download_file_name">파일 이름</Label>
-                  <Input
-                    id="location_download_file_name"
-                    value={settings.location_download_file_name || ""}
-                    onChange={(e) => onSettingChange("location_download_file_name", e.target.value)}
-                    placeholder="예: 오시는 길 안내.pdf"
-                  />
+                <div className="flex items-center justify-between">
+                  <Label>다운로드 파일</Label>
+                  <Button onClick={handleAddDownloadFile} size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    파일 추가
+                  </Button>
                 </div>
-                <ImageUpload
-                  value={settings.location_download_file_url || ""}
-                  onChange={(url) => onSettingChange("location_download_file_url", url)}
-                  label="파일 업로드"
-                  accept="*"
-                />
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEndDownloadFiles}
+                >
+                  <SortableContext
+                    items={downloadFiles.map((_, i) => i.toString())}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-4">
+                      {downloadFiles.map((file, i) => (
+                        <SortableDownloadFile
+                          key={i}
+                          id={i.toString()}
+                          file={file}
+                          onUpdate={(data) => handleUpdateDownloadFile(i, data)}
+                          onDelete={() => handleDeleteDownloadFile(i)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
                 <p className="text-sm text-muted-foreground">
                   사용자가 다운로드할 수 있는 파일을 업로드하세요 (PDF, 이미지 등)
                 </p>
