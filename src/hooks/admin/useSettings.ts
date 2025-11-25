@@ -177,7 +177,7 @@ export const useSettings = () => {
     setLocationBottomButtons(locationButtons);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
     
-    const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card.title && card.description);
+    const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card);
     if (loadedTransportCardsArray.length > 0) {
       setTransportCards(loadedTransportCardsArray);
     } else {
