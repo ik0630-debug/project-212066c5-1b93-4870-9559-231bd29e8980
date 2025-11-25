@@ -190,7 +190,8 @@ export const useSettings = () => {
     setDownloadFiles(downloadFilesArray);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
     
-    const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card);
+    const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card && card.title);
+    console.log('useSettings: Loaded transport cards:', loadedTransportCardsArray.length, loadedTransportCardsArray);
     setTransportCards(loadedTransportCardsArray);
     
     setSettings(settingsMap);
