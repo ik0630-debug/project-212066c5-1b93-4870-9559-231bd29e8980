@@ -23,7 +23,6 @@ const Location = () => {
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
   const [isPageEnabled, setIsPageEnabled] = useState(true);
-  const [contentOrder, setContentOrder] = useState("description_first");
   const [sectionOrder, setSectionOrder] = useState<string[]>([
     "description_buttons",
     "location_info",
@@ -83,9 +82,6 @@ const Location = () => {
           break;
         case 'location_description_bg_color':
           setDescriptionBgColor(setting.value);
-          break;
-        case 'location_content_order':
-          setContentOrder(setting.value);
           break;
         case 'location_section_order':
           try {
@@ -159,7 +155,7 @@ const Location = () => {
   const renderSection = (sectionId: string) => {
     switch (sectionId) {
       case "description_buttons":
-        return contentOrder === "description_first" ? (
+        return (
           <div className="space-y-6">
             {/* Description Section */}
             {(descriptionTitle || descriptionContent) && (
@@ -186,36 +182,6 @@ const Location = () => {
                     {button.text}
                   </Button>
                 ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Bottom Buttons */}
-            {bottomButtons.length > 0 && (
-              <div className="flex justify-center gap-4">
-                {bottomButtons.map((button, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => navigate(button.link)}
-                    variant={button.variant as any || "outline"}
-                    size={button.size as any || "default"}
-                    className={button.fontSize || "text-sm"}
-                  >
-                    {button.text}
-                  </Button>
-                ))}
-              </div>
-            )}
-
-            {/* Description Section */}
-            {(descriptionTitle || descriptionContent) && (
-              <div 
-                className="rounded-lg p-6 shadow-elegant border border-border"
-                style={{ backgroundColor: descriptionBgColor ? `hsl(${descriptionBgColor})` : undefined }}
-              >
-                {descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{descriptionTitle}</h2>}
-                {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
               </div>
             )}
           </div>

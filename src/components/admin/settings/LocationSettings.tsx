@@ -4,7 +4,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, ArrowUp, ArrowDown } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -138,21 +137,6 @@ const LocationSettings = ({
           <div key={sectionId} className="space-y-4">
             <SectionControls title={getSectionTitle(sectionId)} index={index} />
             <div className="grid gap-4">
-              <div>
-                <Label htmlFor="location_content_order">콘텐츠 순서</Label>
-                <Select
-                  value={settings.location_content_order || "description_first"}
-                  onValueChange={(value) => onSettingChange("location_content_order", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="순서 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="description_first">안내 메시지 먼저</SelectItem>
-                    <SelectItem value="buttons_first">버튼 먼저</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
               <div>
                 <Label htmlFor="location_description_title">안내 메시지 제목</Label>
                 <Input
