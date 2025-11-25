@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import * as LucideIcons from "lucide-react";
+import { Moon } from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
 import { useSwipeable } from "react-swipeable";
 
@@ -143,6 +144,7 @@ const Program = () => {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-baseline gap-2 mb-2">
+                        <Moon className="w-4 h-4 text-primary flex-shrink-0" />
                         <span className="text-sm font-semibold text-primary">
                           {card.time}
                         </span>
