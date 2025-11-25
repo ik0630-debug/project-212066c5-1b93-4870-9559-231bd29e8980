@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -127,10 +128,25 @@ const LocationSettings = ({
       <Separator />
 
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">안내 메시지</h3>
+        <h3 className="text-lg font-semibold">안내 메시지 & 버튼</h3>
         <div className="grid gap-4">
           <div>
-            <Label htmlFor="location_description_title">제목</Label>
+            <Label htmlFor="location_content_order">콘텐츠 순서</Label>
+            <Select
+              value={settings.location_content_order || "description_first"}
+              onValueChange={(value) => onSettingChange("location_content_order", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="순서 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="description_first">안내 메시지 먼저</SelectItem>
+                <SelectItem value="buttons_first">버튼 먼저</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="location_description_title">안내 메시지 제목</Label>
             <Input
               id="location_description_title"
               value={settings.location_description_title || ""}
@@ -139,7 +155,7 @@ const LocationSettings = ({
             />
           </div>
           <div>
-            <Label htmlFor="location_description_content">내용</Label>
+            <Label htmlFor="location_description_content">안내 메시지 내용</Label>
             <Textarea
               id="location_description_content"
               value={settings.location_description_content || ""}
