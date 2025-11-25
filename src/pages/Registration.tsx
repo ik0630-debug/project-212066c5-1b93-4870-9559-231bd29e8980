@@ -32,6 +32,7 @@ const Registration = () => {
   const [privacyContent, setPrivacyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPageEnabled, setIsPageEnabled] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [pageSettings, setPageSettings] = useState({
     pageTitle: "참가 신청",
     pageDescription: "아래 양식을 작성해주세요",
@@ -48,6 +49,7 @@ const Registration = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
+      try {
       const { data } = await supabase
         .from("site_settings")
         .select("*")
@@ -85,6 +87,9 @@ const Registration = () => {
           }
         });
         setPageSettings(newSettings);
+      }
+      } finally {
+        setLoading(false);
       }
     };
     loadSettings();
@@ -235,6 +240,10 @@ const Registration = () => {
     trackMouse: false,
     delta: 100, // 스와이프 감지를 위한 최소 이동 거리 (기본값 10px → 100px)
   });
+
+  if (loading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">로딩 중...</div>;
+  }
 
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
