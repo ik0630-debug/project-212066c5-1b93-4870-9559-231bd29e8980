@@ -171,6 +171,13 @@ const LocationSettings = ({
                   placeholder="행사 안내 메시지를 입력하세요"
                 />
               </div>
+              <div>
+                <Label htmlFor="location_description_bg_color">안내 메시지 배경색</Label>
+                <ColorPicker
+                  value={settings.location_description_bg_color || ""}
+                  onChange={(color) => onSettingChange("location_description_bg_color", color)}
+                />
+              </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <Label>하단 버튼</Label>
