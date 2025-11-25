@@ -19,6 +19,7 @@ const Location = () => {
   const [locationEmail, setLocationEmail] = useState("");
   const [descriptionTitle, setDescriptionTitle] = useState("");
   const [descriptionContent, setDescriptionContent] = useState("");
+  const [descriptionBgColor, setDescriptionBgColor] = useState("");
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
   const [isPageEnabled, setIsPageEnabled] = useState(true);
@@ -76,6 +77,9 @@ const Location = () => {
           break;
         case 'location_description_content':
           setDescriptionContent(setting.value);
+          break;
+        case 'location_description_bg_color':
+          setDescriptionBgColor(setting.value);
           break;
         case 'location_content_order':
           setContentOrder(setting.value);
@@ -153,10 +157,13 @@ const Location = () => {
     switch (sectionId) {
       case "description_buttons":
         return contentOrder === "description_first" ? (
-          <>
+          <div className="space-y-6">
             {/* Description Section */}
             {(descriptionTitle || descriptionContent) && (
-              <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
+              <div 
+                className="rounded-lg p-6 shadow-elegant border border-border"
+                style={{ backgroundColor: descriptionBgColor ? `hsl(${descriptionBgColor})` : undefined }}
+              >
                 {descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{descriptionTitle}</h2>}
                 {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
               </div>
@@ -178,9 +185,9 @@ const Location = () => {
                 ))}
               </div>
             )}
-          </>
+          </div>
         ) : (
-          <>
+          <div className="space-y-6">
             {/* Bottom Buttons */}
             {bottomButtons.length > 0 && (
               <div className="flex justify-center gap-4">
@@ -200,12 +207,15 @@ const Location = () => {
 
             {/* Description Section */}
             {(descriptionTitle || descriptionContent) && (
-              <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
+              <div 
+                className="rounded-lg p-6 shadow-elegant border border-border"
+                style={{ backgroundColor: descriptionBgColor ? `hsl(${descriptionBgColor})` : undefined }}
+              >
                 {descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{descriptionTitle}</h2>}
                 {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
               </div>
             )}
-          </>
+          </div>
         );
 
       case "location_info":

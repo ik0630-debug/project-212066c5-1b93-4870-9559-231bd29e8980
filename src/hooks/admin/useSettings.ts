@@ -51,6 +51,7 @@ export const useSettings = () => {
     location_email: "",
     location_description_title: "",
     location_description_content: "",
+    location_description_bg_color: "",
     location_content_order: "description_first", // "description_first" or "buttons_first"
   });
 
