@@ -231,12 +231,12 @@ export const useSettings = () => {
           .map(([key, value]) => ({
             category: getCategoryFromKey(key),
             key,
-            value: value.toString(),
+            value: value?.toString() || "",
           })),
         ...Object.entries(registrationSettings).map(([key, value]) => ({
           category: "registration",
           key,
-          value: value.toString(),
+          value: value?.toString() || "",
         })),
         {
           category: "registration",
@@ -286,8 +286,37 @@ export const useSettings = () => {
         },
       ];
 
-      await supabase.from("site_settings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-      const { error } = await supabase.from("site_settings").insert(settingsToSave);
+      // Clean up old card/button entries that might have higher indices
+      const categories = ['home', 'program', 'location'];
+      const keyPatterns = ['info_card', 'bottom_button', 'card', 'transport_card', 'location_bottom_button'];
+      
+      for (const category of categories) {
+        for (const pattern of keyPatterns) {
+          // Delete entries with indices beyond current arrays
+          const currentMax = pattern === 'info_card' ? infoCards.length :
+                            pattern === 'bottom_button' && category === 'home' ? bottomButtons.length :
+                            pattern === 'card' ? programCards.length :
+                            pattern === 'transport_card' ? transportCards.length :
+                            pattern === 'location_bottom_button' ? locationBottomButtons.length : 0;
+          
+          if (currentMax > 0) {
+            await supabase
+              .from("site_settings")
+              .delete()
+              .eq('category', category)
+              .like('key', `%${pattern}%`)
+              .gte('key', `${category === 'home' ? 'home_' : ''}${pattern}_${currentMax}`);
+          }
+        }
+      }
+
+      // Use upsert to save all settings
+      const { error } = await supabase
+        .from("site_settings")
+        .upsert(settingsToSave, { 
+          onConflict: 'category,key',
+          ignoreDuplicates: false 
+        });
 
       if (error) throw error;
 
@@ -298,6 +327,7 @@ export const useSettings = () => {
         });
       }
     } catch (error: any) {
+      console.error("Save settings error:", error);
       toast({
         title: "저장 실패",
         description: error.message,
