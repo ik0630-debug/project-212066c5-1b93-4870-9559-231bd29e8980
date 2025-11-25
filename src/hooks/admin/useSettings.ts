@@ -286,34 +286,32 @@ export const useSettings = () => {
         },
       ];
 
-      // Clean up old card/button entries that might have higher indices
-      const categories = ['home', 'program', 'location'];
-      const keyPatterns = ['info_card', 'bottom_button', 'card', 'transport_card', 'location_bottom_button'];
+      // Remove duplicates based on category + key combination
+      const uniqueSettings = settingsToSave.reduce((acc, setting) => {
+        const key = `${setting.category}:${setting.key}`;
+        acc[key] = setting;
+        return acc;
+      }, {} as Record<string, any>);
       
-      for (const category of categories) {
-        for (const pattern of keyPatterns) {
-          // Delete entries with indices beyond current arrays
-          const currentMax = pattern === 'info_card' ? infoCards.length :
-                            pattern === 'bottom_button' && category === 'home' ? bottomButtons.length :
-                            pattern === 'card' ? programCards.length :
-                            pattern === 'transport_card' ? transportCards.length :
-                            pattern === 'location_bottom_button' ? locationBottomButtons.length : 0;
-          
-          if (currentMax > 0) {
-            await supabase
-              .from("site_settings")
-              .delete()
-              .eq('category', category)
-              .like('key', `%${pattern}%`)
-              .gte('key', `${category === 'home' ? 'home_' : ''}${pattern}_${currentMax}`);
-          }
-        }
+      const deduplicatedSettings = Object.values(uniqueSettings);
+
+      console.log('Saving settings count:', deduplicatedSettings.length);
+
+      // Delete old card entries that might have higher indices
+      for (let i = Math.max(infoCards.length, bottomButtons.length, programCards.length, transportCards.length, locationBottomButtons.length); i < 20; i++) {
+        await supabase.from("site_settings").delete().in("key", [
+          `home_info_card_${i}`,
+          `home_bottom_button_${i}`,
+          `program_card_${i}`,
+          `transport_card_${i}`,
+          `location_bottom_button_${i}`,
+        ]);
       }
 
       // Use upsert to save all settings
       const { error } = await supabase
         .from("site_settings")
-        .upsert(settingsToSave, { 
+        .upsert(deduplicatedSettings, { 
           onConflict: 'category,key',
           ignoreDuplicates: false 
         });
