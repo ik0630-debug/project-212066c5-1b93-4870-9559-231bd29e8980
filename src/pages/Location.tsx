@@ -45,6 +45,9 @@ const Location = () => {
 
     settings.forEach(setting => {
       switch (setting.key) {
+        case 'location_header_image':
+          setHeaderImage(setting.value);
+          break;
         case 'location_page_title':
           setPageTitle(setting.value);
           break;
@@ -310,6 +313,18 @@ const Location = () => {
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
+        {/* Header Image */}
+        {headerImage && (
+          <div className="w-full">
+            <img 
+              src={headerImage} 
+              alt="Location header" 
+              className="w-full h-auto object-cover"
+              style={{ maxHeight: '400px' }}
+            />
+          </div>
+        )}
+        
         <header 
           className={`sticky top-0 z-40 text-primary-foreground py-4 px-6 text-center ${!headerColor ? 'bg-gradient-primary' : ''}`}
           style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
