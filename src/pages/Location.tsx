@@ -325,6 +325,17 @@ const Location = () => {
           )}
         </header>
 
+        {/* Header Image - Full width hero style */}
+        {isPageEnabled && headerImage && (
+          <div className="w-full">
+            <img 
+              src={headerImage} 
+              alt="Location header" 
+              className="w-full h-[50vh] min-h-[300px] max-h-[600px] object-cover"
+            />
+          </div>
+        )}
+
       <main className="px-6 py-8 space-y-8">
         {!isPageEnabled ? (
           <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center space-y-4">
@@ -337,18 +348,6 @@ const Location = () => {
           </div>
         ) : (
           <>
-            {/* Header Image */}
-            {headerImage && (
-              <div className="w-full -mx-6">
-                <img 
-                  src={headerImage} 
-                  alt="Location header" 
-                  className="w-full h-auto object-cover"
-                  style={{ maxHeight: '400px' }}
-                />
-              </div>
-            )}
-            
             {sectionOrder.map((sectionId) => (
               <div key={sectionId}>{renderSection(sectionId)}</div>
             ))}
