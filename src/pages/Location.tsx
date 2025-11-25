@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
+import { usePageSettings } from "@/hooks/usePageSettings";
 
 const Location = () => {
   const navigate = useNavigate();
@@ -23,8 +24,9 @@ const Location = () => {
   const [descriptionBgColor, setDescriptionBgColor] = useState("");
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
-  const [isPageEnabled, setIsPageEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
+  const { settings: pageSettings } = usePageSettings();
+  const isPageEnabled = pageSettings?.location ?? true;
   const [sectionOrder, setSectionOrder] = useState<string[]>([
     "description_buttons",
     "location_info",
@@ -59,8 +61,6 @@ const Location = () => {
         case 'location_header_color':
           setHeaderColor(setting.value);
           break;
-        case 'location_enabled':
-          setIsPageEnabled(setting.value === "true");
           break;
         case 'location_name':
           setLocationName(setting.value);

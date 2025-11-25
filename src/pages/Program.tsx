@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import * as LucideIcons from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
+import { supabase } from "@/integrations/supabase/client";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
+import { usePageSettings } from "@/hooks/usePageSettings";
 
 interface ProgramCard {
   id: string;
@@ -23,7 +24,8 @@ const Program = () => {
   const [headerColor, setHeaderColor] = useState("");
   const [programCards, setProgramCards] = useState<ProgramCard[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isPageEnabled, setIsPageEnabled] = useState(true);
+  const { settings: pageSettings } = usePageSettings();
+  const isPageEnabled = pageSettings?.program ?? true;
 
   useEffect(() => {
     loadProgramData();
@@ -46,12 +48,10 @@ const Program = () => {
         const titleSetting = settings.find((s) => s.key === "program_title");
         const descSetting = settings.find((s) => s.key === "program_description");
         const colorSetting = settings.find((s) => s.key === "program_header_color");
-        const enabledSetting = settings.find((s) => s.key === "program_enabled");
 
         if (titleSetting) setPageTitle(titleSetting.value);
         if (descSetting) setPageDescription(descSetting.value);
         if (colorSetting) setHeaderColor(colorSetting.value);
-        if (enabledSetting) setIsPageEnabled(enabledSetting.value === "true");
 
         // Load program cards
         const cards = settings

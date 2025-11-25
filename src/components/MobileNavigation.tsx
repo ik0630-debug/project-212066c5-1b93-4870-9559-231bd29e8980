@@ -1,42 +1,13 @@
-import { useState, useEffect } from "react";
 import { NavLink } from "@/components/NavLink";
 import { Home, Calendar, FileText, MapPin } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { usePageSettings } from "@/hooks/usePageSettings";
 
 const MobileNavigation = () => {
-  const [enabledPages, setEnabledPages] = useState({
-    program: true,
-    registration: true,
-    location: true,
-  });
+  const { settings: enabledPages, loading } = usePageSettings();
 
-  useEffect(() => {
-    loadPageSettings();
-  }, []);
-
-  const loadPageSettings = async () => {
-    try {
-      const { data: settings } = await supabase
-        .from("site_settings")
-        .select("*")
-        .in("key", ["program_enabled", "registration_enabled", "location_enabled"]);
-
-      if (settings) {
-        const programSetting = settings.find((s) => s.key === "program_enabled");
-        const registrationSetting = settings.find((s) => s.key === "registration_enabled");
-        const locationSetting = settings.find((s) => s.key === "location_enabled");
-        
-        const newSettings = {
-          program: programSetting ? programSetting.value === "true" : true,
-          registration: registrationSetting ? registrationSetting.value === "true" : true,
-          location: locationSetting ? locationSetting.value === "true" : true,
-        };
-        setEnabledPages(newSettings);
-      }
-    } catch (error) {
-      console.error("Error loading page settings:", error);
-    }
-  };
+  if (loading || !enabledPages) {
+    return null;
+  }
 
   const allNavItems = [
     { icon: Home, label: "홈", path: "/", enabled: true },
