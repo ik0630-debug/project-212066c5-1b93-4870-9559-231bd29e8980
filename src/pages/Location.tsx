@@ -9,19 +9,6 @@ import { useSwipeable } from "react-swipeable";
 const Location = () => {
   const navigate = useNavigate();
   const [headerImage, setHeaderImage] = useState<string>("");
-  const [headerUseText, setHeaderUseText] = useState("false");
-  const [headerTextContent, setHeaderTextContent] = useState("");
-  const [headerOverlayOpacity, setHeaderOverlayOpacity] = useState("50");
-  const [headerUseButton, setHeaderUseButton] = useState("false");
-  const [headerButtonPosition, setHeaderButtonPosition] = useState("inside");
-  const [headerButtonText, setHeaderButtonText] = useState("");
-  const [headerButtonUrl, setHeaderButtonUrl] = useState("");
-  const [headerButtonBgColor, setHeaderButtonBgColor] = useState("");
-  const [headerButtonTextColor, setHeaderButtonTextColor] = useState("");
-  const [headerButtonSizeType, setHeaderButtonSizeType] = useState("lg");
-  const [headerButtonCustomWidth, setHeaderButtonCustomWidth] = useState("");
-  const [headerButtonCustomHeight, setHeaderButtonCustomHeight] = useState("");
-  const [headerButtonFontSize, setHeaderButtonFontSize] = useState("text-base");
   const [headerColor, setHeaderColor] = useState("");
   const [pageTitle, setPageTitle] = useState("");
   const [pageDescription, setPageDescription] = useState("");
@@ -60,45 +47,6 @@ const Location = () => {
       switch (setting.key) {
         case 'location_header_image':
           setHeaderImage(setting.value);
-          break;
-        case 'location_header_use_text':
-          setHeaderUseText(setting.value);
-          break;
-        case 'location_header_text_content':
-          setHeaderTextContent(setting.value);
-          break;
-        case 'location_header_overlay_opacity':
-          setHeaderOverlayOpacity(setting.value);
-          break;
-        case 'location_header_use_button':
-          setHeaderUseButton(setting.value);
-          break;
-        case 'location_header_button_position':
-          setHeaderButtonPosition(setting.value);
-          break;
-        case 'location_header_button_text':
-          setHeaderButtonText(setting.value);
-          break;
-        case 'location_header_button_url':
-          setHeaderButtonUrl(setting.value);
-          break;
-        case 'location_header_button_bg_color':
-          setHeaderButtonBgColor(setting.value);
-          break;
-        case 'location_header_button_text_color':
-          setHeaderButtonTextColor(setting.value);
-          break;
-        case 'location_header_button_size_type':
-          setHeaderButtonSizeType(setting.value);
-          break;
-        case 'location_header_button_custom_width':
-          setHeaderButtonCustomWidth(setting.value);
-          break;
-        case 'location_header_button_custom_height':
-          setHeaderButtonCustomHeight(setting.value);
-          break;
-        case 'location_header_button_font_size':
-          setHeaderButtonFontSize(setting.value);
           break;
         case 'location_page_title':
           setPageTitle(setting.value);
@@ -206,38 +154,6 @@ const Location = () => {
   const getIconComponent = (iconName: string) => {
     const icons: Record<string, any> = { Train, Bus, Car, Plane, Ship };
     return icons[iconName] || MapPin;
-  };
-
-  const HeaderButton = () => {
-    if (headerUseButton !== "true" || !headerButtonText || !headerButtonUrl) return null;
-    
-    const buttonSize = headerButtonSizeType === "custom" ? undefined : (headerButtonSizeType as any || "lg");
-    const customStyle: any = {
-      backgroundColor: headerButtonBgColor ? `hsl(${headerButtonBgColor})` : undefined,
-      color: headerButtonTextColor ? `hsl(${headerButtonTextColor})` : undefined,
-    };
-    
-    if (headerButtonSizeType === "custom") {
-      if (headerButtonCustomWidth) customStyle.width = `${headerButtonCustomWidth}px`;
-      if (headerButtonCustomHeight) customStyle.height = `${headerButtonCustomHeight}px`;
-    }
-    
-    return (
-      <Button
-        onClick={() => {
-          if (headerButtonUrl.startsWith("http")) {
-            window.open(headerButtonUrl, "_blank");
-          } else {
-            navigate(headerButtonUrl);
-          }
-        }}
-        size={buttonSize}
-        style={customStyle}
-        className={`shadow-xl hover:shadow-2xl transition-all ${headerButtonFontSize || "text-base"}`}
-      >
-        {headerButtonText}
-      </Button>
-    );
   };
 
   const renderSection = (sectionId: string) => {
@@ -421,41 +337,15 @@ const Location = () => {
           </div>
         ) : (
           <>
-            {/* Header Image Section */}
+            {/* Header Image */}
             {headerImage && (
-              <div className="relative w-full -mx-6">
-                <div className="relative">
-                  <div 
-                    className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-                    style={{ opacity: parseInt(headerOverlayOpacity) / 100 }}
-                  />
-                  <img 
-                    src={headerImage} 
-                    alt="Location header" 
-                    className="w-full h-auto object-cover"
-                    style={{ maxHeight: '400px' }}
-                  />
-                  
-                  {headerUseText === "true" && headerTextContent && (
-                    <div className="absolute inset-0 z-20 flex items-center justify-center px-6 text-center text-primary-foreground pointer-events-none">
-                      <div dangerouslySetInnerHTML={{ __html: headerTextContent }} />
-                    </div>
-                  )}
-                  
-                  {headerUseButton === "true" && headerButtonPosition === "inside" && (
-                    <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                      <div className="pointer-events-auto">
-                        <HeaderButton />
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                {headerUseButton === "true" && headerButtonPosition === "below" && (
-                  <div className="flex justify-center -mt-6 relative z-30">
-                    <HeaderButton />
-                  </div>
-                )}
+              <div className="w-full -mx-6">
+                <img 
+                  src={headerImage} 
+                  alt="Location header" 
+                  className="w-full h-auto object-cover"
+                  style={{ maxHeight: '400px' }}
+                />
               </div>
             )}
             
