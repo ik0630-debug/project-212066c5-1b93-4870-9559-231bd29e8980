@@ -178,27 +178,7 @@ export const useSettings = () => {
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
     
     const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card);
-    if (loadedTransportCardsArray.length > 0) {
-      setTransportCards(loadedTransportCardsArray);
-    } else {
-      setTransportCards([
-        {
-          icon: "Train",
-          title: "지하철",
-          description: "2호선 강남역 5번 출구에서 도보 5분",
-        },
-        {
-          icon: "Bus",
-          title: "버스",
-          description: "146, 360, 440, 1100번 - 강남역 하차",
-        },
-        {
-          icon: "Car",
-          title: "자가용",
-          description: "건물 지하 1~3층 주차 가능 (3시간 무료)",
-        },
-      ]);
-    }
+    setTransportCards(loadedTransportCardsArray);
     
     setSettings(settingsMap);
     setRegistrationSettings(prev => ({ ...prev, ...registrationSettingsData }));
