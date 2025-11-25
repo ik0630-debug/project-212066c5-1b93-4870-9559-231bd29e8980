@@ -32,9 +32,11 @@ export const useSettings = () => {
     program_title: "",
     program_description: "",
     program_header_color: "220 70% 25%",
+    program_enabled: "true",
     location_page_title: "",
     location_page_description: "",
     location_header_color: "220 70% 25%",
+    location_enabled: "true",
     location_name: "",
     location_address: "",
     location_map_url: "",
@@ -47,6 +49,7 @@ export const useSettings = () => {
     registration_page_description: "아래 양식을 작성해주세요",
     registration_success_title: "신청이 완료되었습니다!",
     registration_success_description: "참가 확인 메일을 발송해드렸습니다.",
+    registration_enabled: "true",
   });
 
   const [registrationFields, setRegistrationFields] = useState([

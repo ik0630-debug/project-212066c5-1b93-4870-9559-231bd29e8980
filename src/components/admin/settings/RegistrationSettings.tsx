@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import IconPicker from "@/components/IconPicker";
 
@@ -82,6 +83,18 @@ const RegistrationSettings = ({
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">페이지 정보</h3>
         <div className="grid gap-4">
+          <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
+            <div className="space-y-0.5">
+              <Label>페이지 활성화</Label>
+              <p className="text-sm text-muted-foreground">
+                비활성화하면 사용자가 참가 신청 페이지에 접근할 수 없습니다
+              </p>
+            </div>
+            <Switch
+              checked={registrationSettings.registration_enabled === "true"}
+              onCheckedChange={(checked) => handleChange("registration_enabled", checked ? "true" : "false")}
+            />
+          </div>
           <div>
             <Label htmlFor="registration_page_title">페이지 제목</Label>
             <Input

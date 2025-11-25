@@ -31,6 +31,7 @@ const Registration = () => {
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [privacyContent, setPrivacyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPageEnabled, setIsPageEnabled] = useState(true);
   const [pageSettings, setPageSettings] = useState({
     pageTitle: "참가 신청",
     pageDescription: "아래 양식을 작성해주세요",
@@ -79,6 +80,8 @@ const Registration = () => {
             newSettings.successDescription = value;
           } else if (key === "registration_privacy_content") {
             setPrivacyContent(value);
+          } else if (key === "registration_enabled") {
+            setIsPageEnabled(value === "true");
           }
         });
         setPageSettings(newSettings);
@@ -248,8 +251,20 @@ const Registration = () => {
           )}
         </header>
 
-      <main className="px-6 py-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {!isPageEnabled ? (
+          <main className="px-6 py-8">
+            <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center space-y-4">
+              <h2 className="text-xl font-bold text-foreground">
+                참가 신청이 일시적으로 중단되었습니다
+              </h2>
+              <p className="text-muted-foreground">
+                현재 참가 신청을 받지 않고 있습니다. 자세한 사항은 관리자에게 문의해주세요.
+              </p>
+            </div>
+          </main>
+        ) : (
+          <main className="px-6 py-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
           {fields.map((field) => (
             <div key={field.id} className="space-y-2">
               <Label htmlFor={field.id} className="flex items-center gap-2">
@@ -351,6 +366,7 @@ const Registration = () => {
           </div>
         </form>
       </main>
+        )}
 
         <MobileNavigation />
       </div>

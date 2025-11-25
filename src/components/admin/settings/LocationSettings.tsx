@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { Plus } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -55,6 +56,18 @@ const LocationSettings = ({
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">페이지 정보</h3>
         <div className="grid gap-4">
+          <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
+            <div className="space-y-0.5">
+              <Label>페이지 활성화</Label>
+              <p className="text-sm text-muted-foreground">
+                비활성화하면 사용자가 오시는 길 페이지에 접근할 수 없습니다
+              </p>
+            </div>
+            <Switch
+              checked={settings.location_enabled === "true"}
+              onCheckedChange={(checked) => onSettingChange("location_enabled", checked ? "true" : "false")}
+            />
+          </div>
           <div>
             <Label htmlFor="location_page_title">페이지 제목</Label>
             <Input
