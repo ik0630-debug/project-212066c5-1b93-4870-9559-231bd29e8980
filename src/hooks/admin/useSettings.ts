@@ -16,6 +16,12 @@ export const useSettings = () => {
     "info_cards",
     "bottom_buttons",
   ]);
+  const [locationSectionOrder, setLocationSectionOrder] = useState<string[]>([
+    "description_buttons",
+    "location_info",
+    "transport_info",
+    "contact_info",
+  ]);
   
   const [settings, setSettings] = useState<any>({
     hero_use_text: "true",
@@ -98,6 +104,10 @@ export const useSettings = () => {
           } else if (key === "section_order") {
             try {
               setSectionOrder(JSON.parse(value));
+            } catch {}
+          } else if (key === "location_section_order") {
+            try {
+              setLocationSectionOrder(JSON.parse(value));
             } catch {}
           } else {
             settingsMap[key] = value;
@@ -284,6 +294,19 @@ export const useSettings = () => {
     }
   };
 
+  const saveLocationSectionOrder = async (order: string[]) => {
+    try {
+      await supabase.from("site_settings").delete().eq("key", "location_section_order");
+      await supabase.from("site_settings").insert({
+        category: "location",
+        key: "location_section_order",
+        value: JSON.stringify(order),
+      });
+    } catch (error) {
+      console.error("Error saving location section order:", error);
+    }
+  };
+
   return {
     // State
     settings,
@@ -295,6 +318,7 @@ export const useSettings = () => {
     transportCards,
     locationBottomButtons,
     sectionOrder,
+    locationSectionOrder,
     
     // Setters
     setSettings,
@@ -306,11 +330,13 @@ export const useSettings = () => {
     setTransportCards,
     setLocationBottomButtons,
     setSectionOrder,
+    setLocationSectionOrder,
     
     // Functions
     loadSettings,
     saveSettings,
     handleSettingChange,
     saveSectionOrder,
+    saveLocationSectionOrder,
   };
 };

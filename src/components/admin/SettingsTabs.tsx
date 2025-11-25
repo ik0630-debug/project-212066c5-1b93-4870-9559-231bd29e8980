@@ -19,6 +19,7 @@ interface SettingsTabsProps {
   transportCards: any[];
   locationBottomButtons: any[];
   sectionOrder: string[];
+  locationSectionOrder: string[];
   onSettingChange: (key: string, value: string) => void;
   onRegistrationSettingsChange: (settings: any) => void;
   onRegistrationFieldsChange: (fields: any[]) => void;
@@ -28,7 +29,9 @@ interface SettingsTabsProps {
   onTransportCardsChange: (cards: any[]) => void;
   onLocationBottomButtonsChange: (buttons: any[]) => void;
   onSectionOrderChange: (order: string[]) => void;
+  onLocationSectionOrderChange: (order: string[]) => void;
   onSaveSectionOrder: (order: string[]) => void;
+  onSaveLocationSectionOrder: (order: string[]) => void;
   onSave: (options?: { silent?: boolean }) => void;
 }
 
@@ -44,6 +47,7 @@ const SettingsTabs = ({
   transportCards,
   locationBottomButtons,
   sectionOrder,
+  locationSectionOrder,
   onSettingChange,
   onRegistrationSettingsChange,
   onRegistrationFieldsChange,
@@ -53,7 +57,9 @@ const SettingsTabs = ({
   onTransportCardsChange,
   onLocationBottomButtonsChange,
   onSectionOrderChange,
+  onLocationSectionOrderChange,
   onSaveSectionOrder,
+  onSaveLocationSectionOrder,
   onSave,
 }: SettingsTabsProps) => {
   const [previewKey, setPreviewKey] = useState(0);
@@ -106,9 +112,12 @@ const SettingsTabs = ({
             settings={settings}
             transportCards={transportCards}
             bottomButtons={locationBottomButtons}
+            sectionOrder={locationSectionOrder}
             onSettingChange={onSettingChange}
             onTransportCardsChange={onTransportCardsChange}
             onBottomButtonsChange={onLocationBottomButtonsChange}
+            onSectionOrderChange={onLocationSectionOrderChange}
+            onSaveSectionOrder={onSaveLocationSectionOrder}
           />
         );
       default:
