@@ -41,10 +41,10 @@ const Location = () => {
 
   const loadLocationSettings = async () => {
     try {
-      const { data: settings } = await supabase
+    const { data: settings } = await supabase
         .from('site_settings')
         .select('*')
-        .eq('category', 'location');
+        .in('category', ['location', 'general']);
 
       if (!settings) return;
 
@@ -126,28 +126,7 @@ const Location = () => {
 
     setBottomButtons(buttons);
     setDownloadFiles(files);
-
-    if (cards.length > 0) {
-      setTransportations(cards);
-    } else {
-      setTransportations([
-        {
-          icon: "Train",
-          title: "지하철",
-          description: "2호선 강남역 5번 출구에서 도보 5분",
-        },
-        {
-          icon: "Bus",
-          title: "버스",
-          description: "146, 360, 440, 1100번 - 강남역 하차",
-        },
-        {
-          icon: "Car",
-          title: "자가용",
-          description: "건물 지하 1~3층 주차 가능 (3시간 무료)",
-        },
-      ]);
-    }
+    setTransportations(cards);
     } finally {
       setLoading(false);
     }

@@ -204,6 +204,7 @@ export const useSettings = () => {
     if (key.startsWith("home_")) return "home";
     if (key.startsWith("program_")) return "program";
     if (key.startsWith("location_")) return "location";
+    if (key.startsWith("transport_card_")) return "location";
     if (key.startsWith("section_")) return "home";
     return "general";
   };
