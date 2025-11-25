@@ -23,6 +23,7 @@ const Location = () => {
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
   const [isPageEnabled, setIsPageEnabled] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [sectionOrder, setSectionOrder] = useState<string[]>([
     "description_buttons",
     "location_info",
@@ -35,12 +36,13 @@ const Location = () => {
   }, []);
 
   const loadLocationSettings = async () => {
-    const { data: settings } = await supabase
-      .from('site_settings')
-      .select('*')
-      .eq('category', 'location');
+    try {
+      const { data: settings } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('category', 'location');
 
-    if (!settings) return;
+      if (!settings) return;
 
     settings.forEach(setting => {
       switch (setting.key) {
@@ -133,6 +135,9 @@ const Location = () => {
           description: "건물 지하 1~3층 주차 가능 (3시간 무료)",
         },
       ]);
+    }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -275,6 +280,10 @@ const Location = () => {
     onSwipedRight: () => navigate('/registration'),
     trackMouse: false,
   });
+
+  if (loading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">로딩 중...</div>;
+  }
 
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
