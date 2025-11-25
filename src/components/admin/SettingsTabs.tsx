@@ -18,6 +18,7 @@ interface SettingsTabsProps {
   programCards: any[];
   transportCards: any[];
   locationBottomButtons: any[];
+  downloadFiles: any[];
   sectionOrder: string[];
   locationSectionOrder: string[];
   onSettingChange: (key: string, value: string) => void;
@@ -28,6 +29,7 @@ interface SettingsTabsProps {
   onProgramCardsChange: (cards: any[]) => void;
   onTransportCardsChange: (cards: any[]) => void;
   onLocationBottomButtonsChange: (buttons: any[]) => void;
+  onDownloadFilesChange: (files: any[]) => void;
   onSectionOrderChange: (order: string[]) => void;
   onLocationSectionOrderChange: (order: string[]) => void;
   onSaveSectionOrder: (order: string[]) => void;
@@ -46,6 +48,7 @@ const SettingsTabs = ({
   programCards,
   transportCards,
   locationBottomButtons,
+  downloadFiles,
   sectionOrder,
   locationSectionOrder,
   onSettingChange,
@@ -56,6 +59,7 @@ const SettingsTabs = ({
   onProgramCardsChange,
   onTransportCardsChange,
   onLocationBottomButtonsChange,
+  onDownloadFilesChange,
   onSectionOrderChange,
   onLocationSectionOrderChange,
   onSaveSectionOrder,
@@ -112,10 +116,12 @@ const SettingsTabs = ({
             settings={settings}
             transportCards={transportCards}
             bottomButtons={locationBottomButtons}
+            downloadFiles={downloadFiles}
             sectionOrder={locationSectionOrder}
             onSettingChange={onSettingChange}
             onTransportCardsChange={onTransportCardsChange}
             onBottomButtonsChange={onLocationBottomButtonsChange}
+            onDownloadFilesChange={onDownloadFilesChange}
             onSectionOrderChange={onLocationSectionOrderChange}
             onSaveSectionOrder={onSaveLocationSectionOrder}
           />

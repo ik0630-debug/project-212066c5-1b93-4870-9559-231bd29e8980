@@ -10,6 +10,7 @@ export const useSettings = () => {
   const [programCards, setProgramCards] = useState<any[]>([]);
   const [transportCards, setTransportCards] = useState<any[]>([]);
   const [locationBottomButtons, setLocationBottomButtons] = useState<any[]>([]);
+  const [downloadFiles, setDownloadFiles] = useState<any[]>([]);
   const [sectionOrder, setSectionOrder] = useState<string[]>([
     "hero_section",
     "description",
@@ -85,6 +86,7 @@ export const useSettings = () => {
     const loadedProgramCards: any = {};
     const loadedTransportCards: any = {};
     const loadedLocationBottomButtons: any = {};
+    const loadedDownloadFiles: any = {};
     const registrationSettingsData: any = {};
 
     data?.forEach(({ key, value }) => {
@@ -146,6 +148,12 @@ export const useSettings = () => {
               const index = parsed.order || 0;
               loadedLocationBottomButtons[index] = parsed;
             } catch {}
+          } else if (key.startsWith("location_download_file_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedDownloadFiles[index] = parsed;
+            } catch {}
           } else {
             settingsMap[key] = value;
           }
@@ -169,14 +177,17 @@ export const useSettings = () => {
     const cards = Object.values(loadedInfoCards).filter((card: any) => card.title);
     const buttons = Object.values(loadedBottomButtons).filter((btn: any) => btn.text);
     const locationButtons = Object.values(loadedLocationBottomButtons).filter((btn: any) => btn.text);
+    const downloadFilesArray = Object.values(loadedDownloadFiles).filter((file: any) => file.name && file.url);
     
     console.log('useSettings: Loaded info cards:', cards.length);
     console.log('useSettings: Loaded bottom buttons:', buttons.length);
     console.log('useSettings: Loaded location bottom buttons:', locationButtons.length);
+    console.log('useSettings: Loaded download files:', downloadFilesArray.length);
     
     setInfoCards(cards);
     setBottomButtons(buttons);
     setLocationBottomButtons(locationButtons);
+    setDownloadFiles(downloadFilesArray);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
     
     const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card);
@@ -243,6 +254,12 @@ export const useSettings = () => {
           category: "location",
           key: `location_bottom_button_${index}`,
           value: JSON.stringify({ ...button, order: index }),
+        })),
+        // Save download files
+        ...downloadFiles.map((file, index) => ({
+          category: "location",
+          key: `location_download_file_${index}`,
+          value: JSON.stringify({ ...file, order: index }),
         })),
         // Save section orders
         {
@@ -317,6 +334,7 @@ export const useSettings = () => {
     programCards,
     transportCards,
     locationBottomButtons,
+    downloadFiles,
     sectionOrder,
     locationSectionOrder,
     
@@ -329,6 +347,7 @@ export const useSettings = () => {
     setProgramCards,
     setTransportCards,
     setLocationBottomButtons,
+    setDownloadFiles,
     setSectionOrder,
     setLocationSectionOrder,
     

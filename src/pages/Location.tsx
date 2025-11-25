@@ -22,8 +22,7 @@ const Location = () => {
   const [descriptionTitle, setDescriptionTitle] = useState("");
   const [descriptionContent, setDescriptionContent] = useState("");
   const [descriptionBgColor, setDescriptionBgColor] = useState("");
-  const [downloadFileUrl, setDownloadFileUrl] = useState("");
-  const [downloadFileName, setDownloadFileName] = useState("");
+  const [downloadFiles, setDownloadFiles] = useState<any[]>([]);
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,12 +87,6 @@ const Location = () => {
         case 'location_description_bg_color':
           setDescriptionBgColor(setting.value);
           break;
-        case 'location_download_file_url':
-          setDownloadFileUrl(setting.value);
-          break;
-        case 'location_download_file_name':
-          setDownloadFileName(setting.value);
-          break;
         case 'location_section_order':
           try {
             setSectionOrder(JSON.parse(setting.value));
@@ -122,7 +115,17 @@ const Location = () => {
       }
     }).filter(Boolean).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
 
+    const downloadFilesSettings = settings.filter(s => s.key.startsWith('location_download_file_'));
+    const files = downloadFilesSettings.map(s => {
+      try {
+        return JSON.parse(s.value);
+      } catch {
+        return null;
+      }
+    }).filter(Boolean).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+
     setBottomButtons(buttons);
+    setDownloadFiles(files);
 
     if (cards.length > 0) {
       setTransportations(cards);
@@ -182,18 +185,22 @@ const Location = () => {
               </div>
             )}
 
-            {/* Download Button */}
-            {downloadFileUrl && (
-              <div className="flex justify-center">
-                <Button
-                  onClick={() => window.open(downloadFileUrl, '_blank', 'noopener,noreferrer')}
-                  variant="outline"
-                  size="lg"
-                  className="gap-2"
-                >
-                  <Download className="w-5 h-5" />
-                  {downloadFileName || "파일 다운로드"}
-                </Button>
+            {/* Download Files */}
+            {downloadFiles.length > 0 && (
+              <div className="space-y-3">
+                {downloadFiles.map((file, index) => (
+                  <div key={index} className="flex justify-center">
+                    <Button
+                      onClick={() => window.open(file.url, '_blank', 'noopener,noreferrer')}
+                      variant="outline"
+                      size="lg"
+                      className="gap-2 w-full max-w-md"
+                    >
+                      <Download className="w-5 h-5" />
+                      {file.name}
+                    </Button>
+                  </div>
+                ))}
               </div>
             )}
 
