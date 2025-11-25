@@ -87,6 +87,20 @@ export const useSettings = () => {
     const registrationSettingsData: any = {};
 
     data?.forEach(({ key, value }) => {
+      // Handle section orders first (they don't follow the category prefix pattern)
+      if (key === "section_order") {
+        try {
+          setSectionOrder(JSON.parse(value));
+        } catch {}
+        return;
+      }
+      if (key === "location_section_order") {
+        try {
+          setLocationSectionOrder(JSON.parse(value));
+        } catch {}
+        return;
+      }
+
       const keyParts = key.split("_");
       
       switch (keyParts[0]) {
@@ -102,15 +116,7 @@ export const useSettings = () => {
               const parsed = JSON.parse(value);
               const index = parsed.order || 0;
               loadedBottomButtons[index] = parsed;
-            } catch {}
-          } else if (key === "section_order") {
-            try {
-              setSectionOrder(JSON.parse(value));
-            } catch {}
-          } else if (key === "location_section_order") {
-            try {
-              setLocationSectionOrder(JSON.parse(value));
-            } catch {}
+          } catch {}
           } else {
             settingsMap[key] = value;
           }
