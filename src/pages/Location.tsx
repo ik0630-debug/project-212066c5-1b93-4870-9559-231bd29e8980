@@ -313,18 +313,6 @@ const Location = () => {
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
-        {/* Header Image */}
-        {headerImage && (
-          <div className="w-full">
-            <img 
-              src={headerImage} 
-              alt="Location header" 
-              className="w-full h-auto object-cover"
-              style={{ maxHeight: '400px' }}
-            />
-          </div>
-        )}
-        
         <header 
           className={`sticky top-0 z-40 text-primary-foreground py-4 px-6 text-center ${!headerColor ? 'bg-gradient-primary' : ''}`}
           style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
@@ -349,6 +337,18 @@ const Location = () => {
           </div>
         ) : (
           <>
+            {/* Header Image */}
+            {headerImage && (
+              <div className="w-full -mx-6">
+                <img 
+                  src={headerImage} 
+                  alt="Location header" 
+                  className="w-full h-auto object-cover"
+                  style={{ maxHeight: '400px' }}
+                />
+              </div>
+            )}
+            
             {sectionOrder.map((sectionId) => (
               <div key={sectionId}>{renderSection(sectionId)}</div>
             ))}
