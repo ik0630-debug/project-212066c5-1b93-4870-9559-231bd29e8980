@@ -46,6 +46,28 @@ const Location = () => {
 
   useEffect(() => {
     loadLocationSettings();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('location-settings-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'site_settings',
+          filter: 'category=eq.location'
+        },
+        () => {
+          console.log('Location settings changed, reloading...');
+          loadLocationSettings();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadLocationSettings = async () => {
