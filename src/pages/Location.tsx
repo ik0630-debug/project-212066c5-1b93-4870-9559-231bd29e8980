@@ -103,7 +103,7 @@ const Location = () => {
       } catch {
         return null;
       }
-    }).filter(Boolean).sort((a: any, b: any) => a.order - b.order);
+    }).filter((card): card is any => card !== null).sort((a: any, b: any) => a.order - b.order);
 
     const locationButtonsSettings = settings.filter(s => s.key.startsWith('location_bottom_button_'));
     const buttons = locationButtonsSettings.map(s => {
