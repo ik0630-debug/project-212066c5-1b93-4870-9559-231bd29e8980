@@ -8,16 +8,12 @@ import heroImage from "@/assets/hero-image.jpg";
 import { useHomeSettings } from "@/hooks/useHomeSettings";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
-import SwipeIndicator from "@/components/SwipeIndicator";
 
 const Index = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { settings, loading } = useHomeSettings();
-  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
-  const [swipeProgress, setSwipeProgress] = useState(0);
-  const [nextPageName, setNextPageName] = useState("");
 
   useEffect(() => {
     checkUserStatus();
@@ -76,40 +72,10 @@ const Index = () => {
     );
   };
 
-  const getPageName = (path: string) => {
-    const pageNames: Record<string, string> = {
-      '/': '홈',
-      '/program': '프로그램',
-      '/registration': '참가 신청',
-      '/location': '오시는 길'
-    };
-    return pageNames[path] || '';
-  };
-
   const swipeHandlers = useSwipeable({
-    onSwiping: async (eventData) => {
-      const deltaX = Math.abs(eventData.deltaX);
-      if (eventData.deltaX < -10) {
-        // 왼쪽으로 스와이프
-        setSwipeDirection('left');
-        const nextPage = await getNextEnabledPage('/', 'left');
-        setNextPageName(getPageName(nextPage));
-        setSwipeProgress(Math.min((deltaX / 150) * 100, 100));
-      } else if (eventData.deltaX > 10) {
-        // 오른쪽으로 스와이프
-        setSwipeDirection('right');
-        setSwipeProgress(0);
-      }
-    },
     onSwipedLeft: async () => {
-      setSwipeDirection(null);
-      setSwipeProgress(0);
       const nextPage = await getNextEnabledPage('/', 'left');
       navigate(nextPage);
-    },
-    onSwiped: () => {
-      setSwipeDirection(null);
-      setSwipeProgress(0);
     },
     trackMouse: false,
   });
@@ -220,12 +186,6 @@ const Index = () => {
 
         <MobileNavigation />
       </div>
-      
-      <SwipeIndicator 
-        direction={swipeDirection} 
-        progress={swipeProgress} 
-        nextPageName={nextPageName}
-      />
     </div>
   );
 };
