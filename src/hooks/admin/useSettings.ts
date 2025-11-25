@@ -42,6 +42,7 @@ export const useSettings = () => {
     program_enabled: "true",
     location_page_title: "",
     location_page_description: "",
+    location_header_image: "",
     location_header_color: "220 70% 25%",
     location_enabled: "true",
     location_name: "",

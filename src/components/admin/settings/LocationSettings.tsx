@@ -11,6 +11,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import SortableTransportCard from "@/components/SortableTransportCard";
 import SortableBottomButton from "@/components/SortableBottomButton";
 import { ColorPicker } from "@/components/ColorPicker";
+import ImageUpload from "@/components/ImageUpload";
 
 interface LocationSettingsProps {
   settings: any;
@@ -330,6 +331,16 @@ const LocationSettings = ({
               checked={settings.location_enabled === "true"}
               onCheckedChange={(checked) => onSettingChange("location_enabled", checked ? "true" : "false")}
             />
+          </div>
+          <div>
+            <ImageUpload
+              value={settings.location_header_image || ""}
+              onChange={(url) => onSettingChange("location_header_image", url)}
+              label="헤더 이미지"
+            />
+            <p className="text-sm text-muted-foreground mt-2">
+              페이지 상단에 표시될 건물 사진을 업로드하세요
+            </p>
           </div>
           <div>
             <Label htmlFor="location_page_title">페이지 제목</Label>
