@@ -18,6 +18,7 @@ const Location = () => {
   const [locationPhone, setLocationPhone] = useState("");
   const [locationEmail, setLocationEmail] = useState("");
   const [transportations, setTransportations] = useState<any[]>([]);
+  const [isPageEnabled, setIsPageEnabled] = useState(true);
 
   useEffect(() => {
     loadLocationSettings();
@@ -41,6 +42,9 @@ const Location = () => {
           break;
         case 'location_header_color':
           setHeaderColor(setting.value);
+          break;
+        case 'location_enabled':
+          setIsPageEnabled(setting.value === "true");
           break;
         case 'location_name':
           setLocationName(setting.value);
@@ -129,6 +133,17 @@ const Location = () => {
         </header>
 
       <main className="px-6 py-8 space-y-8">
+        {!isPageEnabled ? (
+          <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center space-y-4">
+            <h2 className="text-xl font-bold text-foreground">
+              오시는 길 페이지가 일시적으로 비활성화되었습니다
+            </h2>
+            <p className="text-muted-foreground">
+              현재 위치 정보를 제공하지 않고 있습니다. 자세한 사항은 관리자에게 문의해주세요.
+            </p>
+          </div>
+        ) : (
+          <>
         {/* Address */}
         <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
           <div className="flex items-start gap-4">
@@ -201,6 +216,8 @@ const Location = () => {
             </p>
           </div>
         </div>
+          </>
+        )}
       </main>
 
         <MobileNavigation />

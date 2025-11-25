@@ -22,6 +22,7 @@ const Program = () => {
   const [headerColor, setHeaderColor] = useState("");
   const [programCards, setProgramCards] = useState<ProgramCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isPageEnabled, setIsPageEnabled] = useState(true);
 
   useEffect(() => {
     loadProgramData();
@@ -44,10 +45,12 @@ const Program = () => {
         const titleSetting = settings.find((s) => s.key === "program_title");
         const descSetting = settings.find((s) => s.key === "program_description");
         const colorSetting = settings.find((s) => s.key === "program_header_color");
+        const enabledSetting = settings.find((s) => s.key === "program_enabled");
 
         if (titleSetting) setPageTitle(titleSetting.value);
         if (descSetting) setPageDescription(descSetting.value);
         if (colorSetting) setHeaderColor(colorSetting.value);
+        if (enabledSetting) setIsPageEnabled(enabledSetting.value === "true");
 
         // Load program cards
         const cards = settings
@@ -108,7 +111,17 @@ const Program = () => {
 
         {/* Program Schedule */}
         <main className="px-6 py-8">
-          <div className="space-y-4">
+          {!isPageEnabled ? (
+            <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center space-y-4">
+              <h2 className="text-xl font-bold text-foreground">
+                프로그램 페이지가 일시적으로 비활성화되었습니다
+              </h2>
+              <p className="text-muted-foreground">
+                현재 프로그램 정보를 제공하지 않고 있습니다. 자세한 사항은 관리자에게 문의해주세요.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
             {programCards.length === 0 ? (
               <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center">
                 <p className="text-muted-foreground">
@@ -148,6 +161,7 @@ const Program = () => {
               ))
             )}
           </div>
+          )}
         </main>
 
         {/* Mobile Navigation */}
