@@ -25,6 +25,7 @@ const Admin = () => {
     transportCards,
     locationBottomButtons,
     sectionOrder,
+    locationSectionOrder,
     setRegistrationSettings,
     setRegistrationFields,
     setInfoCards,
@@ -33,10 +34,12 @@ const Admin = () => {
     setTransportCards,
     setLocationBottomButtons,
     setSectionOrder,
+    setLocationSectionOrder,
     loadSettings,
     saveSettings,
     handleSettingChange,
     saveSectionOrder,
+    saveLocationSectionOrder,
   } = useSettings();
 
   useEffect(() => {
@@ -81,6 +84,7 @@ const Admin = () => {
             transportCards,
             locationBottomButtons,
             sectionOrder,
+            locationSectionOrder,
             onSettingChange: handleSettingChange,
             onRegistrationSettingsChange: setRegistrationSettings,
             onRegistrationFieldsChange: setRegistrationFields,
@@ -90,7 +94,9 @@ const Admin = () => {
             onTransportCardsChange: setTransportCards,
             onLocationBottomButtonsChange: setLocationBottomButtons,
             onSectionOrderChange: setSectionOrder,
+            onLocationSectionOrderChange: setLocationSectionOrder,
             onSaveSectionOrder: saveSectionOrder,
+            onSaveLocationSectionOrder: saveLocationSectionOrder,
             onSave: saveSettings,
           }}
         />

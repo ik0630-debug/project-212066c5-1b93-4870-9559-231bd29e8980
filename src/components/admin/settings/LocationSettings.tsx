@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, ArrowUp, ArrowDown } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableTransportCard from "@/components/SortableTransportCard";
@@ -16,18 +16,24 @@ interface LocationSettingsProps {
   settings: any;
   transportCards: any[];
   bottomButtons: any[];
+  sectionOrder: string[];
   onSettingChange: (key: string, value: string) => void;
   onTransportCardsChange: (cards: any[]) => void;
   onBottomButtonsChange: (buttons: any[]) => void;
+  onSectionOrderChange: (order: string[]) => void;
+  onSaveSectionOrder: (order: string[]) => void;
 }
 
 const LocationSettings = ({
   settings,
   transportCards,
   bottomButtons,
+  sectionOrder,
   onSettingChange,
   onTransportCardsChange,
   onBottomButtonsChange,
+  onSectionOrderChange,
+  onSaveSectionOrder,
 }: LocationSettingsProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -82,6 +88,225 @@ const LocationSettings = ({
     }
   };
 
+  const handleMoveSectionUp = (index: number) => {
+    if (index > 0) {
+      const newOrder = [...sectionOrder];
+      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+      onSectionOrderChange(newOrder);
+      onSaveSectionOrder(newOrder);
+    }
+  };
+
+  const handleMoveSectionDown = (index: number) => {
+    if (index < sectionOrder.length - 1) {
+      const newOrder = [...sectionOrder];
+      [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+      onSectionOrderChange(newOrder);
+      onSaveSectionOrder(newOrder);
+    }
+  };
+
+  const getSectionTitle = (sectionId: string): string => {
+    switch (sectionId) {
+      case "description_buttons": return "안내 메시지 & 버튼";
+      case "location_info": return "장소 정보";
+      case "transport_info": return "교통 정보";
+      case "contact_info": return "연락처";
+      default: return sectionId;
+    }
+  };
+
+  const SectionControls = ({ title, index }: { title: string; index: number }) => (
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" onClick={() => handleMoveSectionUp(index)} disabled={index === 0}>
+          <ArrowUp className="w-4 h-4" />
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => handleMoveSectionDown(index)} disabled={index === sectionOrder.length - 1}>
+          <ArrowDown className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderSection = (sectionId: string, index: number) => {
+    switch (sectionId) {
+      case "description_buttons":
+        return (
+          <div key={sectionId} className="space-y-4">
+            <SectionControls title={getSectionTitle(sectionId)} index={index} />
+            <div className="grid gap-4">
+              <div>
+                <Label htmlFor="location_content_order">콘텐츠 순서</Label>
+                <Select
+                  value={settings.location_content_order || "description_first"}
+                  onValueChange={(value) => onSettingChange("location_content_order", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="순서 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="description_first">안내 메시지 먼저</SelectItem>
+                    <SelectItem value="buttons_first">버튼 먼저</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="location_description_title">안내 메시지 제목</Label>
+                <Input
+                  id="location_description_title"
+                  value={settings.location_description_title || ""}
+                  onChange={(e) => onSettingChange("location_description_title", e.target.value)}
+                  placeholder="행사 소개"
+                />
+              </div>
+              <div>
+                <Label htmlFor="location_description_content">안내 메시지 내용</Label>
+                <Textarea
+                  id="location_description_content"
+                  value={settings.location_description_content || ""}
+                  onChange={(e) => onSettingChange("location_description_content", e.target.value)}
+                  rows={4}
+                  placeholder="행사 안내 메시지를 입력하세요"
+                />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <Label>하단 버튼</Label>
+                <Button onClick={handleAddBottomButton} size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  버튼 추가
+                </Button>
+              </div>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEndBottomButtons}
+              >
+                <SortableContext
+                  items={bottomButtons.map((_, i) => i.toString())}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-4">
+                    {bottomButtons.map((button, i) => (
+                      <SortableBottomButton
+                        key={i}
+                        id={i.toString()}
+                        button={{ id: i.toString() }}
+                        buttonData={button}
+                        onUpdate={(id, data) => handleUpdateBottomButton(id, data)}
+                        onDelete={(id) => handleDeleteBottomButton(parseInt(id))}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            </div>
+          </div>
+        );
+
+      case "location_info":
+        return (
+          <div key={sectionId} className="space-y-4">
+            <SectionControls title={getSectionTitle(sectionId)} index={index} />
+            <div className="grid gap-4">
+              <div>
+                <Label htmlFor="location_name">장소명</Label>
+                <Input
+                  id="location_name"
+                  value={settings.location_name}
+                  onChange={(e) => onSettingChange("location_name", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="location_address">주소</Label>
+                <Textarea
+                  id="location_address"
+                  value={settings.location_address}
+                  onChange={(e) => onSettingChange("location_address", e.target.value)}
+                  rows={3}
+                  placeholder="주소를 입력하세요 (줄바꿈 가능)"
+                />
+              </div>
+              <div>
+                <Label htmlFor="location_map_url">지도 URL</Label>
+                <Input
+                  id="location_map_url"
+                  value={settings.location_map_url}
+                  onChange={(e) => onSettingChange("location_map_url", e.target.value)}
+                  placeholder="https://maps.google.com/..."
+                />
+              </div>
+            </div>
+          </div>
+        );
+
+      case "transport_info":
+        return (
+          <div key={sectionId} className="space-y-4">
+            <SectionControls title={getSectionTitle(sectionId)} index={index} />
+            <div className="flex justify-end mb-4">
+              <Button onClick={handleAddTransportCard} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                교통수단 추가
+              </Button>
+            </div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEndTransportCards}
+            >
+              <SortableContext
+                items={transportCards.map((_, i) => i.toString())}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-4">
+                  {transportCards.map((card, i) => (
+                    <SortableTransportCard
+                      key={i}
+                      id={i.toString()}
+                      card={card}
+                      onUpdate={(data) => handleUpdateTransportCard(i.toString(), data)}
+                      onDelete={() => handleDeleteTransportCard(i)}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </div>
+        );
+
+      case "contact_info":
+        return (
+          <div key={sectionId} className="space-y-4">
+            <SectionControls title={getSectionTitle(sectionId)} index={index} />
+            <div className="grid gap-4">
+              <div>
+                <Label htmlFor="location_phone">전화번호</Label>
+                <Input
+                  id="location_phone"
+                  value={settings.location_phone}
+                  onChange={(e) => onSettingChange("location_phone", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="location_email">이메일</Label>
+                <Input
+                  id="location_email"
+                  value={settings.location_email}
+                  onChange={(e) => onSettingChange("location_email", e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="space-y-4">
@@ -127,173 +352,12 @@ const LocationSettings = ({
 
       <Separator />
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">안내 메시지 & 버튼</h3>
-        <div className="grid gap-4">
-          <div>
-            <Label htmlFor="location_content_order">콘텐츠 순서</Label>
-            <Select
-              value={settings.location_content_order || "description_first"}
-              onValueChange={(value) => onSettingChange("location_content_order", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="순서 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="description_first">안내 메시지 먼저</SelectItem>
-                <SelectItem value="buttons_first">버튼 먼저</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="location_description_title">안내 메시지 제목</Label>
-            <Input
-              id="location_description_title"
-              value={settings.location_description_title || ""}
-              onChange={(e) => onSettingChange("location_description_title", e.target.value)}
-              placeholder="행사 소개"
-            />
-          </div>
-          <div>
-            <Label htmlFor="location_description_content">안내 메시지 내용</Label>
-            <Textarea
-              id="location_description_content"
-              value={settings.location_description_content || ""}
-              onChange={(e) => onSettingChange("location_description_content", e.target.value)}
-              rows={4}
-              placeholder="행사 안내 메시지를 입력하세요"
-            />
-          </div>
+      {sectionOrder.map((sectionId, index) => (
+        <div key={sectionId}>
+          {renderSection(sectionId, index)}
+          {index < sectionOrder.length - 1 && <Separator className="my-6" />}
         </div>
-      </div>
-
-      <Separator />
-
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">하단 버튼</h3>
-          <Button onClick={handleAddBottomButton} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            버튼 추가
-          </Button>
-        </div>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEndBottomButtons}
-        >
-          <SortableContext
-            items={bottomButtons.map((_, i) => i.toString())}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-4">
-              {bottomButtons.map((button, i) => (
-                <SortableBottomButton
-                  key={i}
-                  id={i.toString()}
-                  button={{ id: i.toString() }}
-                  buttonData={button}
-                  onUpdate={(id, data) => handleUpdateBottomButton(id, data)}
-                  onDelete={(id) => handleDeleteBottomButton(parseInt(id))}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-      </div>
-
-      <Separator />
-
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">장소 정보</h3>
-        <div className="grid gap-4">
-          <div>
-            <Label htmlFor="location_name">장소명</Label>
-            <Input
-              id="location_name"
-              value={settings.location_name}
-              onChange={(e) => onSettingChange("location_name", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="location_address">주소</Label>
-            <Textarea
-              id="location_address"
-              value={settings.location_address}
-              onChange={(e) => onSettingChange("location_address", e.target.value)}
-              rows={3}
-              placeholder="주소를 입력하세요 (줄바꿈 가능)"
-            />
-          </div>
-          <div>
-            <Label htmlFor="location_map_url">지도 URL</Label>
-            <Input
-              id="location_map_url"
-              value={settings.location_map_url}
-              onChange={(e) => onSettingChange("location_map_url", e.target.value)}
-              placeholder="https://maps.google.com/..."
-            />
-          </div>
-        </div>
-      </div>
-
-      <Separator />
-
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">교통 정보</h3>
-          <Button onClick={handleAddTransportCard} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            교통수단 추가
-          </Button>
-        </div>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEndTransportCards}
-        >
-          <SortableContext
-            items={transportCards.map((_, i) => i.toString())}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-4">
-              {transportCards.map((card, i) => (
-                <SortableTransportCard
-                  key={i}
-                  id={i.toString()}
-                  card={card}
-                  onUpdate={(data) => handleUpdateTransportCard(i.toString(), data)}
-                  onDelete={() => handleDeleteTransportCard(i)}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-      </div>
-
-      <Separator />
-
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">연락처</h3>
-        <div className="grid gap-4">
-          <div>
-            <Label htmlFor="location_phone">전화번호</Label>
-            <Input
-              id="location_phone"
-              value={settings.location_phone}
-              onChange={(e) => onSettingChange("location_phone", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="location_email">이메일</Label>
-            <Input
-              id="location_email"
-              value={settings.location_email}
-              onChange={(e) => onSettingChange("location_email", e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };

@@ -23,6 +23,12 @@ const Location = () => {
   const [transportations, setTransportations] = useState<any[]>([]);
   const [isPageEnabled, setIsPageEnabled] = useState(true);
   const [contentOrder, setContentOrder] = useState("description_first");
+  const [sectionOrder, setSectionOrder] = useState<string[]>([
+    "description_buttons",
+    "location_info",
+    "transport_info",
+    "contact_info",
+  ]);
 
   useEffect(() => {
     loadLocationSettings();
@@ -73,6 +79,13 @@ const Location = () => {
           break;
         case 'location_content_order':
           setContentOrder(setting.value);
+          break;
+        case 'location_section_order':
+          try {
+            setSectionOrder(JSON.parse(setting.value));
+          } catch {
+            // Use default order if parsing fails
+          }
           break;
       }
     });
@@ -136,6 +149,149 @@ const Location = () => {
     return icons[iconName] || MapPin;
   };
 
+  const renderSection = (sectionId: string) => {
+    switch (sectionId) {
+      case "description_buttons":
+        return contentOrder === "description_first" ? (
+          <>
+            {/* Description Section */}
+            {(descriptionTitle || descriptionContent) && (
+              <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
+                {descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{descriptionTitle}</h2>}
+                {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
+              </div>
+            )}
+
+            {/* Bottom Buttons */}
+            {bottomButtons.length > 0 && (
+              <div className="flex justify-center gap-4">
+                {bottomButtons.map((button, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => navigate(button.link)}
+                    variant={button.variant as any || "outline"}
+                    size={button.size as any || "default"}
+                    className={button.fontSize || "text-sm"}
+                  >
+                    {button.text}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Bottom Buttons */}
+            {bottomButtons.length > 0 && (
+              <div className="flex justify-center gap-4">
+                {bottomButtons.map((button, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => navigate(button.link)}
+                    variant={button.variant as any || "outline"}
+                    size={button.size as any || "default"}
+                    className={button.fontSize || "text-sm"}
+                  >
+                    {button.text}
+                  </Button>
+                ))}
+              </div>
+            )}
+
+            {/* Description Section */}
+            {(descriptionTitle || descriptionContent) && (
+              <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
+                {descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{descriptionTitle}</h2>}
+                {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
+              </div>
+            )}
+          </>
+        );
+
+      case "location_info":
+        return (
+          <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-card-foreground mb-2">
+                  {locationName}
+                </h3>
+                <p className="text-muted-foreground text-sm mb-3 whitespace-pre-line">
+                  {locationAddress}
+                </p>
+                <a
+                  href={locationMapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+                >
+                  <Navigation className="w-4 h-4" />
+                  지도 앱에서 열기
+                </a>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "transport_info":
+        return (
+          <div>
+            <h2 className="text-xl font-bold text-foreground mb-4">
+              교통 안내
+            </h2>
+            <div className="space-y-4">
+              {transportations.map(({ icon, title, description }, index) => {
+                const Icon = getIconComponent(icon);
+                return (
+                  <div
+                    key={index}
+                    className="bg-card rounded-lg p-5 shadow-elegant border border-border"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                        <Icon className="w-6 h-6 text-accent" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-card-foreground mb-1">
+                          {title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground whitespace-pre-line">
+                          {description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+
+      case "contact_info":
+        return (
+          <div className="bg-primary/5 rounded-lg p-6 border border-primary/10">
+            <h3 className="text-lg font-bold text-foreground mb-3">
+              문의사항
+            </h3>
+            <div className="space-y-2 text-sm">
+              <p className="text-muted-foreground">
+                전화: {locationPhone}
+              </p>
+              <p className="text-muted-foreground">
+                이메일: {locationEmail}
+              </p>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => navigate('/registration'),
     trackMouse: false,
@@ -168,135 +324,9 @@ const Location = () => {
           </div>
         ) : (
           <>
-        {/* Address */}
-        <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <MapPin className="w-6 h-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-card-foreground mb-2">
-                {locationName}
-              </h3>
-              <p className="text-muted-foreground text-sm mb-3 whitespace-pre-line">
-                {locationAddress}
-              </p>
-              <a
-                href={locationMapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-              >
-                <Navigation className="w-4 h-4" />
-                지도 앱에서 열기
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Transportation */}
-        <div>
-          <h2 className="text-xl font-bold text-foreground mb-4">
-            교통 안내
-          </h2>
-          <div className="space-y-4">
-            {transportations.map(({ icon, title, description }, index) => {
-              const Icon = getIconComponent(icon);
-              return (
-                <div
-                  key={index}
-                  className="bg-card rounded-lg p-5 shadow-elegant border border-border"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-accent" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-card-foreground mb-1">
-                        {title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground whitespace-pre-line">
-                        {description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Dynamic Content Order */}
-        {contentOrder === "description_first" ? (
-          <>
-            {/* Description Section */}
-            {(descriptionTitle || descriptionContent) && (
-              <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
-                {descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{descriptionTitle}</h2>}
-                {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
-              </div>
-            )}
-
-            {/* Bottom Buttons */}
-            {bottomButtons.length > 0 && (
-              <div className="flex justify-center gap-4">
-                {bottomButtons.map((button, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => navigate(button.link)}
-                    variant={button.variant as any || "outline"}
-                    size={button.size as any || "default"}
-                    className={button.fontSize || "text-sm"}
-                  >
-                    {button.text}
-                  </Button>
-                ))}
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            {/* Bottom Buttons */}
-            {bottomButtons.length > 0 && (
-              <div className="flex justify-center gap-4">
-                {bottomButtons.map((button, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => navigate(button.link)}
-                    variant={button.variant as any || "outline"}
-                    size={button.size as any || "default"}
-                    className={button.fontSize || "text-sm"}
-                  >
-                    {button.text}
-                  </Button>
-                ))}
-              </div>
-            )}
-
-            {/* Description Section */}
-            {(descriptionTitle || descriptionContent) && (
-              <div className="bg-card rounded-lg p-6 shadow-elegant border border-border">
-                {descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{descriptionTitle}</h2>}
-                {descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{descriptionContent}</p>}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Contact */}
-        <div className="bg-primary/5 rounded-lg p-6 border border-primary/10">
-          <h3 className="text-lg font-bold text-foreground mb-3">
-            문의사항
-          </h3>
-          <div className="space-y-2 text-sm">
-            <p className="text-muted-foreground">
-              전화: {locationPhone}
-            </p>
-            <p className="text-muted-foreground">
-              이메일: {locationEmail}
-            </p>
-          </div>
-        </div>
+            {sectionOrder.map((sectionId) => (
+              <div key={sectionId}>{renderSection(sectionId)}</div>
+            ))}
           </>
         )}
       </main>
