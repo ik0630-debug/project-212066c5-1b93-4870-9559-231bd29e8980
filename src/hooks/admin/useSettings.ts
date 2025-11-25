@@ -186,8 +186,9 @@ export const useSettings = () => {
     return "general";
   };
 
-  const saveSettings = async (options?: { silent?: boolean }) => {
+  const saveSettings = async (options?: { silent?: boolean }): Promise<void> => {
     try {
+      console.log('Settings being saved:', settings);
       const settingsToSave = [
         ...Object.entries(settings)
           .filter(([key]) => key !== 'section_order' && key !== 'location_section_order')
