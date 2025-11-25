@@ -257,6 +257,17 @@ export const useSettings = () => {
           key: `location_bottom_button_${index}`,
           value: JSON.stringify({ ...button, order: index }),
         })),
+        // Save section orders
+        {
+          category: "home",
+          key: "section_order",
+          value: JSON.stringify(sectionOrder),
+        },
+        {
+          category: "location",
+          key: "location_section_order",
+          value: JSON.stringify(locationSectionOrder),
+        },
       ];
 
       await supabase.from("site_settings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
