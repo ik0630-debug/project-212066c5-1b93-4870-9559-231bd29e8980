@@ -115,14 +115,14 @@ const Index = () => {
             </div>
             
             {settings.heroButtonPosition === "below" && (
-              <div className="flex justify-center py-8">
+              <div className="flex justify-center py-4">
                 <HeroButton />
               </div>
             )}
           </div>
         </header>
 
-        <main className="px-6 py-8">
+        <main className="px-6 py-4">
           <div className="space-y-6">
             {settings.sectionOrder.map((sectionKey) => {
               if (sectionKey === 'info_cards' && settings.infoCards.length > 0) {
