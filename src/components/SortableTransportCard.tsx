@@ -2,6 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { GripVertical, Trash2 } from "lucide-react";
@@ -71,10 +72,11 @@ const SortableTransportCard = ({ id, card, onUpdate, onDelete }: SortableTranspo
               </div>
               <div className="space-y-2">
                 <Label className="text-sm">설명</Label>
-                <Input
+                <Textarea
                   value={card.description}
                   onChange={(e) => onUpdate({ ...card, description: e.target.value })}
-                  placeholder="교통편 설명"
+                  placeholder="교통편 설명 (줄바꿈 가능)"
+                  rows={3}
                 />
               </div>
             </div>

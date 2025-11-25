@@ -211,7 +211,7 @@ const Location = () => {
                       <h3 className="text-lg font-bold text-card-foreground mb-1">
                         {title}
                       </h3>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground whitespace-pre-line">
                         {description}
                       </p>
                     </div>
