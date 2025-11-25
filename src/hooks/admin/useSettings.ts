@@ -208,7 +208,7 @@ export const useSettings = () => {
       ]);
     }
     
-    setSettings(settingsMap);
+    setSettings(prev => ({ ...prev, ...settingsMap }));
     setRegistrationSettings(prev => ({ ...prev, ...registrationSettingsData }));
   }, []);
 
