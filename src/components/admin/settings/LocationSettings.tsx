@@ -164,6 +164,28 @@ const LocationSettings = ({
                 />
               </div>
               <Separator />
+              <div className="space-y-4">
+                <Label>다운로드 파일</Label>
+                <div>
+                  <Label htmlFor="location_download_file_name">파일 이름</Label>
+                  <Input
+                    id="location_download_file_name"
+                    value={settings.location_download_file_name || ""}
+                    onChange={(e) => onSettingChange("location_download_file_name", e.target.value)}
+                    placeholder="예: 오시는 길 안내.pdf"
+                  />
+                </div>
+                <ImageUpload
+                  value={settings.location_download_file_url || ""}
+                  onChange={(url) => onSettingChange("location_download_file_url", url)}
+                  label="파일 업로드"
+                  accept="*"
+                />
+                <p className="text-sm text-muted-foreground">
+                  사용자가 다운로드할 수 있는 파일을 업로드하세요 (PDF, 이미지 등)
+                </p>
+              </div>
+              <Separator />
               <div className="flex items-center justify-between">
                 <Label>하단 버튼</Label>
                 <Button onClick={handleAddBottomButton} size="sm">

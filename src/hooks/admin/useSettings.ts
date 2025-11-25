@@ -53,6 +53,8 @@ export const useSettings = () => {
     location_description_title: "",
     location_description_content: "",
     location_description_bg_color: "",
+    location_download_file_url: "",
+    location_download_file_name: "",
   });
 
   const [registrationSettings, setRegistrationSettings] = useState({
