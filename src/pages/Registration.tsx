@@ -14,6 +14,7 @@ import { User, Mail, Phone, Building, Upload } from "lucide-react";
 import { z } from "zod";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
+import SwipeIndicator from "@/components/SwipeIndicator";
 
 interface RegistrationField {
   id: string;
@@ -34,6 +35,9 @@ const Registration = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPageEnabled, setIsPageEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [swipeProgress, setSwipeProgress] = useState(0);
+  const [nextPageName, setNextPageName] = useState("");
   const [pageSettings, setPageSettings] = useState({
     pageTitle: "참가 신청",
     pageDescription: "아래 양식을 작성해주세요",
@@ -235,14 +239,46 @@ const Registration = () => {
     }
   };
 
+  const getPageName = (path: string) => {
+    const pageNames: Record<string, string> = {
+      '/': '홈',
+      '/program': '프로그램',
+      '/registration': '참가 신청',
+      '/location': '오시는 길'
+    };
+    return pageNames[path] || '';
+  };
+
   const swipeHandlers = useSwipeable({
+    onSwiping: async (eventData) => {
+      const deltaX = Math.abs(eventData.deltaX);
+      if (eventData.deltaX < -10) {
+        setSwipeDirection('left');
+        const nextPage = await getNextEnabledPage('/registration', 'left');
+        setNextPageName(getPageName(nextPage));
+        setSwipeProgress(Math.min((deltaX / 150) * 100, 100));
+      } else if (eventData.deltaX > 10) {
+        setSwipeDirection('right');
+        const nextPage = await getNextEnabledPage('/registration', 'right');
+        setNextPageName(getPageName(nextPage));
+        setSwipeProgress(Math.min((deltaX / 150) * 100, 100));
+      }
+    },
     onSwipedLeft: async () => {
+      setSwipeDirection(null);
+      setSwipeProgress(0);
       const nextPage = await getNextEnabledPage('/registration', 'left');
       navigate(nextPage);
     },
     onSwipedRight: async () => {
+      setSwipeDirection(null);
+      setSwipeProgress(0);
       const nextPage = await getNextEnabledPage('/registration', 'right');
       navigate(nextPage);
+    },
+    onSwiped: () => {
+      setSwipeDirection(null);
+      setSwipeProgress(0);
     },
     trackMouse: false,
     delta: 100,
@@ -386,6 +422,12 @@ const Registration = () => {
 
         <MobileNavigation />
       </div>
+      
+      <SwipeIndicator 
+        direction={swipeDirection} 
+        progress={swipeProgress} 
+        nextPageName={nextPageName}
+      />
     </div>
   );
 };
