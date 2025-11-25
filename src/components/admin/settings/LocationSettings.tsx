@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -109,10 +110,12 @@ const LocationSettings = ({
           </div>
           <div>
             <Label htmlFor="location_address">주소</Label>
-            <Input
+            <Textarea
               id="location_address"
               value={settings.location_address}
               onChange={(e) => onSettingChange("location_address", e.target.value)}
+              rows={3}
+              placeholder="주소를 입력하세요 (줄바꿈 가능)"
             />
           </div>
           <div>

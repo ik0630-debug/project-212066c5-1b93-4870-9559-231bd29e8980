@@ -154,7 +154,7 @@ const Location = () => {
               <h3 className="text-lg font-bold text-card-foreground mb-2">
                 {locationName}
               </h3>
-              <p className="text-muted-foreground text-sm mb-3">
+              <p className="text-muted-foreground text-sm mb-3 whitespace-pre-line">
                 {locationAddress}
               </p>
               <a
