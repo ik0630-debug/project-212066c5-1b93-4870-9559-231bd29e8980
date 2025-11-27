@@ -6,6 +6,7 @@ import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { getIconComponent } from "@/utils/iconUtils";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
+import { HeroImage } from "@/components/HeroImage";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -35,27 +36,14 @@ const Index = () => {
                 const heroSection = settings.heroSections?.find((h: any) => h.id === sectionKey);
                 if (heroSection && heroSection.enabled === "true") {
                   return (
-                    <header key={sectionKey} className="flex flex-col items-center justify-center -mx-6 -mt-4">
-                      <div className="relative w-full">
-                        {heroSection.imageUrl ? (
-                          <div className="relative">
-                            <div 
-                              className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-                              style={{ opacity: parseInt(heroSection.overlayOpacity || "0") / 100 }}
-                            />
-                            <img
-                              src={heroSection.imageUrl}
-                              alt="Conference Hero"
-                              className="w-full h-auto object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-center h-48 bg-muted/30 border-2 border-dashed border-border">
-                            <p className="text-muted-foreground">이미지를 업로드하시면 여기에 표시됩니다.</p>
-                          </div>
-                        )}
-                      </div>
-                    </header>
+                    <div key={sectionKey} className="-mx-6 -mt-4">
+                      <HeroImage
+                        imageUrl={heroSection.imageUrl}
+                        alt="Conference Hero"
+                        overlayOpacity={heroSection.overlayOpacity}
+                        enabled={true}
+                      />
+                    </div>
                   );
                 }
               }
