@@ -14,6 +14,8 @@ const Location = () => {
   const [headerColor, setHeaderColor] = useState("");
   const [pageTitle, setPageTitle] = useState("");
   const [pageDescription, setPageDescription] = useState("");
+  const [heroEnabled, setHeroEnabled] = useState(true);
+  const [heroOverlayOpacity, setHeroOverlayOpacity] = useState("0");
   const [locationName, setLocationName] = useState("");
   const [locationAddress, setLocationAddress] = useState("");
   const [locationMapUrl, setLocationMapUrl] = useState("");
@@ -62,6 +64,11 @@ const Location = () => {
         case 'location_header_color':
           setHeaderColor(setting.value);
           break;
+        case 'location_hero_enabled':
+          setHeroEnabled(setting.value === 'true');
+          break;
+        case 'location_hero_overlay_opacity':
+          setHeroOverlayOpacity(setting.value);
           break;
         case 'location_name':
           setLocationName(setting.value);
@@ -321,12 +328,16 @@ const Location = () => {
       </div>
 
       {/* Header Image - Full width hero style */}
-      {isPageEnabled && headerImage && (
-        <div className="w-full">
+      {isPageEnabled && heroEnabled && headerImage && (
+        <div className="w-full relative">
+          <div 
+            className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
+            style={{ opacity: parseInt(heroOverlayOpacity || "0") / 100 }}
+          />
           <img 
             src={headerImage} 
             alt="Location header" 
-            className="w-full h-auto"
+            className="w-full h-auto object-contain"
           />
         </div>
       )}

@@ -364,6 +364,7 @@ const LocationSettings = ({
 
   return (
     <div className="space-y-8">
+      {/* Page Information Section */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">페이지 정보</h3>
         <div className="grid gap-4">
@@ -378,16 +379,6 @@ const LocationSettings = ({
               checked={settings.location_enabled === "true"}
               onCheckedChange={(checked) => onSettingChange("location_enabled", checked ? "true" : "false")}
             />
-          </div>
-          <div>
-            <ImageUpload
-              value={settings.location_header_image || ""}
-              onChange={(url) => onSettingChange("location_header_image", url)}
-              label="헤더 이미지"
-            />
-            <p className="text-sm text-muted-foreground mt-2">
-              페이지 상단에 표시될 건물 사진을 업로드하세요
-            </p>
           </div>
           <div>
             <Label htmlFor="location_page_title">페이지 제목</Label>
@@ -410,6 +401,45 @@ const LocationSettings = ({
             <ColorPicker
               value={settings.location_header_color || ""}
               onChange={(color) => onSettingChange("location_header_color", color)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Hero Image Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">헤더 이미지</h3>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="location_hero_enabled">사용</Label>
+            <Switch
+              id="location_hero_enabled"
+              checked={settings.location_hero_enabled === "true"}
+              onCheckedChange={(checked) => onSettingChange("location_hero_enabled", checked ? "true" : "false")}
+            />
+          </div>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <ImageUpload
+              value={settings.location_header_image || ""}
+              onChange={(url) => onSettingChange("location_header_image", url)}
+              label="배경 이미지"
+            />
+            <p className="text-sm text-muted-foreground mt-2">
+              페이지 상단에 표시될 건물 사진을 업로드하세요
+            </p>
+          </div>
+          <div>
+            <Label>오버레이 투명도 (%)</Label>
+            <Input
+              type="number"
+              min="0"
+              max="100"
+              value={settings.location_hero_overlay_opacity || "0"}
+              onChange={(e) => onSettingChange("location_hero_overlay_opacity", e.target.value)}
             />
           </div>
         </div>
