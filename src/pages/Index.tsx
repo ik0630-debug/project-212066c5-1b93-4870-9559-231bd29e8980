@@ -119,7 +119,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex flex-col items-center gap-4">
             <img src={logo} alt="M&C Communications" className="h-30 md:h-36" />
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-blue-600">
               참가자 초청 플랫폼
             </h1>
             <p className="text-gray-600 text-center text-sm">
