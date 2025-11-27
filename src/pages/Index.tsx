@@ -8,12 +8,43 @@ import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { getIconComponent } from "@/utils/iconUtils";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { HeroImage } from "@/components/HeroImage";
+import { useOpenGraph } from "@/hooks/useOpenGraph";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const navigate = useNavigate();
   const { projectSlug } = useParams();
   const { projectId } = useProjectId();
   const { settings, loading } = useHomeSettings(projectId);
+  const [projectData, setProjectData] = useState<any>(null);
+
+  // Load project data for OG tags
+  useEffect(() => {
+    const loadProjectData = async () => {
+      if (!projectSlug) return;
+
+      const { data } = await supabase
+        .from("projects")
+        .select("name, description, og_title, og_description, og_image")
+        .eq("slug", projectSlug)
+        .maybeSingle();
+
+      if (data) {
+        setProjectData(data);
+      }
+    };
+
+    loadProjectData();
+  }, [projectSlug]);
+
+  // Set Open Graph tags
+  useOpenGraph({
+    title: projectData?.og_title || projectData?.name || "이벤트",
+    description: projectData?.og_description || projectData?.description || "이벤트 참가 안내",
+    image: projectData?.og_image,
+    url: window.location.href,
+  });
 
 
   const swipeHandlers = useSwipeable({
