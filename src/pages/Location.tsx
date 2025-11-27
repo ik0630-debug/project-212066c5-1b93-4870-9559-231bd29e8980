@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
-import { MapPin, Train, Bus, Car, Navigation, Upload, Plane, Ship, Download } from "lucide-react";
+import { MapPin, Navigation, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
+import { getIconComponent } from "@/utils/iconUtils";
 
 const Location = () => {
   const navigate = useNavigate();
@@ -154,11 +155,6 @@ const Location = () => {
     }
   };
 
-  const getIconComponent = (iconName: string) => {
-    const icons: Record<string, any> = { Train, Bus, Car, Plane, Ship };
-    return icons[iconName] || MapPin;
-  };
-
   const renderSection = (sectionId: string) => {
     switch (sectionId) {
       case "description_buttons":
@@ -255,7 +251,7 @@ const Location = () => {
             </h2>
             <div className="space-y-4">
               {transportations.map(({ icon, title, description }, index) => {
-                const Icon = getIconComponent(icon);
+                const Icon = getIconComponent(icon, "MapPin");
                 return (
                   <div
                     key={index}
