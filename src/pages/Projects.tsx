@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Plus, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectCreateDialog } from "@/components/admin/ProjectCreateDialog";
+import { ProjectEditDialog } from "@/components/admin/ProjectEditDialog";
+import { ProjectDeleteDialog } from "@/components/admin/ProjectDeleteDialog";
 
 interface Project {
   id: string;
@@ -20,6 +22,9 @@ const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -58,6 +63,18 @@ const Projects = () => {
     navigate(`/${slug}`);
   };
 
+  const handleEdit = (project: Project, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedProject(project);
+    setShowEditDialog(true);
+  };
+
+  const handleDelete = (project: Project, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedProject(project);
+    setShowDeleteDialog(true);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -84,14 +101,36 @@ const Projects = () => {
           {projects.map((project) => (
             <Card
               key={project.id}
-              className="cursor-pointer hover:shadow-lg transition-shadow"
+              className="cursor-pointer hover:shadow-lg transition-shadow relative group"
               onClick={() => handleProjectClick(project.slug)}
             >
               <CardHeader>
-                <CardTitle>{project.name}</CardTitle>
-                <CardDescription>
-                  {project.description || "설명이 없습니다"}
-                </CardDescription>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <CardTitle>{project.name}</CardTitle>
+                    <CardDescription>
+                      {project.description || "설명이 없습니다"}
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => handleEdit(project, e)}
+                      className="h-8 w-8"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => handleDelete(project, e)}
+                      className="h-8 w-8 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="flex justify-between items-center text-sm text-muted-foreground">
@@ -120,6 +159,26 @@ const Projects = () => {
           onOpenChange={setShowCreateDialog}
           onSuccess={() => {
             setShowCreateDialog(false);
+            loadProjects();
+          }}
+        />
+
+        <ProjectEditDialog
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          project={selectedProject}
+          onSuccess={() => {
+            setShowEditDialog(false);
+            loadProjects();
+          }}
+        />
+
+        <ProjectDeleteDialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+          project={selectedProject}
+          onSuccess={() => {
+            setShowDeleteDialog(false);
             loadProjects();
           }}
         />
