@@ -48,6 +48,23 @@ const Index = () => {
   }, [navigate]);
 
   const checkAdminAndRedirect = async (userId: string) => {
+    // Check if profile is approved
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("approved")
+      .eq("user_id", userId)
+      .single();
+    
+    if (profileData && !profileData.approved) {
+      toast({
+        title: "승인 대기 중",
+        description: "관리자 승인 후 이용이 가능합니다.",
+        variant: "destructive",
+      });
+      await supabase.auth.signOut();
+      return;
+    }
+    
     const { data: roleData } = await supabase
       .from("user_roles")
       .select("role")

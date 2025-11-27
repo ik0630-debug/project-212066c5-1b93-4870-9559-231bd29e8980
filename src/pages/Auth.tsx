@@ -56,6 +56,23 @@ const Auth = () => {
   }, [navigate]);
 
   const checkAdminAndRedirect = async (userId: string) => {
+    // Check if profile is approved
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("approved")
+      .eq("user_id", userId)
+      .single();
+    
+    if (profileData && !profileData.approved) {
+      toast({
+        title: "승인 대기 중",
+        description: "관리자 승인 후 이용이 가능합니다.",
+        variant: "destructive",
+      });
+      await supabase.auth.signOut();
+      return;
+    }
+    
     const { data: roleData } = await supabase
       .from("user_roles")
       .select("role")
@@ -64,9 +81,14 @@ const Auth = () => {
       .maybeSingle();
     
     if (roleData) {
-      navigate("/admin");
+      navigate("/projects");
     } else {
-      navigate("/");
+      toast({
+        title: "접근 권한 없음",
+        description: "관리자 권한이 필요합니다.",
+        variant: "destructive",
+      });
+      await supabase.auth.signOut();
     }
   };
 
@@ -123,16 +145,25 @@ const Auth = () => {
                 office_phone: null,
                 mobile_phone: mobilePhone,
                 email,
+                approved: false, // Set to false by default
               },
             ]);
 
           if (profileError) throw profileError;
+          
+          // Sign out the user immediately after signup
+          await supabase.auth.signOut();
         }
 
         toast({
-          title: "회원가입 성공!",
-          description: "자동으로 로그인되었습니다.",
+          title: "회원가입이 완료되었습니다.",
+          description: "관리자 확인 후 이용이 가능합니다.",
         });
+        
+        // Redirect to home page after a short delay
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       }
     } catch (error: any) {
       toast({
