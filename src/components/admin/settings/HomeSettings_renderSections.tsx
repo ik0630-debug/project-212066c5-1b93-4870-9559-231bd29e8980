@@ -1,4 +1,4 @@
-import { Copy, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,17 +36,12 @@ export const renderDescriptionSection = (props: RenderSectionsProps) => {
 
   return (
     <div key={sectionId} className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <SectionControls title={getSectionTitle(sectionId)} index={index} />
-        <div className="flex gap-2">
-          <Button onClick={() => onCopyDescription(sectionId)} size="sm" variant="outline">
-            <Copy className="w-4 h-4" />
-          </Button>
-          <Button onClick={() => onDeleteDescription(sectionId)} size="sm" variant="destructive">
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+      <SectionControls 
+        title={getSectionTitle(sectionId)} 
+        index={index}
+        onCopy={() => onCopyDescription(sectionId)}
+        onDelete={() => onDeleteDescription(sectionId)}
+      />
       
       <div className="flex items-center justify-between">
         <Label htmlFor={`${sectionId}_enabled`}>사용</Label>
@@ -144,17 +139,12 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
 
   return (
     <div key={sectionId} className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <SectionControls title={getSectionTitle(sectionId)} index={index} />
-        <div className="flex gap-2">
-          <Button onClick={() => onCopyButtonGroup(sectionId)} size="sm" variant="outline">
-            <Copy className="w-4 h-4" />
-          </Button>
-          <Button onClick={() => onDeleteButtonGroup(sectionId)} size="sm" variant="destructive">
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+      <SectionControls 
+        title={getSectionTitle(sectionId)} 
+        index={index}
+        onCopy={() => onCopyButtonGroup(sectionId)}
+        onDelete={() => onDeleteButtonGroup(sectionId)}
+      />
       
       <div className="flex items-center justify-between">
         <Label htmlFor={`${sectionId}_enabled`}>사용</Label>
