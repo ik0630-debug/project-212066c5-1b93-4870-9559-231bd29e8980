@@ -101,10 +101,32 @@ const Index = () => {
               }
               
               if (sectionKey === 'description' && settings.descriptionEnabled === "true" && (settings.descriptionTitle || settings.descriptionContent)) {
+                const titleFontSize = settings.descriptionTitleFontSize || "24";
+                const contentFontSize = settings.descriptionContentFontSize || "16";
+                const bgColor = settings.descriptionBgColor || "";
+                
                 return (
-                  <div key={sectionKey} className="bg-card rounded-lg p-6 shadow-elegant border border-border">
-                    {settings.descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{settings.descriptionTitle}</h2>}
-                    {settings.descriptionContent && <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{settings.descriptionContent}</p>}
+                  <div 
+                    key={sectionKey} 
+                    className="rounded-lg p-6 shadow-elegant border border-border"
+                    style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : undefined}
+                  >
+                    {settings.descriptionTitle && (
+                      <h2 
+                        className="font-bold text-card-foreground mb-4 whitespace-pre-line"
+                        style={{ fontSize: `${titleFontSize}px` }}
+                      >
+                        {settings.descriptionTitle}
+                      </h2>
+                    )}
+                    {settings.descriptionContent && (
+                      <p 
+                        className="text-muted-foreground leading-relaxed whitespace-pre-line"
+                        style={{ fontSize: `${contentFontSize}px` }}
+                      >
+                        {settings.descriptionContent}
+                      </p>
+                    )}
                   </div>
                 );
               }

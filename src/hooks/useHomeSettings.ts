@@ -27,6 +27,9 @@ interface HomeSettings {
   descriptionEnabled: string;
   descriptionTitle: string;
   descriptionContent: string;
+  descriptionTitleFontSize: string;
+  descriptionContentFontSize: string;
+  descriptionBgColor: string;
   bottomButtonsEnabled: string;
   infoCards: InfoCard[];
   bottomButtons: BottomButton[];
@@ -41,6 +44,9 @@ const defaultSettings: HomeSettings = {
   descriptionEnabled: "true",
   descriptionTitle: "",
   descriptionContent: "",
+  descriptionTitleFontSize: "24",
+  descriptionContentFontSize: "16",
+  descriptionBgColor: "",
   bottomButtonsEnabled: "true",
   infoCards: [],
   bottomButtons: [],
@@ -76,6 +82,9 @@ export const useHomeSettings = () => {
           description_enabled: 'descriptionEnabled',
           description_title: 'descriptionTitle',
           description_content: 'descriptionContent',
+          description_title_font_size: 'descriptionTitleFontSize',
+          description_content_font_size: 'descriptionContentFontSize',
+          description_bg_color: 'descriptionBgColor',
           bottom_buttons_enabled: 'bottomButtonsEnabled',
         };
 
