@@ -82,11 +82,24 @@ const Index = () => {
                   <div key={sectionKey} className="grid gap-4">
                     {settings.infoCards.map((card, index) => {
                       const IconComponent = getIconComponent(card.icon);
+                      const bgColor = card.bgColor || "0 0% 100%";
+                      const iconColor = card.iconColor || "221 83% 53%";
+                      
                       return (
-                        <div key={index} className="bg-card rounded-lg p-5 shadow-elegant border border-border">
+                        <div 
+                          key={index} 
+                          className="rounded-lg p-5 shadow-elegant border border-border"
+                          style={{ backgroundColor: `hsl(${bgColor})` }}
+                        >
                           <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                              <IconComponent className="w-6 h-6 text-primary" />
+                            <div 
+                              className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: `hsl(${iconColor} / 0.1)` }}
+                            >
+                              <IconComponent 
+                                className="w-6 h-6" 
+                                style={{ color: `hsl(${iconColor})` }}
+                              />
                             </div>
                             <div>
                               <h3 className="text-lg font-bold text-card-foreground mb-1">{card.title}</h3>
