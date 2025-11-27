@@ -20,6 +20,7 @@ interface BottomButton {
 }
 
 interface HomeSettings {
+  heroEnabled: string;
   heroImageUrl: string;
   heroOverlayOpacity: string;
   descriptionTitle: string;
@@ -30,6 +31,7 @@ interface HomeSettings {
 }
 
 const defaultSettings: HomeSettings = {
+  heroEnabled: "true",
   heroImageUrl: "",
   heroOverlayOpacity: "0",
   descriptionTitle: "",
@@ -61,6 +63,7 @@ export const useHomeSettings = () => {
 
         // Load simple settings
         const settingMap: Record<string, keyof HomeSettings> = {
+          hero_enabled: 'heroEnabled',
           hero_image_url: 'heroImageUrl',
           hero_overlay_opacity: 'heroOverlayOpacity',
           description_title: 'descriptionTitle',

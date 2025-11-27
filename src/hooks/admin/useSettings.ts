@@ -25,6 +25,7 @@ export const useSettings = () => {
   ]);
   
   const [settings, setSettings] = useState<any>({
+    hero_enabled: "true",
     hero_image_url: "",
     hero_overlay_opacity: "0",
     description_title: "",
