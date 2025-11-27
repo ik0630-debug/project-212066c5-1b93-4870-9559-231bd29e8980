@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Plus, ArrowUp, ArrowDown } from "lucide-react";
 import ImageUpload from "@/components/ImageUpload";
+import { ColorPicker } from "@/components/ColorPicker";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableInfoCard from "@/components/SortableInfoCard";
@@ -284,15 +285,13 @@ const HomeSettings = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="description_bg_color">배경 색상 (HSL)</Label>
-                  <Input
-                    id="description_bg_color"
-                    value={settings.description_bg_color || ""}
-                    onChange={(e) => onSettingChange("description_bg_color", e.target.value)}
-                    placeholder="220 70% 95% (예시)"
+                  <ColorPicker
+                    value={settings.description_bg_color || "0 0% 100%"}
+                    onChange={(color) => onSettingChange("description_bg_color", color)}
+                    label="배경 색상"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    HSL 형식으로 입력 (예: 220 70% 95%). 비워두면 기본 카드 배경색 사용
+                    색상을 선택하세요. 비워두면 기본 카드 배경색이 사용됩니다.
                   </p>
                 </div>
               </div>
