@@ -428,31 +428,35 @@ const HomeSettings = ({
       <div className="flex gap-2 mb-6">
         <Button 
           onClick={handleAddHeroSection} 
-          size="icon"
+          size="sm"
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 mr-2" />
+          헤더 이미지
         </Button>
         <Button 
           onClick={handleAddDescription} 
-          size="icon"
+          size="sm"
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 mr-2" />
+          설명 섹션
         </Button>
         <Button 
           onClick={handleAddInfoCardSection} 
-          size="icon"
+          size="sm"
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 mr-2" />
+          정보 카드
         </Button>
         <Button 
           onClick={handleAddButtonGroup} 
-          size="icon"
+          size="sm"
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 mr-2" />
+          버튼 그룹
         </Button>
       </div>
 
