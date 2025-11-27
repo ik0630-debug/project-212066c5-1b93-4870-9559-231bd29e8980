@@ -73,11 +73,19 @@ export const useUsers = () => {
 
   const approveUser = async (userId: string) => {
     try {
+      // Get current admin user id
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("로그인이 필요합니다.");
+      }
+      
       const { error } = await supabase
         .from("profiles")
         .update({ 
           approved: true, 
-          approved_at: new Date().toISOString() 
+          approved_at: new Date().toISOString(),
+          approved_by: user.id
         })
         .eq("user_id", userId);
       
