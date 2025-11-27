@@ -1,19 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import * as LucideIcons from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
 import { useHomeSettings } from "@/hooks/useHomeSettings";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
+import { getIconComponent } from "@/utils/iconUtils";
 
 const Index = () => {
   const navigate = useNavigate();
   const { settings, loading } = useHomeSettings();
-
-  const getIconComponent = (iconName: string) => {
-    const Icon = (LucideIcons as any)[iconName];
-    return Icon || LucideIcons.Calendar;
-  };
 
 
   const swipeHandlers = useSwipeable({

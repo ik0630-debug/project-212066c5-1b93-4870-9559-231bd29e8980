@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import * as LucideIcons from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
 import { supabase } from "@/integrations/supabase/client";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
+import { getIconComponent } from "@/utils/iconUtils";
 
 interface ProgramCard {
   id: string;
@@ -81,12 +81,6 @@ const Program = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const getIconComponent = (iconName?: string) => {
-    if (!iconName) return LucideIcons.Clock;
-    const Icon = (LucideIcons as any)[iconName];
-    return Icon || LucideIcons.Clock;
   };
 
   const swipeHandlers = useSwipeable({
@@ -168,7 +162,7 @@ const Program = () => {
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                       {(() => {
-                        const IconComponent = getIconComponent(card.icon);
+                        const IconComponent = getIconComponent(card.icon, "Clock");
                         return <IconComponent className="w-6 h-6 text-primary" />;
                       })()}
                     </div>
