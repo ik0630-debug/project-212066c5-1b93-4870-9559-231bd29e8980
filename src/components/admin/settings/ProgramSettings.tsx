@@ -2,13 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { ColorPicker } from "@/components/ColorPicker";
-import IconPicker from "@/components/IconPicker";
+import { SortableProgramCard } from "@/components/SortableProgramCard";
 
 interface ProgramSettingsProps {
   settings: any;
@@ -34,6 +33,19 @@ const ProgramSettings = ({
 
   const handleDeleteProgramCard = (index: number) => {
     onProgramCardsChange(programCards.filter((_, i) => i !== index));
+  };
+
+  const handleDuplicateProgramCard = (index: number) => {
+    const cardToDuplicate = { ...programCards[index] };
+    const newCards = [...programCards];
+    newCards.splice(index + 1, 0, cardToDuplicate);
+    onProgramCardsChange(newCards);
+  };
+
+  const handleUpdateProgramCard = (index: number, updates: any) => {
+    const newCards = [...programCards];
+    newCards[index] = { ...newCards[index], ...updates };
+    onProgramCardsChange(newCards);
   };
 
   const handleDragEndProgramCards = (event: DragEndEvent) => {
@@ -109,65 +121,14 @@ const ProgramSettings = ({
           >
             <div className="space-y-4">
               {programCards.map((card, i) => (
-                <div key={i} className="p-4 border rounded-lg space-y-3">
-                  <div className="grid grid-cols-3 gap-2">
-                    <div>
-                      <Label className="text-xs mb-1">아이콘</Label>
-                      <IconPicker
-                        value={card.icon || "Clock"}
-                        onValueChange={(icon) => {
-                          const newCards = [...programCards];
-                          newCards[i].icon = icon;
-                          onProgramCardsChange(newCards);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs mb-1">시간</Label>
-                      <Input
-                        placeholder="10:00"
-                        value={card.time}
-                        onChange={(e) => {
-                          const newCards = [...programCards];
-                          newCards[i].time = e.target.value;
-                          onProgramCardsChange(newCards);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs mb-1">제목</Label>
-                      <Input
-                        placeholder="프로그램 제목"
-                        value={card.title}
-                        onChange={(e) => {
-                          const newCards = [...programCards];
-                          newCards[i].title = e.target.value;
-                          onProgramCardsChange(newCards);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="text-xs mb-1">설명</Label>
-                    <Textarea
-                      placeholder="프로그램 설명&#10;줄바꿈을 입력할 수 있습니다"
-                      value={card.description}
-                      onChange={(e) => {
-                        const newCards = [...programCards];
-                        newCards[i].description = e.target.value;
-                        onProgramCardsChange(newCards);
-                      }}
-                      rows={3}
-                    />
-                  </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDeleteProgramCard(i)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
+                <SortableProgramCard
+                  key={i}
+                  id={i.toString()}
+                  card={card}
+                  onUpdate={(updates) => handleUpdateProgramCard(i, updates)}
+                  onDelete={() => handleDeleteProgramCard(i)}
+                  onDuplicate={() => handleDuplicateProgramCard(i)}
+                />
               ))}
             </div>
           </SortableContext>
