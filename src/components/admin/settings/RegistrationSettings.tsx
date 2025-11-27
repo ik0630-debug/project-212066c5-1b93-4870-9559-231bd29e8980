@@ -5,9 +5,11 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
 import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import IconPicker from "@/components/IconPicker";
+import { SettingsField } from "./SettingsField";
+import { SettingsSection } from "./SettingsSection";
+import { SettingsToggle } from "./SettingsToggle";
 
 interface RegistrationField {
   id: string;
@@ -80,50 +82,40 @@ const RegistrationSettings = ({
 
   return (
     <div className="space-y-8">
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">페이지 정보</h3>
-        <div className="grid gap-4">
-          <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
-            <div className="space-y-0.5">
-              <Label>페이지 활성화</Label>
-              <p className="text-sm text-muted-foreground">
-                비활성화하면 사용자가 참가 신청 페이지에 접근할 수 없습니다
-              </p>
-            </div>
-            <Switch
-              checked={registrationSettings.registration_enabled === "true"}
-              onCheckedChange={(checked) => handleChange("registration_enabled", checked ? "true" : "false")}
-            />
-          </div>
-          <div>
-            <Label htmlFor="registration_page_title">페이지 제목</Label>
-            <Input
-              id="registration_page_title"
-              value={registrationSettings.registration_page_title || ""}
-              onChange={(e) => handleChange("registration_page_title", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="registration_page_description">페이지 설명</Label>
-            <Input
-              id="registration_page_description"
-              value={registrationSettings.registration_page_description || ""}
-              onChange={(e) => handleChange("registration_page_description", e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
+      <SettingsSection title="페이지 정보">
+        <SettingsToggle
+          label="페이지 활성화"
+          description="비활성화하면 사용자가 참가 신청 페이지에 접근할 수 없습니다"
+          checked={registrationSettings.registration_enabled === "true"}
+          onCheckedChange={(checked) => handleChange("registration_enabled", checked ? "true" : "false")}
+        />
+        <SettingsField label="페이지 제목" htmlFor="registration_page_title">
+          <Input
+            id="registration_page_title"
+            value={registrationSettings.registration_page_title || ""}
+            onChange={(e) => handleChange("registration_page_title", e.target.value)}
+          />
+        </SettingsField>
+        <SettingsField label="페이지 설명" htmlFor="registration_page_description">
+          <Input
+            id="registration_page_description"
+            value={registrationSettings.registration_page_description || ""}
+            onChange={(e) => handleChange("registration_page_description", e.target.value)}
+          />
+        </SettingsField>
+      </SettingsSection>
 
       <Separator />
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">폼 필드 설정</h3>
+      <SettingsSection 
+        title="폼 필드 설정"
+        action={
           <Button onClick={addField} size="sm">
             <Plus className="w-4 h-4 mr-2" />
             필드 추가
           </Button>
-        </div>
+        }
+      >
         
         <div className="grid gap-6">
           {registrationFields.map((field, index) => (
@@ -229,14 +221,16 @@ const RegistrationSettings = ({
             </div>
           ))}
         </div>
-      </div>
+      </SettingsSection>
 
       <Separator />
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">개인정보 동의 내용</h3>
-        <div>
-          <Label htmlFor="registration_privacy_content">개인정보 수집 및 이용 동의 내용</Label>
+      <SettingsSection title="개인정보 동의 내용">
+        <SettingsField 
+          label="개인정보 수집 및 이용 동의 내용" 
+          htmlFor="registration_privacy_content"
+          description="참가신청 페이지의 '내용 상세 보기'에 표시될 내용입니다."
+        >
           <Textarea
             id="registration_privacy_content"
             value={registrationSettings.registration_privacy_content || ""}
@@ -245,35 +239,27 @@ const RegistrationSettings = ({
             rows={10}
             className="resize-none"
           />
-          <p className="text-xs text-muted-foreground mt-2">
-            참가신청 페이지의 "내용 상세 보기"에 표시될 내용입니다.
-          </p>
-        </div>
-      </div>
+        </SettingsField>
+      </SettingsSection>
 
       <Separator />
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">성공 메시지</h3>
-        <div className="grid gap-4">
-          <div>
-            <Label htmlFor="registration_success_title">성공 메시지 제목</Label>
-            <Input
-              id="registration_success_title"
-              value={registrationSettings.registration_success_title || ""}
-              onChange={(e) => handleChange("registration_success_title", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="registration_success_description">성공 메시지 설명</Label>
-            <Input
-              id="registration_success_description"
-              value={registrationSettings.registration_success_description || ""}
-              onChange={(e) => handleChange("registration_success_description", e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
+      <SettingsSection title="성공 메시지">
+        <SettingsField label="성공 메시지 제목" htmlFor="registration_success_title">
+          <Input
+            id="registration_success_title"
+            value={registrationSettings.registration_success_title || ""}
+            onChange={(e) => handleChange("registration_success_title", e.target.value)}
+          />
+        </SettingsField>
+        <SettingsField label="성공 메시지 설명" htmlFor="registration_success_description">
+          <Input
+            id="registration_success_description"
+            value={registrationSettings.registration_success_description || ""}
+            onChange={(e) => handleChange("registration_success_description", e.target.value)}
+          />
+        </SettingsField>
+      </SettingsSection>
     </div>
   );
 };
