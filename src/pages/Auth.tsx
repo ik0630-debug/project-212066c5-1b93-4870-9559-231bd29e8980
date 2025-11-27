@@ -134,7 +134,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex items-center justify-center px-6 animate-fade-in">
       <div className="w-full max-w-[800px]">
         <div className="w-full max-w-md mx-auto">
         <div className="bg-card rounded-lg p-8 shadow-elegant border border-border">
