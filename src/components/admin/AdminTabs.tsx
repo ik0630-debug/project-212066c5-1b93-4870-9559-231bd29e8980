@@ -1,15 +1,16 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Users, FileText, Wrench } from "lucide-react";
+import { Settings, Users, FileText, Wrench, UserCog } from "lucide-react";
 import RegistrationsTable from "./RegistrationsTable";
 import UsersTable from "./UsersTable";
 import ApprovalTable from "./ApprovalTable";
 import SettingsTabs from "./SettingsTabs";
 import ConfigSettings from "./settings/ConfigSettings";
+import ProjectMembersTable from "./ProjectMembersTable";
 
 interface AdminTabsProps {
   userRole: 'admin' | 'registration_manager' | null;
-  activeTab: 'registrations' | 'users' | 'page-settings' | 'config';
-  onTabChange: (tab: 'registrations' | 'users' | 'page-settings' | 'config') => void;
+  activeTab: 'registrations' | 'users' | 'members' | 'page-settings' | 'config';
+  onTabChange: (tab: 'registrations' | 'users' | 'members' | 'page-settings' | 'config') => void;
   registrations: any[];
   registrationFormFields: any[];
   users: any[];
@@ -19,6 +20,10 @@ interface AdminTabsProps {
   onApproveUser: (userId: string) => void;
   onRejectUser: (userId: string) => void;
   settingsTabProps: any;
+  projectMembers?: any[];
+  onUpdateMemberRole?: (memberId: string, role: string) => void;
+  onRemoveMember?: (memberId: string) => void;
+  onInviteMember?: (email: string, role: string) => Promise<void>;
 }
 
 const AdminTabs = ({
@@ -34,10 +39,15 @@ const AdminTabs = ({
   onApproveUser,
   onRejectUser,
   settingsTabProps,
+  projectMembers = [],
+  onUpdateMemberRole,
+  onRemoveMember,
+  onInviteMember,
 }: AdminTabsProps) => {
   const allTabs = [
     { icon: FileText, label: "신청 관리", value: "registrations" as const },
     { icon: Users, label: "사용자 관리", value: "users" as const },
+    { icon: UserCog, label: "멤버 관리", value: "members" as const },
     { icon: Settings, label: "페이지 설정", value: "page-settings" as const },
     { icon: Wrench, label: "설정", value: "config" as const },
   ];
@@ -49,7 +59,7 @@ const AdminTabs = ({
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange}>
-      <TabsList className="grid w-full grid-cols-4 mb-8">
+      <TabsList className="grid w-full grid-cols-5 mb-8">
         {tabs.map(({ icon: Icon, label, value }) => (
           <TabsTrigger key={value} value={value} className="flex items-center gap-2">
             <Icon className="w-4 h-4" />
@@ -73,6 +83,17 @@ const AdminTabs = ({
           onReject={onRejectUser}
         />
         <UsersTable users={users} onToggleAdmin={onToggleAdmin} onToggleRegistrationManager={onToggleRegistrationManager} />
+      </TabsContent>
+
+      <TabsContent value="members">
+        {onUpdateMemberRole && onRemoveMember && onInviteMember && (
+          <ProjectMembersTable
+            members={projectMembers}
+            onUpdateRole={onUpdateMemberRole}
+            onRemove={onRemoveMember}
+            onInvite={onInviteMember}
+          />
+        )}
       </TabsContent>
 
       <TabsContent value="page-settings">
