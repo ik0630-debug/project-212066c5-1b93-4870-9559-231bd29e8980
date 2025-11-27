@@ -78,7 +78,7 @@ export const useSettings = () => {
 
     data?.forEach(({ key, value }) => {
       // Handle section orders first (they don't follow the category prefix pattern)
-      if (key === "section_order") {
+      if (key === "sectionOrder" || key === "section_order") {
         try {
           setSectionOrder(JSON.parse(value));
         } catch {}
@@ -101,7 +101,7 @@ export const useSettings = () => {
               const index = parsed.order || 0;
               loadedHeroSections[index] = parsed;
             } catch {}
-          } else if (key.startsWith("home_info_card_section_")) {
+          } else if (key.startsWith("home_infocard_section_") || key.startsWith("home_info_card_section_")) {
             try {
               const parsed = JSON.parse(value);
               const index = parsed.order || 0;
