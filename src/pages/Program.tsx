@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
 import { useSwipeable } from "react-swipeable";
@@ -8,6 +7,8 @@ import { usePageSettings } from "@/hooks/usePageSettings";
 import { getIconComponent } from "@/utils/iconUtils";
 import { useCategorySettings } from "@/hooks/useCategorySettings";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
+import { PageHeader } from "@/components/PageHeader";
+import { HeroImage } from "@/components/HeroImage";
 
 interface ProgramCard {
   id: string;
@@ -87,33 +88,18 @@ const Program = () => {
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
-        {/* Header */}
-        <header 
-          className={`sticky top-0 z-40 text-primary-foreground py-4 px-6 text-center ${!headerColor ? 'bg-gradient-primary' : ''}`}
-          style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
-        >
-          <h1 className="text-2xl font-bold mb-1">{pageTitle}</h1>
-          {pageDescription && (
-            <p className="text-primary-foreground/90 text-sm whitespace-pre-line">
-              {pageDescription}
-            </p>
-          )}
-        </header>
-
-        {/* Hero Image Section */}
-        {heroEnabled && heroImage && (
-          <div className="relative w-full -mt-4">
-            <div 
-              className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-              style={{ opacity: parseInt(heroOverlayOpacity || "0") / 100 }}
-            />
-            <img
-              src={heroImage}
-              alt="Program Hero"
-              className="w-full h-auto object-contain"
-            />
-          </div>
-        )}
+        <PageHeader 
+          title={pageTitle}
+          description={pageDescription}
+          backgroundColor={headerColor}
+        />
+        
+        <HeroImage 
+          imageUrl={heroImage}
+          alt="Program Hero"
+          overlayOpacity={heroOverlayOpacity}
+          enabled={heroEnabled}
+        />
 
         {/* Program Schedule */}
         <main className="px-6 py-8">

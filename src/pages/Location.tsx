@@ -9,6 +9,8 @@ import { usePageSettings } from "@/hooks/usePageSettings";
 import { getIconComponent } from "@/utils/iconUtils";
 import { useCategorySettings } from "@/hooks/useCategorySettings";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
+import { PageHeader } from "@/components/PageHeader";
+import { HeroImage } from "@/components/HeroImage";
 
 const Location = () => {
   const navigate = useNavigate();
@@ -306,33 +308,19 @@ const Location = () => {
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
-        <header 
-          className={`sticky top-0 z-40 text-primary-foreground py-4 px-6 text-center ${!headerColor ? 'bg-gradient-primary' : ''}`}
-          style={{ backgroundColor: headerColor ? `hsl(${headerColor})` : undefined }}
-        >
-          <h1 className="text-2xl font-bold mb-1">{pageTitle}</h1>
-          {pageDescription && (
-            <p className="text-primary-foreground/90 text-sm whitespace-pre-line">
-              {pageDescription}
-            </p>
-          )}
-        </header>
+        <PageHeader 
+          title={pageTitle}
+          description={pageDescription}
+          backgroundColor={headerColor}
+        />
       </div>
 
-      {/* Header Image - Full width hero style */}
-      {isPageEnabled && heroEnabled && headerImage && (
-        <div className="w-full relative">
-          <div 
-            className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-            style={{ opacity: parseInt(heroOverlayOpacity || "0") / 100 }}
-          />
-          <img 
-            src={headerImage} 
-            alt="Location header" 
-            className="w-full h-auto object-contain"
-          />
-        </div>
-      )}
+      <HeroImage 
+        imageUrl={headerImage}
+        alt="Location header"
+        overlayOpacity={heroOverlayOpacity}
+        enabled={isPageEnabled && heroEnabled}
+      />
 
       <div className="max-w-[800px] mx-auto">
         <main className="px-6 py-8 space-y-8">
