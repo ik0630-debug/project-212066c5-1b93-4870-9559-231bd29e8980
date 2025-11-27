@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Plus, ArrowUp, ArrowDown, Copy } from "lucide-react";
+import { Copy, ArrowUp, ArrowDown, Trash2, Plus } from "lucide-react";
 import ImageUpload from "@/components/ImageUpload";
 import { ColorPicker } from "@/components/ColorPicker";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
@@ -192,10 +192,20 @@ const HomeSettings = ({
     return sectionId;
   };
 
-  const SectionControls = ({ title, index }: { title: string; index: number }) => (
+  const SectionControls = ({ title, index, onCopy, onDelete }: { title: string; index: number; onCopy?: () => void; onDelete?: () => void }) => (
     <div className="flex items-center justify-between mb-4">
       <h3 className="text-lg font-semibold">{title}</h3>
       <div className="flex gap-2">
+        {onCopy && (
+          <Button variant="outline" size="sm" onClick={onCopy}>
+            <Copy className="w-4 h-4" />
+          </Button>
+        )}
+        {onDelete && (
+          <Button variant="outline" size="sm" onClick={onDelete}>
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
         <Button variant="outline" size="sm" onClick={() => handleMoveSectionUp(index)} disabled={index === 0}>
           <ArrowUp className="w-4 h-4" />
         </Button>
@@ -355,17 +365,6 @@ const HomeSettings = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-2 mb-4">
-        <Button onClick={handleAddDescription} size="sm" variant="outline">
-          <Plus className="w-4 h-4 mr-2" />
-          설명 섹션 추가
-        </Button>
-        <Button onClick={handleAddButtonGroup} size="sm" variant="outline">
-          <Plus className="w-4 h-4 mr-2" />
-          버튼 그룹 추가
-        </Button>
-      </div>
-      
       {sectionOrder.map((sectionId, index) => (
         <div key={sectionId}>
           {renderSection(sectionId, index)}
