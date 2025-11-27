@@ -40,37 +40,6 @@ const Index = () => {
     return Icon || LucideIcons.Calendar;
   };
 
-  const HeroButton = () => {
-    if (settings.heroUseButton !== "true" || !settings.heroButtonText || !settings.heroButtonUrl) return null;
-    
-    const buttonSize = settings.heroButtonSizeType === "custom" ? undefined : (settings.heroButtonSizeType as any || "lg");
-    const customStyle: any = {
-      backgroundColor: settings.heroButtonBgColor ? `hsl(${settings.heroButtonBgColor})` : undefined,
-      color: settings.heroButtonTextColor ? `hsl(${settings.heroButtonTextColor})` : undefined,
-    };
-    
-    if (settings.heroButtonSizeType === "custom") {
-      if (settings.heroButtonCustomWidth) customStyle.width = `${settings.heroButtonCustomWidth}px`;
-      if (settings.heroButtonCustomHeight) customStyle.height = `${settings.heroButtonCustomHeight}px`;
-    }
-    
-    return (
-      <Button
-        onClick={() => {
-          if (settings.heroButtonUrl.startsWith("http")) {
-            window.open(settings.heroButtonUrl, "_blank");
-          } else {
-            navigate(settings.heroButtonUrl);
-          }
-        }}
-        size={buttonSize}
-        style={customStyle}
-        className={`shadow-xl hover:shadow-2xl transition-all ${settings.heroButtonFontSize || "text-base"}`}
-      >
-        {settings.heroButtonText}
-      </Button>
-    );
-  };
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: async () => {
@@ -92,37 +61,14 @@ const Index = () => {
             <div className="relative">
               <div 
                 className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-                style={{ opacity: parseInt(settings.heroOverlayOpacity) / 100 }}
+                style={{ opacity: parseInt(settings.heroOverlayOpacity || "0") / 100 }}
               />
               <img
                 src={settings.heroImageUrl || heroImage}
                 alt="Conference Hero"
                 className="w-full h-auto object-contain"
               />
-              
-              {settings.heroUseText === "true" && settings.heroTextContent && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center px-6 text-center text-primary-foreground pointer-events-none">
-                  <div 
-                    className="w-full max-w-4xl"
-                    dangerouslySetInnerHTML={{ __html: settings.heroTextContent }}
-                  />
-                </div>
-              )}
-              
-              {settings.heroButtonPosition === "inside" && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                  <div className="pointer-events-auto mt-32">
-                    <HeroButton />
-                  </div>
-                </div>
-              )}
             </div>
-            
-            {settings.heroButtonPosition === "below" && (
-              <div className="flex justify-center py-4">
-                <HeroButton />
-              </div>
-            )}
           </div>
         </header>
 

@@ -21,18 +21,6 @@ interface BottomButton {
 
 interface HomeSettings {
   heroImageUrl: string;
-  heroUseText: string;
-  heroTextContent: string;
-  heroUseButton: string;
-  heroButtonPosition: string;
-  heroButtonText: string;
-  heroButtonUrl: string;
-  heroButtonBgColor: string;
-  heroButtonTextColor: string;
-  heroButtonSizeType: string;
-  heroButtonCustomWidth: string;
-  heroButtonCustomHeight: string;
-  heroButtonFontSize: string;
   heroOverlayOpacity: string;
   descriptionTitle: string;
   descriptionContent: string;
@@ -43,18 +31,6 @@ interface HomeSettings {
 
 const defaultSettings: HomeSettings = {
   heroImageUrl: "",
-  heroUseText: "true",
-  heroTextContent: "",
-  heroUseButton: "false",
-  heroButtonPosition: "inside",
-  heroButtonText: "",
-  heroButtonUrl: "",
-  heroButtonBgColor: "",
-  heroButtonTextColor: "",
-  heroButtonSizeType: "lg",
-  heroButtonCustomWidth: "",
-  heroButtonCustomHeight: "",
-  heroButtonFontSize: "text-base",
   heroOverlayOpacity: "0",
   descriptionTitle: "",
   descriptionContent: "",
@@ -86,18 +62,6 @@ export const useHomeSettings = () => {
         // Load simple settings
         const settingMap: Record<string, keyof HomeSettings> = {
           hero_image_url: 'heroImageUrl',
-          hero_use_text: 'heroUseText',
-          hero_text_content: 'heroTextContent',
-          hero_use_button: 'heroUseButton',
-          hero_button_position: 'heroButtonPosition',
-          hero_button_text: 'heroButtonText',
-          hero_button_url: 'heroButtonUrl',
-          hero_button_bg_color: 'heroButtonBgColor',
-          hero_button_text_color: 'heroButtonTextColor',
-          hero_button_size_type: 'heroButtonSizeType',
-          hero_button_custom_width: 'heroButtonCustomWidth',
-          hero_button_custom_height: 'heroButtonCustomHeight',
-          hero_button_font_size: 'heroButtonFontSize',
           hero_overlay_opacity: 'heroOverlayOpacity',
           description_title: 'descriptionTitle',
           description_content: 'descriptionContent',
