@@ -25,7 +25,7 @@ const Index = () => {
   }
 
   return (
-    <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
+    <div {...swipeHandlers} className="min-h-screen bg-background pb-20 animate-fade-in">
       <div className="max-w-[800px] mx-auto">
         <main className="px-6 py-4">
           <div className="space-y-6">

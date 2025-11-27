@@ -62,7 +62,7 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background animate-fade-in">
       <AdminHeader onBack={() => navigate(-1)} onSignOut={signOut} />
       
       <main className="px-6 py-8">
