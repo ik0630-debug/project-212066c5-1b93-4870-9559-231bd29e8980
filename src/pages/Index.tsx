@@ -1,214 +1,220 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import MobileNavigation from "@/components/MobileNavigation";
-import { useHomeSettings } from "@/hooks/useHomeSettings";
-import { useProjectId } from "@/hooks/useProjectId";
-import { useSwipeable } from "react-swipeable";
-import { getNextEnabledPage } from "@/utils/pageNavigation";
-import { getIconComponent } from "@/utils/iconUtils";
-import { LoadingSkeleton } from "@/components/LoadingSkeleton";
-import { HeroImage } from "@/components/HeroImage";
-import { useOpenGraph } from "@/hooks/useOpenGraph";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { User, Session } from "@supabase/supabase-js";
+import { Shield, FileText, Clock } from "lucide-react";
+import logo from "@/assets/mnc-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { projectSlug } = useParams();
-  const { projectId } = useProjectId();
-  const { settings, loading } = useHomeSettings(projectId);
-  const [projectData, setProjectData] = useState<any>(null);
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
 
-  // Load project data for OG tags
   useEffect(() => {
-    const loadProjectData = async () => {
-      if (!projectSlug) return;
-
-      const { data } = await supabase
-        .from("projects")
-        .select("name, description, og_title, og_description, og_image")
-        .eq("slug", projectSlug)
-        .maybeSingle();
-
-      if (data) {
-        setProjectData(data);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          setTimeout(() => {
+            checkAdminAndRedirect(session.user.id);
+          }, 0);
+        }
       }
-    };
+    );
 
-    loadProjectData();
-  }, [projectSlug]);
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        checkAdminAndRedirect(session.user.id);
+      }
+    });
 
-  // Set Open Graph tags
-  useOpenGraph({
-    title: projectData?.og_title || projectData?.name || "이벤트",
-    description: projectData?.og_description || projectData?.description || "이벤트 참가 안내",
-    image: projectData?.og_image,
-    url: window.location.href,
-  });
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
+  const checkAdminAndRedirect = async (userId: string) => {
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .in("role", ["admin", "registration_manager"])
+      .maybeSingle();
+    
+    if (roleData) {
+      navigate("/projects");
+    } else {
+      toast({
+        title: "접근 권한 없음",
+        description: "관리자 권한이 필요합니다.",
+        variant: "destructive",
+      });
+      await supabase.auth.signOut();
+    }
+  };
 
-  const swipeHandlers = useSwipeable({
-    onSwipedLeft: async () => {
-      const nextPage = await getNextEnabledPage(`/${projectSlug}`, 'left', projectSlug);
-      navigate(nextPage);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "로그인 성공!",
+        description: "환영합니다.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "로그인 실패",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const features = [
+    {
+      icon: FileText,
+      title: "간편한 영수증 발급",
+      description: "성명만 입력하면 간편하게 영수증을 발급받을 수 있습니다",
     },
-    trackMouse: false,
-  });
-
-  if (loading) {
-    return <LoadingSkeleton type="home" />;
-  }
+    {
+      icon: Shield,
+      title: "안전한 정보 보호",
+      description: "본인 확인을 통해 안전하게 영수증을 발급합니다",
+    },
+    {
+      icon: Clock,
+      title: "실시간 발급",
+      description: "언제든지 필요할 때 즉시 영수증을 발급받을 수 있습니다",
+    },
+  ];
 
   return (
-    <div {...swipeHandlers} className="min-h-screen bg-background pb-20 animate-fade-in">
-      <div className="max-w-[800px] mx-auto">
-        <main className="px-6 py-4">
-          <div className="space-y-6">
-            {settings.sectionOrder.map((sectionKey) => {
-              // Render hero sections
-              if (sectionKey.startsWith('hero_')) {
-                const heroSection = settings.heroSections?.find((h: any) => h.id === sectionKey);
-                if (heroSection && heroSection.enabled === "true") {
-                  return (
-                    <div key={sectionKey} className="-mx-6 -mt-4">
-                      <HeroImage
-                        imageUrl={heroSection.imageUrl}
-                        alt="Conference Hero"
-                        overlayOpacity={heroSection.overlayOpacity}
-                        enabled={true}
-                      />
-                    </div>
-                  );
-                }
-              }
-
-              // Render info card sections
-              if (sectionKey.startsWith('infocard_section_') || sectionKey.startsWith('info_card_section_')) {
-                const infoCardSection = settings.infoCardSections?.find((s: any) => s.id === sectionKey);
-                if (infoCardSection && infoCardSection.enabled === "true" && infoCardSection.cards?.length > 0) {
-                  return (
-                    <div key={sectionKey} className="grid gap-4">
-                      {infoCardSection.cards.map((card: any, index: number) => {
-                        const IconComponent = getIconComponent(card.icon);
-                        const bgColor = card.bgColor || "0 0% 100%";
-                        const iconColor = card.iconColor || "221 83% 53%";
-                        const titleFontSize = card.titleFontSize || "16";
-                        const contentFontSize = card.contentFontSize || "14";
-                        
-                        return (
-                          <div 
-                            key={index} 
-                            className="rounded-lg p-5 shadow-elegant border border-border"
-                            style={{ backgroundColor: `hsl(${bgColor})` }}
-                          >
-                            <div className="flex items-start gap-4">
-                              <div 
-                                className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
-                                style={{ backgroundColor: `hsl(${iconColor} / 0.1)` }}
-                              >
-                                <IconComponent 
-                                  className="w-6 h-6" 
-                                  style={{ color: `hsl(${iconColor})` }}
-                                />
-                              </div>
-                              <div>
-                                <h3 
-                                  className="font-bold text-card-foreground mb-1"
-                                  style={{ fontSize: `${titleFontSize}px` }}
-                                >
-                                  {card.title}
-                                </h3>
-                                <p 
-                                  className="text-muted-foreground whitespace-pre-line"
-                                  style={{ fontSize: `${contentFontSize}px` }}
-                                >
-                                  {card.content}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                }
-              }
-              
-              if (sectionKey.startsWith('description_')) {
-                const description = settings.descriptions?.find((d: any) => d.id === sectionKey);
-                if (description && description.enabled === "true" && (description.title || description.content)) {
-                  const titleFontSize = description.titleFontSize || "24";
-                  const contentFontSize = description.contentFontSize || "14";
-                  const bgColor = description.bgColor || "0 0% 100%";
-                  
-                  return (
-                    <div 
-                      key={sectionKey} 
-                      className="rounded-lg p-6 shadow-elegant border border-border"
-                      style={{ backgroundColor: `hsl(${bgColor})` }}
-                    >
-                      {description.title && (
-                        <h2 
-                          className="font-bold text-card-foreground mb-4 whitespace-pre-line"
-                          style={{ fontSize: `${titleFontSize}px` }}
-                        >
-                          {description.title}
-                        </h2>
-                      )}
-                      {description.content && (
-                        <p 
-                          className="text-muted-foreground leading-relaxed whitespace-pre-line"
-                          style={{ fontSize: `${contentFontSize}px` }}
-                        >
-                          {description.content}
-                        </p>
-                      )}
-                    </div>
-                  );
-                }
-              }
-              
-              if (sectionKey.startsWith('button_group_')) {
-                const buttonGroup = settings.buttonGroups?.find((g: any) => g.id === sectionKey);
-                if (buttonGroup && buttonGroup.enabled === "true" && buttonGroup.buttons?.length > 0) {
-                  const alignment = buttonGroup.alignment || "center";
-                  const alignmentClass = alignment === "left" ? "justify-start" : alignment === "right" ? "justify-end" : "justify-center";
-                  
-                  return (
-                    <div key={sectionKey} className={`flex ${alignmentClass} gap-4 flex-wrap`}>
-                      {buttonGroup.buttons.map((button: any, index: number) => {
-                        const bgColor = button.bgColor || "221 83% 53%";
-                        const textColor = button.textColor || "0 0% 100%";
-                        
-                        return (
-                          <Button
-                            key={index}
-                            onClick={() => navigate(button.link)}
-                            variant="outline"
-                            size={button.size as any || "default"}
-                            className={button.fontSize || "text-sm"}
-                            style={{
-                              backgroundColor: `hsl(${bgColor})`,
-                              color: `hsl(${textColor})`,
-                              borderColor: `hsl(${bgColor})`,
-                            }}
-                          >
-                            {button.text}
-                          </Button>
-                        );
-                      })}
-                    </div>
-                  );
-                }
-              }
-              
-              return null;
-            })}
+    <div className="min-h-screen bg-background animate-fade-in">
+      {/* Header */}
+      <header className="border-b border-border bg-card">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex flex-col items-center gap-4">
+            <img src={logo} alt="M&C Communications" className="h-12 md:h-16" />
+            <h1 className="text-3xl md:text-4xl font-bold text-primary">
+              참가자 초청 플랫폼
+            </h1>
+            <p className="text-muted-foreground text-center">
+              M&C Communications 가 제공하는 발표자 지원 시스템입니다.
+            </p>
           </div>
-        </main>
+        </div>
+      </header>
 
-        <MobileNavigation />
-      </div>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
+          {/* Left Side - Features */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-card-foreground mb-6">
+                시스템 특징
+              </h2>
+            </div>
+            {features.map((feature, index) => (
+              <Card key={index} className="shadow-elegant">
+                <CardHeader>
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <feature.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
+                      <CardDescription className="text-base">
+                        {feature.description}
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+
+          {/* Right Side - Admin Login */}
+          <div className="lg:sticky lg:top-6">
+            <Card className="shadow-elegant">
+              <CardHeader>
+                <CardTitle className="text-2xl text-center">
+                  사례비 영수증 작성 시스템
+                </CardTitle>
+                <CardDescription className="text-center">
+                  성명을 입력해주시 후 사례비 영수증을 작성하여 주십시오
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">성명을 입력해주세요</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="이메일을 입력하세요"
+                      required
+                      className="h-12"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password">비밀번호</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      className="h-12"
+                      minLength={6}
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full h-12 bg-primary text-primary-foreground font-bold hover:bg-primary/90"
+                    disabled={loading}
+                  >
+                    {loading ? "처리중..." : "확인"}
+                  </Button>
+                </form>
+
+                <div className="mt-6 text-center text-sm text-muted-foreground">
+                  문의사항이 있으시면 주최측에 연락해주세요
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
