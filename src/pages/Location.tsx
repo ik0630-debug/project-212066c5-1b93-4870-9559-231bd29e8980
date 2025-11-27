@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
+import { useProjectId } from "@/hooks/useProjectId";
 import { getIconComponent } from "@/utils/iconUtils";
 import { useCategorySettings } from "@/hooks/useCategorySettings";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
@@ -14,6 +15,7 @@ import { HeroImage } from "@/components/HeroImage";
 
 const Location = () => {
   const navigate = useNavigate();
+  const { projectId } = useProjectId();
   const [headerImage, setHeaderImage] = useState<string>("");
   const [headerColor, setHeaderColor] = useState("");
   const [pageTitle, setPageTitle] = useState("");
@@ -32,8 +34,8 @@ const Location = () => {
   const [downloadFiles, setDownloadFiles] = useState<any[]>([]);
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
-  const { settings: pageSettings } = usePageSettings();
-  const { settings, loading } = useCategorySettings(['location', 'general']);
+  const { settings: pageSettings } = usePageSettings(projectId);
+  const { settings, loading } = useCategorySettings(['location', 'general'], projectId);
   const isPageEnabled = pageSettings?.location ?? true;
   const [sectionOrder, setSectionOrder] = useState<string[]>([
     "description_buttons",

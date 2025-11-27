@@ -11,26 +11,32 @@ interface RegistrationField {
   options?: string[];
 }
 
-export const useRegistrations = () => {
+export const useRegistrations = (projectId?: string | null) => {
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [registrationFields, setRegistrationFields] = useState<RegistrationField[]>([]);
   const { toast } = useToast();
 
   const loadRegistrations = async () => {
+    if (!projectId) return;
+
     const { data } = await supabase
       .from("registrations")
       .select("*")
+      .eq("project_id", projectId)
       .order("created_at", { ascending: false });
     setRegistrations(data || []);
   };
 
   const loadRegistrationFields = async () => {
+    if (!projectId) return;
+
     const { data } = await supabase
       .from("site_settings")
       .select("value")
       .eq("category", "registration")
       .eq("key", "registration_fields")
-      .single();
+      .eq("project_id", projectId)
+      .maybeSingle();
 
     if (data?.value) {
       try {
@@ -43,6 +49,8 @@ export const useRegistrations = () => {
   };
 
   useEffect(() => {
+    if (!projectId) return;
+
     loadRegistrations();
     loadRegistrationFields();
 
@@ -87,7 +95,7 @@ export const useRegistrations = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [projectId, toast]);
 
   const deleteRegistration = async (id: string) => {
     try {

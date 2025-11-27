@@ -13,17 +13,23 @@ const DEFAULT_SETTINGS: PageSettings = {
   location: true,
 };
 
-export const usePageSettings = () => {
+export const usePageSettings = (projectId?: string | null) => {
   const [settings, setSettings] = useState<PageSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadSettings = async () => {
+      if (!projectId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data } = await supabase
           .from("site_settings")
           .select("*")
-          .in("key", ["program_enabled", "registration_enabled", "location_enabled"]);
+          .in("key", ["program_enabled", "registration_enabled", "location_enabled"])
+          .eq("project_id", projectId);
 
         if (data) {
           const programSetting = data.find((s) => s.key === "program_enabled");
@@ -44,6 +50,8 @@ export const usePageSettings = () => {
     };
 
     loadSettings();
+
+    if (!projectId) return;
 
     // Subscribe to realtime changes
     const channel = supabase
@@ -73,7 +81,7 @@ export const usePageSettings = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [projectId]);
 
   return { settings, loading };
 };

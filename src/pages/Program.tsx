@@ -4,6 +4,7 @@ import MobileNavigation from "@/components/MobileNavigation";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
+import { useProjectId } from "@/hooks/useProjectId";
 import { getIconComponent } from "@/utils/iconUtils";
 import { useCategorySettings } from "@/hooks/useCategorySettings";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
@@ -21,6 +22,7 @@ interface ProgramCard {
 
 const Program = () => {
   const navigate = useNavigate();
+  const { projectId } = useProjectId();
   const [pageTitle, setPageTitle] = useState("");
   const [pageDescription, setPageDescription] = useState("");
   const [headerColor, setHeaderColor] = useState("");
@@ -28,8 +30,8 @@ const Program = () => {
   const [heroOverlayOpacity, setHeroOverlayOpacity] = useState("0");
   const [heroEnabled, setHeroEnabled] = useState(true);
   const [programCards, setProgramCards] = useState<ProgramCard[]>([]);
-  const { settings: pageSettings } = usePageSettings();
-  const { settings, loading } = useCategorySettings("program");
+  const { settings: pageSettings } = usePageSettings(projectId);
+  const { settings, loading } = useCategorySettings("program", projectId);
   const isPageEnabled = pageSettings?.program ?? true;
 
   useEffect(() => {

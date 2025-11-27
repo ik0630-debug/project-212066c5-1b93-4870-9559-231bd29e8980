@@ -15,6 +15,7 @@ import { z } from "zod";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
+import { useProjectId } from "@/hooks/useProjectId";
 
 interface RegistrationField {
   id: string;
@@ -28,14 +29,14 @@ interface RegistrationField {
 const Registration = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { projectId } = useProjectId();
   const [headerImage, setHeaderImage] = useState<string>("");
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [privacyContent, setPrivacyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [defaultProjectId, setDefaultProjectId] = useState<string | null>(null);
-  const { settings: enabledPages } = usePageSettings();
+  const { settings: enabledPages } = usePageSettings(projectId);
   const isPageEnabled = enabledPages?.registration ?? true;
   const [pageSettings, setPageSettings] = useState({
     pageTitle: "참가 신청",
@@ -53,22 +54,17 @@ const Registration = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      try {
-        // Get default project ID
-        const { data: projectData } = await supabase
-          .from("projects")
-          .select("id")
-          .eq("slug", "default")
-          .single();
-        
-        if (projectData) {
-          setDefaultProjectId(projectData.id);
-        }
+      if (!projectId) {
+        setLoading(false);
+        return;
+      }
 
-      const { data } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("category", "registration");
+      try {
+        const { data } = await supabase
+          .from("site_settings")
+          .select("*")
+          .eq("category", "registration")
+          .eq("project_id", projectId);
 
       if (data) {
         const newSettings = { ...pageSettings };
@@ -103,8 +99,11 @@ const Registration = () => {
         setLoading(false);
       }
     };
-    loadSettings();
-  }, []);
+    
+    if (projectId) {
+      loadSettings();
+    }
+  }, [projectId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +149,7 @@ const Registration = () => {
       // Validate form data
       const validatedData = registrationSchema.parse(formData);
 
-      if (!defaultProjectId) {
+      if (!projectId) {
         throw new Error("프로젝트 정보를 찾을 수 없습니다");
       }
 
@@ -158,7 +157,7 @@ const Registration = () => {
       const insertData: any = {
         name: validatedData.name || null,
         form_data: validatedData,
-        project_id: defaultProjectId,
+        project_id: projectId,
       };
 
       const { error } = await supabase
