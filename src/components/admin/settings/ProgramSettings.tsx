@@ -117,7 +117,17 @@ const ProgramSettings = ({
 
       {/* Hero Image Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">헤더 이미지</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">헤더 이미지</h3>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="hero_enabled">사용</Label>
+            <Switch
+              id="hero_enabled"
+              checked={settings.program_hero_enabled === "true"}
+              onCheckedChange={(checked) => onSettingChange("program_hero_enabled", checked ? "true" : "false")}
+            />
+          </div>
+        </div>
         <div className="space-y-4">
           <div>
             <ImageUpload
