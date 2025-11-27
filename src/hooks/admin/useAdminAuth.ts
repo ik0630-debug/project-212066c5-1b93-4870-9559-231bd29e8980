@@ -6,7 +6,7 @@ import { User } from "@supabase/supabase-js";
 export const useAdminAuth = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<'admin' | 'registration_manager' | null>(null);
+  const [userRole, setUserRole] = useState<'master' | 'mnc_admin' | 'project_staff' | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export const useAdminAuth = () => {
         .from("user_roles")
         .select("role")
         .eq("user_id", session.user.id)
-        .in("role", ["admin", "registration_manager"])
+        .in("role", ["master", "mnc_admin", "project_staff"])
         .maybeSingle();
       
       if (!roleData) {
@@ -35,7 +35,7 @@ export const useAdminAuth = () => {
         return;
       }
       
-      setUserRole(roleData.role as 'admin' | 'registration_manager');
+      setUserRole(roleData.role as 'master' | 'mnc_admin' | 'project_staff');
     } catch (error) {
       navigate("/auth");
     } finally {

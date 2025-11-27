@@ -8,15 +8,15 @@ import ConfigSettings from "./settings/ConfigSettings";
 import ProjectMembersTable from "./ProjectMembersTable";
 
 interface AdminTabsProps {
-  userRole: 'admin' | 'registration_manager' | null;
+  userRole: 'master' | 'mnc_admin' | 'project_staff' | null;
   activeTab: 'registrations' | 'users' | 'members' | 'page-settings' | 'config';
   onTabChange: (tab: 'registrations' | 'users' | 'members' | 'page-settings' | 'config') => void;
   registrations: any[];
   registrationFormFields: any[];
   users: any[];
   onDeleteRegistration: (id: string) => void;
-  onToggleAdmin: (userId: string, isAdmin: boolean) => void;
-  onToggleRegistrationManager: (userId: string, isManager: boolean) => void;
+  onToggleMncAdmin: (userId: string, isMncAdmin: boolean) => void;
+  onToggleProjectStaff: (userId: string, isProjectStaff: boolean) => void;
   onApproveUser: (userId: string) => void;
   onRejectUser: (userId: string) => void;
   settingsTabProps: any;
@@ -35,8 +35,8 @@ const AdminTabs = ({
   registrationFormFields,
   users,
   onDeleteRegistration,
-  onToggleAdmin,
-  onToggleRegistrationManager,
+  onToggleMncAdmin,
+  onToggleProjectStaff,
   onApproveUser,
   onRejectUser,
   settingsTabProps,
@@ -56,7 +56,7 @@ const AdminTabs = ({
 
   // Filter tabs based on role
   const isProjectAdmin = projectRole === 'owner' || projectRole === 'admin';
-  const tabs = userRole === 'registration_manager' 
+  const tabs = userRole === 'project_staff' 
     ? allTabs.filter(tab => tab.value === 'registrations')
     : isProjectAdmin 
       ? allTabs 
@@ -87,7 +87,7 @@ const AdminTabs = ({
           onApprove={onApproveUser}
           onReject={onRejectUser}
         />
-        <UsersTable users={users} onToggleAdmin={onToggleAdmin} onToggleRegistrationManager={onToggleRegistrationManager} />
+        <UsersTable users={users} onToggleMncAdmin={onToggleMncAdmin} onToggleProjectStaff={onToggleProjectStaff} />
       </TabsContent>
 
       <TabsContent value="members">
