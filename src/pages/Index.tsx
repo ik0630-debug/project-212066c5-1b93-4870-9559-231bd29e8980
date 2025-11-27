@@ -123,7 +123,7 @@ const Index = () => {
               참가자 초청 플랫폼
             </h1>
             <p className="text-gray-600 text-center text-sm">
-              M&C Communications 가 제공하는 발표자 지원 시스템입니다.
+              M&C Communications가 제공하는 모바일 참가자 초청 시스템입니다.
             </p>
           </div>
         </div>
