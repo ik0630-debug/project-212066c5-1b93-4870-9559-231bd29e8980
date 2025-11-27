@@ -7,10 +7,12 @@ import { useRegistrations } from "@/hooks/admin/useRegistrations";
 import { useUsers } from "@/hooks/admin/useUsers";
 import { useSettings } from "@/hooks/admin/useSettings";
 import { useProjectMembers } from "@/hooks/admin/useProjectMembers";
+import { useProjectAccess } from "@/hooks/useProjectAccess";
 
 const Admin = () => {
   const navigate = useNavigate();
   const { userRole, loading, signOut } = useAdminAuth();
+  const { role: projectRole } = useProjectAccess();
   const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'members' | 'page-settings' | 'config'>('registrations');
   const [activeSettingsTab, setActiveSettingsTab] = useState(0);
 
@@ -84,6 +86,7 @@ const Admin = () => {
           onUpdateMemberRole={updateMemberRole}
           onRemoveMember={removeMember}
           onInviteMember={inviteMember}
+          projectRole={projectRole}
           settingsTabProps={{
             activeTab: activeSettingsTab,
             onTabChange: setActiveSettingsTab,

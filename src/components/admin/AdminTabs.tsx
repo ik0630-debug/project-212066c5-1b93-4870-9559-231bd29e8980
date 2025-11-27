@@ -24,6 +24,7 @@ interface AdminTabsProps {
   onUpdateMemberRole?: (memberId: string, role: string) => void;
   onRemoveMember?: (memberId: string) => void;
   onInviteMember?: (email: string, role: string) => Promise<void>;
+  projectRole?: 'owner' | 'admin' | 'editor' | 'viewer' | null;
 }
 
 const AdminTabs = ({
@@ -43,19 +44,23 @@ const AdminTabs = ({
   onUpdateMemberRole,
   onRemoveMember,
   onInviteMember,
+  projectRole,
 }: AdminTabsProps) => {
   const allTabs = [
-    { icon: FileText, label: "신청 관리", value: "registrations" as const },
-    { icon: Users, label: "사용자 관리", value: "users" as const },
-    { icon: UserCog, label: "멤버 관리", value: "members" as const },
-    { icon: Settings, label: "페이지 설정", value: "page-settings" as const },
-    { icon: Wrench, label: "설정", value: "config" as const },
+    { icon: FileText, label: "신청 관리", value: "registrations" as const, requireAdmin: false },
+    { icon: Users, label: "사용자 관리", value: "users" as const, requireAdmin: true },
+    { icon: UserCog, label: "멤버 관리", value: "members" as const, requireAdmin: true },
+    { icon: Settings, label: "페이지 설정", value: "page-settings" as const, requireAdmin: true },
+    { icon: Wrench, label: "설정", value: "config" as const, requireAdmin: true },
   ];
 
-  // 등록 관리자는 신청 관리 탭만 표시
+  // Filter tabs based on role
+  const isProjectAdmin = projectRole === 'owner' || projectRole === 'admin';
   const tabs = userRole === 'registration_manager' 
     ? allTabs.filter(tab => tab.value === 'registrations')
-    : allTabs;
+    : isProjectAdmin 
+      ? allTabs 
+      : allTabs.filter(tab => !tab.requireAdmin);
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange}>
