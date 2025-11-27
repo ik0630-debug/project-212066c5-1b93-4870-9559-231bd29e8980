@@ -89,7 +89,7 @@ const Index = () => {
               }
 
               // Render info card sections
-              if (sectionKey.startsWith('info_card_section_')) {
+              if (sectionKey.startsWith('infocard_section_')) {
                 const infoCardSection = settings.infoCardSections?.find((s: any) => s.id === sectionKey);
                 if (infoCardSection && infoCardSection.enabled === "true" && infoCardSection.cards?.length > 0) {
                   return (
