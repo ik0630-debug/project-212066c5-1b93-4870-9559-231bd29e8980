@@ -188,28 +188,41 @@ const HomeSettings = ({
         return (
           <div key={sectionId} className="space-y-4">
             <SectionControls title={getSectionTitle(sectionId)} index={index} />
-            <div className="flex justify-end mb-4">
-              <Button onClick={handleAddInfoCard} size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                카드 추가
-              </Button>
+            <div className="flex items-center justify-between mb-4">
+              <Label htmlFor="info_cards_enabled">정보 카드 사용</Label>
+              <Switch
+                id="info_cards_enabled"
+                checked={settings.info_cards_enabled === "true"}
+                onCheckedChange={(checked) => onSettingChange("info_cards_enabled", checked ? "true" : "false")}
+              />
             </div>
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndInfoCards}>
-              <SortableContext items={infoCards.map((_, i) => i.toString())} strategy={verticalListSortingStrategy}>
-                <div className="space-y-4">
-                  {infoCards.map((card, i) => (
-                    <SortableInfoCard
-                      key={i}
-                      id={i.toString()}
-                      card={card}
-                      cardData={card}
-                      onUpdate={(data) => handleUpdateInfoCard(i.toString(), data)}
-                      onDelete={() => handleDeleteInfoCard(i)}
-                    />
-                  ))}
+            
+            {settings.info_cards_enabled === "true" && (
+              <>
+                <div className="flex justify-end mb-4">
+                  <Button onClick={handleAddInfoCard} size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    카드 추가
+                  </Button>
                 </div>
-              </SortableContext>
-            </DndContext>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndInfoCards}>
+                  <SortableContext items={infoCards.map((_, i) => i.toString())} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-4">
+                      {infoCards.map((card, i) => (
+                        <SortableInfoCard
+                          key={i}
+                          id={i.toString()}
+                          card={card}
+                          cardData={card}
+                          onUpdate={(data) => handleUpdateInfoCard(i.toString(), data)}
+                          onDelete={() => handleDeleteInfoCard(i)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </>
+            )}
           </div>
         );
 
@@ -217,26 +230,37 @@ const HomeSettings = ({
         return (
           <div key={sectionId} className="space-y-4">
             <SectionControls title={getSectionTitle(sectionId)} index={index} />
-            <div className="grid gap-4">
-              <div>
-                <Label htmlFor="description_title">제목</Label>
-                <Textarea
-                  id="description_title"
-                  value={settings.description_title}
-                  onChange={(e) => onSettingChange("description_title", e.target.value)}
-                  rows={2}
-                />
-              </div>
-              <div>
-                <Label htmlFor="description_content">내용</Label>
-                <Textarea
-                  id="description_content"
-                  value={settings.description_content}
-                  onChange={(e) => onSettingChange("description_content", e.target.value)}
-                  rows={4}
-                />
-              </div>
+            <div className="flex items-center justify-between mb-4">
+              <Label htmlFor="description_enabled">행사 소개 사용</Label>
+              <Switch
+                id="description_enabled"
+                checked={settings.description_enabled === "true"}
+                onCheckedChange={(checked) => onSettingChange("description_enabled", checked ? "true" : "false")}
+              />
             </div>
+            
+            {settings.description_enabled === "true" && (
+              <div className="grid gap-4">
+                <div>
+                  <Label htmlFor="description_title">제목</Label>
+                  <Textarea
+                    id="description_title"
+                    value={settings.description_title}
+                    onChange={(e) => onSettingChange("description_title", e.target.value)}
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description_content">내용</Label>
+                  <Textarea
+                    id="description_content"
+                    value={settings.description_content}
+                    onChange={(e) => onSettingChange("description_content", e.target.value)}
+                    rows={4}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         );
 
@@ -244,28 +268,41 @@ const HomeSettings = ({
         return (
           <div key={sectionId} className="space-y-4">
             <SectionControls title={getSectionTitle(sectionId)} index={index} />
-            <div className="flex justify-end mb-4">
-              <Button onClick={handleAddBottomButton} size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                버튼 추가
-              </Button>
+            <div className="flex items-center justify-between mb-4">
+              <Label htmlFor="bottom_buttons_enabled">하단 버튼 사용</Label>
+              <Switch
+                id="bottom_buttons_enabled"
+                checked={settings.bottom_buttons_enabled === "true"}
+                onCheckedChange={(checked) => onSettingChange("bottom_buttons_enabled", checked ? "true" : "false")}
+              />
             </div>
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndBottomButtons}>
-              <SortableContext items={bottomButtons.map((_, i) => i.toString())} strategy={verticalListSortingStrategy}>
-                <div className="space-y-4">
-                  {bottomButtons.map((button, i) => (
-                    <SortableBottomButton
-                      key={i}
-                      id={i.toString()}
-                      button={button}
-                      buttonData={button}
-                      onUpdate={(data) => handleUpdateBottomButton(i.toString(), data)}
-                      onDelete={() => handleDeleteBottomButton(i)}
-                    />
-                  ))}
+            
+            {settings.bottom_buttons_enabled === "true" && (
+              <>
+                <div className="flex justify-end mb-4">
+                  <Button onClick={handleAddBottomButton} size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    버튼 추가
+                  </Button>
                 </div>
-              </SortableContext>
-            </DndContext>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndBottomButtons}>
+                  <SortableContext items={bottomButtons.map((_, i) => i.toString())} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-4">
+                      {bottomButtons.map((button, i) => (
+                        <SortableBottomButton
+                          key={i}
+                          id={i.toString()}
+                          button={button}
+                          buttonData={button}
+                          onUpdate={(data) => handleUpdateBottomButton(i.toString(), data)}
+                          onDelete={() => handleDeleteBottomButton(i)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </>
+            )}
           </div>
         );
 
