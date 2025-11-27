@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
 import { MapPin, Navigation, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
 import { getIconComponent } from "@/utils/iconUtils";
+import { useCategorySettings } from "@/hooks/useCategorySettings";
 
 const Location = () => {
   const navigate = useNavigate();
@@ -29,8 +29,8 @@ const Location = () => {
   const [downloadFiles, setDownloadFiles] = useState<any[]>([]);
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const { settings: pageSettings } = usePageSettings();
+  const { settings, loading } = useCategorySettings(['location', 'general']);
   const isPageEnabled = pageSettings?.location ?? true;
   const [sectionOrder, setSectionOrder] = useState<string[]>([
     "description_buttons",
@@ -40,19 +40,10 @@ const Location = () => {
   ]);
 
   useEffect(() => {
-    loadLocationSettings();
-  }, []);
+    if (!settings) return;
 
-  const loadLocationSettings = async () => {
     try {
-    const { data: settings } = await supabase
-        .from('site_settings')
-        .select('*')
-        .in('category', ['location', 'general']);
-
-      if (!settings) return;
-
-    settings.forEach(setting => {
+      settings.forEach(setting => {
       switch (setting.key) {
         case 'location_header_image':
           setHeaderImage(setting.value);
@@ -136,13 +127,13 @@ const Location = () => {
       }
     }).filter(Boolean).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
 
-    setBottomButtons(buttons);
-    setDownloadFiles(files);
-    setTransportations(cards);
-    } finally {
-      setLoading(false);
+      setBottomButtons(buttons);
+      setDownloadFiles(files);
+      setTransportations(cards);
+    } catch (error) {
+      console.error("Error parsing location settings:", error);
     }
-  };
+  }, [settings]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
