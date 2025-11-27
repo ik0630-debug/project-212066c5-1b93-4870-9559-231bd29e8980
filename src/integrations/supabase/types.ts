@@ -59,7 +59,7 @@ export type Database = {
           name: string
           office_phone: string | null
           organization: string
-          position: string
+          position: string | null
           updated_at: string
           user_id: string
         }
@@ -75,7 +75,7 @@ export type Database = {
           name: string
           office_phone?: string | null
           organization: string
-          position: string
+          position?: string | null
           updated_at?: string
           user_id: string
         }
@@ -91,7 +91,7 @@ export type Database = {
           name?: string
           office_phone?: string | null
           organization?: string
-          position?: string
+          position?: string | null
           updated_at?: string
           user_id?: string
         }
