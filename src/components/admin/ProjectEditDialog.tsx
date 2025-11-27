@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import ImageUpload from "@/components/ImageUpload";
 import { QRCodeSVG } from "qrcode.react";
-import { Copy, Download, QrCode } from "lucide-react";
+import { Copy, Download, QrCode, Eye } from "lucide-react";
 
 interface Project {
   id: string;
@@ -307,6 +307,51 @@ export const ProjectEditDialog = ({ open, onOpenChange, project, onSuccess }: Pr
             <p className="text-xs text-muted-foreground">
               권장 크기: 1200x630px (카카오톡, 페이스북 최적)
             </p>
+
+            <div className="rounded-lg border border-border bg-card p-4 space-y-4">
+              <div className="flex items-center gap-2">
+                <Eye className="h-4 w-4" />
+                <h4 className="text-sm font-semibold">공유 미리보기</h4>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                소셜 미디어에서 링크가 어떻게 보일지 미리 확인하세요
+              </p>
+
+              <div className="space-y-3">
+                <div className="rounded-lg border border-border overflow-hidden bg-background hover:bg-accent/50 transition-colors">
+                  {(ogImage || ogTitle || ogDescription) ? (
+                    <>
+                      {ogImage && (
+                        <div className="w-full aspect-[1.91/1] bg-muted relative overflow-hidden">
+                          <img
+                            src={ogImage}
+                            alt="미리보기"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-3 space-y-1">
+                        <p className="text-xs text-muted-foreground line-clamp-1">
+                          {shareUrl}
+                        </p>
+                        <h5 className="font-semibold text-sm line-clamp-2">
+                          {ogTitle || name || "프로젝트 제목"}
+                        </h5>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {ogDescription || description || "프로젝트 설명"}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="p-4 text-center">
+                      <p className="text-sm text-muted-foreground">
+                        공유 정보를 입력하면 미리보기가 표시됩니다
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
 
