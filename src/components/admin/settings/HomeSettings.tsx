@@ -160,8 +160,8 @@ const HomeSettings = ({
       enabled: "true",
       title: "",
       content: "",
-      titleFontSize: "24",
-      contentFontSize: "14",
+      titleFontSize: "18",
+      contentFontSize: "16",
       bgColor: "0 0% 100%",
       order: descriptions.length,
     };
