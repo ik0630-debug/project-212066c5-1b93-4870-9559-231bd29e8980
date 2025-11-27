@@ -161,7 +161,7 @@ const HomeSettings = ({
       title: "",
       content: "",
       titleFontSize: "24",
-      contentFontSize: "16",
+      contentFontSize: "14",
       bgColor: "0 0% 100%",
       order: descriptions.length,
     };

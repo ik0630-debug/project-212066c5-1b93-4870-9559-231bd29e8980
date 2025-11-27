@@ -144,7 +144,7 @@ const Index = () => {
                 const description = settings.descriptions?.find((d: any) => d.id === sectionKey);
                 if (description && description.enabled === "true" && (description.title || description.content)) {
                   const titleFontSize = description.titleFontSize || "24";
-                  const contentFontSize = description.contentFontSize || "16";
+                  const contentFontSize = description.contentFontSize || "14";
                   const bgColor = description.bgColor || "0 0% 100%";
                   
                   return (
