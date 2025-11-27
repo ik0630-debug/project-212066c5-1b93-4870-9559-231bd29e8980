@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -160,16 +160,16 @@ const Index = () => {
             <Card className="border border-gray-200 shadow-sm bg-white">
               <CardHeader className="space-y-2 pb-6">
                 <CardTitle className="text-2xl text-center font-bold text-gray-900">
-                  사례비 영수증 작성 시스템
+                  관리자 로그인
                 </CardTitle>
                 <CardDescription className="text-center text-sm text-gray-600">
-                  성명을 입력해주시 후 사례비 영수증을 작성하여 주십시오
+                  프로젝트 관리자는 이메일(ID)과 비밀번호를 입력해 주십시오.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-medium text-gray-900">성명을 입력해주세요</Label>
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-900">이메일(ID)</Label>
                     <Input
                       id="email"
                       type="email"
@@ -200,9 +200,16 @@ const Index = () => {
                     className="w-full h-14 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm transition-all"
                     disabled={loading}
                   >
-                    {loading ? "처리중..." : "확인"}
+                    {loading ? "처리중..." : "로그인"}
                   </Button>
                 </form>
+                
+                <div className="text-center text-sm text-gray-600">
+                  처음 접속하시는 프로젝트 관리자인가요?{" "}
+                  <Link to="/auth?mode=signup" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                    회원가입
+                  </Link>
+                </div>
               </CardContent>
             </Card>
           </div>
