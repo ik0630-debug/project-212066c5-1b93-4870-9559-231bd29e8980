@@ -91,7 +91,29 @@ export const ProjectCreateDialog = ({ open, onOpenChange, onSuccess }: ProjectCr
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("로그인이 필요합니다");
+      
+      console.log('Creating project - User:', user?.id);
+      
+      if (!user) {
+        throw new Error("로그인이 필요합니다");
+      }
+
+      // Check for duplicate slug
+      const { data: existingProject } = await supabase
+        .from("projects")
+        .select("id")
+        .eq("slug", slug.trim())
+        .maybeSingle();
+
+      if (existingProject) {
+        toast({
+          title: "슬러그 중복",
+          description: "이미 사용 중인 슬러그입니다. 다른 슬러그를 입력해주세요.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
 
       // 1. Create project
       const { data: project, error: projectError } = await supabase
@@ -106,7 +128,12 @@ export const ProjectCreateDialog = ({ open, onOpenChange, onSuccess }: ProjectCr
         .select()
         .single();
 
-      if (projectError) throw projectError;
+      console.log('Project insert result:', { project, error: projectError });
+
+      if (projectError) {
+        console.error('Project creation error:', projectError);
+        throw projectError;
+      }
 
       // 2. Add creator as owner
       const { error: memberError } = await supabase
@@ -150,9 +177,10 @@ export const ProjectCreateDialog = ({ open, onOpenChange, onSuccess }: ProjectCr
       // Navigate to new project
       navigate(`/${project.slug}`);
     } catch (error: any) {
+      console.error('Full error details:', error);
       toast({
         title: "프로젝트 생성 실패",
-        description: error.message,
+        description: error.message || "알 수 없는 오류가 발생했습니다",
         variant: "destructive",
       });
     } finally {
