@@ -425,42 +425,34 @@ const HomeSettings = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-3 mb-6">
+      <div className="flex gap-2 mb-6">
         <Button 
           onClick={handleAddHeroSection} 
-          size="default" 
-          variant="secondary"
-          className="shadow-sm hover:shadow-md transition-shadow"
+          size="icon"
+          className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          헤더 이미지 추가
+          <Plus className="w-4 h-4" />
         </Button>
         <Button 
           onClick={handleAddDescription} 
-          size="default" 
-          variant="secondary"
-          className="shadow-sm hover:shadow-md transition-shadow"
+          size="icon"
+          className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          설명 섹션 추가
+          <Plus className="w-4 h-4" />
         </Button>
         <Button 
           onClick={handleAddInfoCardSection} 
-          size="default" 
-          variant="secondary"
-          className="shadow-sm hover:shadow-md transition-shadow"
+          size="icon"
+          className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          정보 카드 추가
+          <Plus className="w-4 h-4" />
         </Button>
         <Button 
           onClick={handleAddButtonGroup} 
-          size="default" 
-          variant="secondary"
-          className="shadow-sm hover:shadow-md transition-shadow"
+          size="icon"
+          className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          버튼 그룹 추가
+          <Plus className="w-4 h-4" />
         </Button>
       </div>
 
