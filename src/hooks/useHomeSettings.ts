@@ -23,8 +23,11 @@ interface HomeSettings {
   heroEnabled: string;
   heroImageUrl: string;
   heroOverlayOpacity: string;
+  infoCardsEnabled: string;
+  descriptionEnabled: string;
   descriptionTitle: string;
   descriptionContent: string;
+  bottomButtonsEnabled: string;
   infoCards: InfoCard[];
   bottomButtons: BottomButton[];
   sectionOrder: string[];
@@ -34,8 +37,11 @@ const defaultSettings: HomeSettings = {
   heroEnabled: "true",
   heroImageUrl: "",
   heroOverlayOpacity: "0",
+  infoCardsEnabled: "true",
+  descriptionEnabled: "true",
   descriptionTitle: "",
   descriptionContent: "",
+  bottomButtonsEnabled: "true",
   infoCards: [],
   bottomButtons: [],
   sectionOrder: ['hero_section', 'description', 'info_cards', 'bottom_buttons'],
@@ -66,8 +72,11 @@ export const useHomeSettings = () => {
           hero_enabled: 'heroEnabled',
           hero_image_url: 'heroImageUrl',
           hero_overlay_opacity: 'heroOverlayOpacity',
+          info_cards_enabled: 'infoCardsEnabled',
+          description_enabled: 'descriptionEnabled',
           description_title: 'descriptionTitle',
           description_content: 'descriptionContent',
+          bottom_buttons_enabled: 'bottomButtonsEnabled',
         };
 
         data.forEach((item) => {

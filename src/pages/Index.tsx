@@ -77,7 +77,7 @@ const Index = () => {
         <main className="px-6 py-4">
           <div className="space-y-6">
             {settings.sectionOrder.map((sectionKey) => {
-              if (sectionKey === 'info_cards' && settings.infoCards.length > 0) {
+              if (sectionKey === 'info_cards' && settings.infoCardsEnabled === "true" && settings.infoCards.length > 0) {
                 return (
                   <div key={sectionKey} className="grid gap-4">
                     {settings.infoCards.map((card, index) => {
@@ -100,7 +100,7 @@ const Index = () => {
                 );
               }
               
-              if (sectionKey === 'description' && (settings.descriptionTitle || settings.descriptionContent)) {
+              if (sectionKey === 'description' && settings.descriptionEnabled === "true" && (settings.descriptionTitle || settings.descriptionContent)) {
                 return (
                   <div key={sectionKey} className="bg-card rounded-lg p-6 shadow-elegant border border-border">
                     {settings.descriptionTitle && <h2 className="font-bold text-card-foreground mb-4 whitespace-pre-line">{settings.descriptionTitle}</h2>}
@@ -109,7 +109,7 @@ const Index = () => {
                 );
               }
               
-              if (sectionKey === 'bottom_buttons' && settings.bottomButtons.length > 0) {
+              if (sectionKey === 'bottom_buttons' && settings.bottomButtonsEnabled === "true" && settings.bottomButtons.length > 0) {
                 return (
                   <div key={sectionKey} className="grid grid-cols-2 gap-4">
                     {settings.bottomButtons.map((button, index) => (
