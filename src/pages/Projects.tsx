@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Users, FileText, Calendar, MapPin, Settings } from "lucide-react";
+import { Plus, Edit, Trash2, Users, FileText, Calendar, MapPin, Settings, Home, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectCreateDialog } from "@/components/admin/ProjectCreateDialog";
 import { ProjectEditDialog } from "@/components/admin/ProjectEditDialog";
@@ -150,9 +150,38 @@ const Projects = () => {
     );
   }
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border bg-card sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-8 py-4">
+          <div className="flex justify-between items-center">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2"
+            >
+              <Home className="h-5 w-5" />
+              <span className="text-lg font-semibold">홈으로</span>
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              로그아웃
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-6xl mx-auto p-8">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">프로젝트 목록</h1>
