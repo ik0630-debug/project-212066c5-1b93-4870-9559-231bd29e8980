@@ -15,6 +15,7 @@ import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Projects from "./pages/Projects";
 import NotFound from "./pages/NotFound";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -30,14 +31,42 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
             
-            {/* Project-specific routes */}
-            <Route path="/:projectSlug" element={<Index />} />
-            <Route path="/:projectSlug/program" element={<Program />} />
-            <Route path="/:projectSlug/registration" element={<Registration />} />
-            <Route path="/:projectSlug/registration/check" element={<RegistrationCheck />} />
-            <Route path="/:projectSlug/registration/verify" element={<RegistrationVerify />} />
-            <Route path="/:projectSlug/location" element={<Location />} />
-            <Route path="/:projectSlug/admin" element={<Admin />} />
+            {/* Project-specific routes - all require member access */}
+            <Route path="/:projectSlug" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            <Route path="/:projectSlug/program" element={
+              <ProtectedRoute>
+                <Program />
+              </ProtectedRoute>
+            } />
+            <Route path="/:projectSlug/registration" element={
+              <ProtectedRoute>
+                <Registration />
+              </ProtectedRoute>
+            } />
+            <Route path="/:projectSlug/registration/check" element={
+              <ProtectedRoute>
+                <RegistrationCheck />
+              </ProtectedRoute>
+            } />
+            <Route path="/:projectSlug/registration/verify" element={
+              <ProtectedRoute>
+                <RegistrationVerify />
+              </ProtectedRoute>
+            } />
+            <Route path="/:projectSlug/location" element={
+              <ProtectedRoute>
+                <Location />
+              </ProtectedRoute>
+            } />
+            <Route path="/:projectSlug/admin" element={
+              <ProtectedRoute requireAdmin>
+                <Admin />
+              </ProtectedRoute>
+            } />
             
             {/* Redirect root to projects list */}
             <Route path="/" element={<Projects />} />
