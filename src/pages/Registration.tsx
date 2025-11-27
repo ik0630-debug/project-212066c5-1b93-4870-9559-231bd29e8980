@@ -61,16 +61,14 @@ const Registration = () => {
       if (data) {
         const newSettings = { ...pageSettings };
         data.forEach(({ key, value }) => {
-          if (key === "registration_fields") {
+          if (key === "form_fields") {
             try {
               const parsedFields = JSON.parse(value);
-              console.log("=== 필드 로드 ===", parsedFields);
               setFields(parsedFields);
               const initialFormData: Record<string, string> = {};
               parsedFields.forEach((field: any) => {
                 initialFormData[field.id] = "";
               });
-              console.log("=== 초기 formData ===", initialFormData);
               setFormData(initialFormData);
             } catch (e) {
               console.error("Failed to parse registration fields", e);
@@ -140,18 +138,11 @@ const Registration = () => {
       // Validate form data
       const validatedData = registrationSchema.parse(formData);
 
-      console.log("=== 신청 데이터 디버깅 ===");
-      console.log("1. formData:", formData);
-      console.log("2. validatedData:", validatedData);
-      console.log("3. fields:", fields);
-
       // Prepare data for database - form_data에 모든 필드 저장
       const insertData: any = {
         name: validatedData.name || null,
         form_data: validatedData
       };
-      
-      console.log("4. insertData:", insertData);
 
       const { error } = await supabase
         .from("registrations")
@@ -194,7 +185,6 @@ const Registration = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    console.log(`=== handleChange: ${name} = "${value}" ===`);
     
     // 전화번호 타입 필드 포맷팅 (자동으로 - 추가)
     const field = fields.find(f => f.id === name);
