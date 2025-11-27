@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminTabs from "@/components/admin/AdminTabs";
 import { useAdminAuth } from "@/hooks/admin/useAdminAuth";
@@ -11,6 +11,7 @@ import { useProjectAccess } from "@/hooks/useProjectAccess";
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { projectSlug } = useParams();
   const { userRole, loading, signOut } = useAdminAuth();
   const { role: projectRole } = useProjectAccess();
   const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'members' | 'page-settings' | 'config'>('registrations');
@@ -81,7 +82,7 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
-      <AdminHeader onBack={() => navigate(-1)} onSignOut={signOut} />
+      <AdminHeader onBack={() => navigate(`/${projectSlug}`)} onSignOut={signOut} />
       
       <main className="px-6 py-8">
         <AdminTabs

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
 import { MapPin, Navigation, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { HeroImage } from "@/components/HeroImage";
 
 const Location = () => {
   const navigate = useNavigate();
+  const { projectSlug } = useParams();
   const { projectId } = useProjectId();
   const [headerImage, setHeaderImage] = useState<string>("");
   const [headerColor, setHeaderColor] = useState("");
@@ -297,7 +298,7 @@ const Location = () => {
 
   const swipeHandlers = useSwipeable({
     onSwipedRight: async () => {
-      const nextPage = await getNextEnabledPage('/location', 'right');
+      const nextPage = await getNextEnabledPage(`/${projectSlug}/location`, 'right', projectSlug);
       navigate(nextPage);
     },
     trackMouse: false,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileNavigation from "@/components/MobileNavigation";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ interface RegistrationField {
 const Registration = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { projectSlug } = useParams();
   const { projectId } = useProjectId();
   const [headerImage, setHeaderImage] = useState<string>("");
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -243,11 +244,11 @@ const Registration = () => {
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: async () => {
-      const nextPage = await getNextEnabledPage('/registration', 'left');
+      const nextPage = await getNextEnabledPage(`/${projectSlug}/registration`, 'left', projectSlug);
       navigate(nextPage);
     },
     onSwipedRight: async () => {
-      const nextPage = await getNextEnabledPage('/registration', 'right');
+      const nextPage = await getNextEnabledPage(`/${projectSlug}/registration`, 'right', projectSlug);
       navigate(nextPage);
     },
     trackMouse: false,

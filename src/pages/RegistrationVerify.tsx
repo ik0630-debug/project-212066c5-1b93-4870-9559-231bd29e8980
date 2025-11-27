@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import MobileNavigation from "@/components/MobileNavigation";
 const RegistrationVerify = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { projectSlug } = useParams();
   const { toast } = useToast();
   const [registration, setRegistration] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +79,7 @@ const RegistrationVerify = () => {
       <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
           <div className="flex items-center gap-4 px-6 py-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(`/${projectSlug}`)}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <h1 className="text-xl font-semibold">등록 확인</h1>
@@ -93,7 +94,7 @@ const RegistrationVerify = () => {
               <p className="text-muted-foreground mb-6">
                 유효하지 않은 QR코드이거나 삭제된 등록 정보입니다.
               </p>
-              <Button onClick={() => navigate("/")} className="w-full">
+              <Button onClick={() => navigate(`/${projectSlug}`)} className="w-full">
                 홈으로 돌아가기
               </Button>
             </CardContent>
@@ -123,7 +124,7 @@ const RegistrationVerify = () => {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
         <div className="flex items-center gap-4 px-6 py-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate(`/${projectSlug}`)}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-xl font-semibold">등록 정보 확인</h1>
@@ -207,7 +208,7 @@ const RegistrationVerify = () => {
             </CardContent>
           </Card>
 
-          <Button onClick={() => navigate("/")} variant="outline" className="w-full">
+          <Button onClick={() => navigate(`/${projectSlug}`)} variant="outline" className="w-full">
             홈으로 돌아가기
           </Button>
         </div>

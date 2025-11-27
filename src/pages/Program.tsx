@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
@@ -22,6 +22,7 @@ interface ProgramCard {
 
 const Program = () => {
   const navigate = useNavigate();
+  const { projectSlug } = useParams();
   const { projectId } = useProjectId();
   const [pageTitle, setPageTitle] = useState("");
   const [pageDescription, setPageDescription] = useState("");
@@ -73,11 +74,11 @@ const Program = () => {
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: async () => {
-      const nextPage = await getNextEnabledPage('/program', 'left');
+      const nextPage = await getNextEnabledPage(`/${projectSlug}/program`, 'left', projectSlug);
       navigate(nextPage);
     },
     onSwipedRight: async () => {
-      const nextPage = await getNextEnabledPage('/program', 'right');
+      const nextPage = await getNextEnabledPage(`/${projectSlug}/program`, 'right', projectSlug);
       navigate(nextPage);
     },
     trackMouse: false,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileNavigation from "@/components/MobileNavigation";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ interface RegistrationData {
 
 const RegistrationCheck = () => {
   const navigate = useNavigate();
+  const { projectSlug } = useParams();
   const { toast } = useToast();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("010-");
@@ -163,7 +164,7 @@ const RegistrationCheck = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(`/${projectSlug}`)}
               className="hover:bg-accent"
             >
               <ArrowLeft className="w-5 h-5" />

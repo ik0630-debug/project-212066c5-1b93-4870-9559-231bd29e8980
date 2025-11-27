@@ -1,19 +1,23 @@
 import { NavLink } from "@/components/NavLink";
 import { Home, Calendar, FileText, MapPin } from "lucide-react";
 import { usePageSettings } from "@/hooks/usePageSettings";
+import { useParams } from "react-router-dom";
+import { useProjectId } from "@/hooks/useProjectId";
 
 const MobileNavigation = () => {
-  const { settings: enabledPages, loading } = usePageSettings();
+  const { projectSlug } = useParams();
+  const { projectId } = useProjectId();
+  const { settings: enabledPages, loading } = usePageSettings(projectId);
 
-  if (loading || !enabledPages) {
+  if (loading || !enabledPages || !projectSlug) {
     return null;
   }
 
   const allNavItems = [
-    { icon: Home, label: "홈", path: "/", enabled: true },
-    { icon: Calendar, label: "프로그램", path: "/program", enabled: enabledPages.program },
-    { icon: FileText, label: "참가신청", path: "/registration", enabled: enabledPages.registration },
-    { icon: MapPin, label: "오시는 길", path: "/location", enabled: enabledPages.location },
+    { icon: Home, label: "홈", path: `/${projectSlug}`, enabled: true },
+    { icon: Calendar, label: "프로그램", path: `/${projectSlug}/program`, enabled: enabledPages.program },
+    { icon: FileText, label: "참가신청", path: `/${projectSlug}/registration`, enabled: enabledPages.registration },
+    { icon: MapPin, label: "오시는 길", path: `/${projectSlug}/location`, enabled: enabledPages.location },
   ];
 
   const navItems = allNavItems.filter((item) => item.enabled);
