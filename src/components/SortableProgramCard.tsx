@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Copy, Trash2 } from "lucide-react";
+import { GripVertical, Copy, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,17 +10,25 @@ import IconPicker from "@/components/IconPicker";
 interface SortableProgramCardProps {
   id: string;
   card: any;
+  index: number;
+  total: number;
   onUpdate: (updates: any) => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }
 
 export const SortableProgramCard = ({
   id,
   card,
+  index,
+  total,
   onUpdate,
   onDelete,
   onDuplicate,
+  onMoveUp,
+  onMoveDown,
 }: SortableProgramCardProps) => {
   const {
     attributes,
@@ -54,6 +62,24 @@ export const SortableProgramCard = ({
           </button>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onMoveUp}
+            disabled={index === 0}
+            title="위로 이동"
+          >
+            <ChevronUp className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onMoveDown}
+            disabled={index === total - 1}
+            title="아래로 이동"
+          >
+            <ChevronDown className="w-4 h-4" />
+          </Button>
           <Button
             variant="outline"
             size="sm"

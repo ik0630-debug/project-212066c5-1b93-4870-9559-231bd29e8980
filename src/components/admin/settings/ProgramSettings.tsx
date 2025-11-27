@@ -48,6 +48,18 @@ const ProgramSettings = ({
     onProgramCardsChange(newCards);
   };
 
+  const handleMoveUp = (index: number) => {
+    if (index === 0) return;
+    const newCards = arrayMove(programCards, index, index - 1);
+    onProgramCardsChange(newCards);
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index === programCards.length - 1) return;
+    const newCards = arrayMove(programCards, index, index + 1);
+    onProgramCardsChange(newCards);
+  };
+
   const handleDragEndProgramCards = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -125,9 +137,13 @@ const ProgramSettings = ({
                   key={i}
                   id={i.toString()}
                   card={card}
+                  index={i}
+                  total={programCards.length}
                   onUpdate={(updates) => handleUpdateProgramCard(i, updates)}
                   onDelete={() => handleDeleteProgramCard(i)}
                   onDuplicate={() => handleDuplicateProgramCard(i)}
+                  onMoveUp={() => handleMoveUp(i)}
+                  onMoveDown={() => handleMoveDown(i)}
                 />
               ))}
             </div>
