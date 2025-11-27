@@ -251,6 +251,18 @@ const HomeSettings = ({
                   />
                 </div>
                 <div>
+                  <Label htmlFor="description_title_font_size">제목 폰트 크기 (px)</Label>
+                  <Input
+                    id="description_title_font_size"
+                    type="number"
+                    value={settings.description_title_font_size || "24"}
+                    onChange={(e) => onSettingChange("description_title_font_size", e.target.value)}
+                    placeholder="24"
+                    min="12"
+                    max="72"
+                  />
+                </div>
+                <div>
                   <Label htmlFor="description_content">내용</Label>
                   <Textarea
                     id="description_content"
@@ -258,6 +270,30 @@ const HomeSettings = ({
                     onChange={(e) => onSettingChange("description_content", e.target.value)}
                     rows={4}
                   />
+                </div>
+                <div>
+                  <Label htmlFor="description_content_font_size">내용 폰트 크기 (px)</Label>
+                  <Input
+                    id="description_content_font_size"
+                    type="number"
+                    value={settings.description_content_font_size || "16"}
+                    onChange={(e) => onSettingChange("description_content_font_size", e.target.value)}
+                    placeholder="16"
+                    min="12"
+                    max="48"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description_bg_color">배경 색상 (HSL)</Label>
+                  <Input
+                    id="description_bg_color"
+                    value={settings.description_bg_color || ""}
+                    onChange={(e) => onSettingChange("description_bg_color", e.target.value)}
+                    placeholder="220 70% 95% (예시)"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    HSL 형식으로 입력 (예: 220 70% 95%). 비워두면 기본 카드 배경색 사용
+                  </p>
                 </div>
               </div>
             )}
