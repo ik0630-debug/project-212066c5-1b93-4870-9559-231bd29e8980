@@ -289,9 +289,9 @@ const HomeSettings = ({
             variant="ghost" 
             size="sm" 
             onClick={() => toggleSection(sectionId)}
-            className="hover:bg-secondary"
+            className="hover:bg-secondary p-1 h-auto"
           >
-            {isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+            <span className="text-xl">{isCollapsed ? '〉' : '∨'}</span>
           </Button>
           <h3 className="text-lg font-semibold">{title}</h3>
         </div>

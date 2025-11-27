@@ -47,73 +47,58 @@ export const renderDescriptionSection = (props: RenderSectionsProps) => {
       
       {!isCollapsed && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor={`${sectionId}_enabled`}>사용</Label>
-            <Switch
-              id={`${sectionId}_enabled`}
-              checked={description.enabled === "true"}
-              onCheckedChange={(checked) =>
-                onUpdateDescription(sectionId, { enabled: checked ? "true" : "false" })
-              }
+          <div>
+            <Label htmlFor={`${sectionId}_title`}>제목</Label>
+            <Textarea
+              id={`${sectionId}_title`}
+              value={description.title}
+              onChange={(e) => onUpdateDescription(sectionId, { title: e.target.value })}
+              rows={2}
             />
           </div>
-          
-          {description.enabled === "true" && (
-            <div className="grid gap-4">
-              <div>
-                <Label htmlFor={`${sectionId}_title`}>제목</Label>
-                <Textarea
-                  id={`${sectionId}_title`}
-                  value={description.title}
-                  onChange={(e) => onUpdateDescription(sectionId, { title: e.target.value })}
-                  rows={2}
-                />
-              </div>
-              <div>
-                <Label htmlFor={`${sectionId}_title_font_size`}>제목 폰트 크기 (px)</Label>
-                <Input
-                  id={`${sectionId}_title_font_size`}
-                  type="number"
-                  value={description.titleFontSize || "24"}
-                  onChange={(e) => onUpdateDescription(sectionId, { titleFontSize: e.target.value })}
-                  placeholder="24"
-                  min="12"
-                  max="72"
-                />
-              </div>
-              <div>
-                <Label htmlFor={`${sectionId}_content`}>내용</Label>
-                <Textarea
-                  id={`${sectionId}_content`}
-                  value={description.content}
-                  onChange={(e) => onUpdateDescription(sectionId, { content: e.target.value })}
-                  rows={4}
-                />
-              </div>
-              <div>
-                <Label htmlFor={`${sectionId}_content_font_size`}>내용 폰트 크기 (px)</Label>
-                <Input
-                  id={`${sectionId}_content_font_size`}
-                  type="number"
-                  value={description.contentFontSize || "16"}
-                  onChange={(e) => onUpdateDescription(sectionId, { contentFontSize: e.target.value })}
-                  placeholder="16"
-                  min="12"
-                  max="48"
-                />
-              </div>
-              <div>
-                <ColorPicker
-                  value={description.bgColor || "0 0% 100%"}
-                  onChange={(color) => onUpdateDescription(sectionId, { bgColor: color })}
-                  label="배경 색상"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  색상을 선택하세요. 비워두면 기본 카드 배경색이 사용됩니다.
-                </p>
-              </div>
-            </div>
-          )}
+          <div>
+            <Label htmlFor={`${sectionId}_title_font_size`}>제목 폰트 크기 (px)</Label>
+            <Input
+              id={`${sectionId}_title_font_size`}
+              type="number"
+              value={description.titleFontSize || "24"}
+              onChange={(e) => onUpdateDescription(sectionId, { titleFontSize: e.target.value })}
+              placeholder="24"
+              min="12"
+              max="72"
+            />
+          </div>
+          <div>
+            <Label htmlFor={`${sectionId}_content`}>내용</Label>
+            <Textarea
+              id={`${sectionId}_content`}
+              value={description.content}
+              onChange={(e) => onUpdateDescription(sectionId, { content: e.target.value })}
+              rows={4}
+            />
+          </div>
+          <div>
+            <Label htmlFor={`${sectionId}_content_font_size`}>내용 폰트 크기 (px)</Label>
+            <Input
+              id={`${sectionId}_content_font_size`}
+              type="number"
+              value={description.contentFontSize || "16"}
+              onChange={(e) => onUpdateDescription(sectionId, { contentFontSize: e.target.value })}
+              placeholder="16"
+              min="12"
+              max="48"
+            />
+          </div>
+          <div>
+            <ColorPicker
+              value={description.bgColor || "0 0% 100%"}
+              onChange={(color) => onUpdateDescription(sectionId, { bgColor: color })}
+              label="배경 색상"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              색상을 선택하세요. 비워두면 기본 카드 배경색이 사용됩니다.
+            </p>
+          </div>
         </div>
       )}
     </div>
@@ -155,50 +140,35 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
       
       {!isCollapsed && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor={`${sectionId}_enabled`}>사용</Label>
-            <Switch
-              id={`${sectionId}_enabled`}
-              checked={buttonGroup.enabled === "true"}
-              onCheckedChange={(checked) =>
-                onUpdateButtonGroup(sectionId, { enabled: checked ? "true" : "false" })
-              }
-            />
+          <div className="flex justify-end mb-4">
+            <Button onClick={handleAddButton} size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              버튼 추가
+            </Button>
           </div>
-          
-          {buttonGroup.enabled === "true" && (
-            <>
-              <div className="flex justify-end mb-4">
-                <Button onClick={handleAddButton} size="sm">
-                  <Plus className="w-4 h-4 mr-2" />
-                  버튼 추가
-                </Button>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={(event) => handleDragEndBottomButtons(sectionId, event)}
+          >
+            <SortableContext
+              items={(buttonGroup.buttons || []).map((_, i) => i.toString())}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-4">
+                {(buttonGroup.buttons || []).map((button, i) => (
+                  <SortableBottomButton
+                    key={i}
+                    id={i.toString()}
+                    button={button}
+                    buttonData={button}
+                    onUpdate={(data) => handleUpdateButton(i.toString(), data)}
+                    onDelete={() => handleDeleteButton(i)}
+                  />
+                ))}
               </div>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(event) => handleDragEndBottomButtons(sectionId, event)}
-              >
-                <SortableContext
-                  items={(buttonGroup.buttons || []).map((_, i) => i.toString())}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {(buttonGroup.buttons || []).map((button, i) => (
-                      <SortableBottomButton
-                        key={i}
-                        id={i.toString()}
-                        button={button}
-                        buttonData={button}
-                        onUpdate={(data) => handleUpdateButton(i.toString(), data)}
-                        onDelete={() => handleDeleteButton(i)}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </>
-          )}
+            </SortableContext>
+          </DndContext>
         </div>
       )}
     </div>
