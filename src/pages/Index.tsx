@@ -118,7 +118,7 @@ const Index = () => {
       <header className="bg-white">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex flex-col items-center gap-4">
-            <img src={logo} alt="M&C Communications" className="h-20 md:h-24" />
+            <img src={logo} alt="M&C Communications" className="h-30 md:h-36" />
             <h1 className="text-4xl md:text-5xl font-bold text-blue-600">
               Speaker's Potal
             </h1>
