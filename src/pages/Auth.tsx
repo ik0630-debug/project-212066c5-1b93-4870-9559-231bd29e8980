@@ -27,6 +27,25 @@ const Auth = () => {
   const [mobilePhone, setMobilePhone] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // Format phone number as user types
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+    
+    let formatted = '';
+    if (value.length <= 3) {
+      formatted = value;
+    } else if (value.length <= 7) {
+      formatted = `${value.slice(0, 3)}-${value.slice(3)}`;
+    } else if (value.length <= 11) {
+      formatted = `${value.slice(0, 3)}-${value.slice(3, 7)}-${value.slice(7)}`;
+    } else {
+      // Limit to 11 digits
+      formatted = `${value.slice(0, 3)}-${value.slice(3, 7)}-${value.slice(7, 11)}`;
+    }
+    
+    setMobilePhone(formatted);
+  };
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -268,10 +287,13 @@ const Auth = () => {
                         id="mobilePhone"
                         type="tel"
                         value={mobilePhone}
-                        onChange={(e) => setMobilePhone(e.target.value)}
+                        onChange={handlePhoneChange}
                         required
                         className="h-12 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="010-0000-0000"
+                        maxLength={13}
                       />
+                      <p className="text-xs text-gray-500 mt-1">하이픈(-)은 자동으로 입력됩니다</p>
                     </div>
                   </>
                 )}
