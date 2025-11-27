@@ -76,12 +76,6 @@ export const ProjectCreateDialog = ({ open, onOpenChange, onSuccess }: ProjectCr
 
   const handleNameChange = (value: string) => {
     setName(value);
-    // Auto-generate slug from name
-    const autoSlug = value
-      .toLowerCase()
-      .replace(/[^a-z0-9가-힣]+/g, "-")
-      .replace(/^-|-$/g, "");
-    setSlug(autoSlug);
   };
 
   const createProject = async () => {
