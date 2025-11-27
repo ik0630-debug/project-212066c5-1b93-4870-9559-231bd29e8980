@@ -10,6 +10,8 @@ import { useCategorySettings } from "@/hooks/useCategorySettings";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { PageHeader } from "@/components/PageHeader";
 import { HeroImage } from "@/components/HeroImage";
+import { useOpenGraph } from "@/hooks/useOpenGraph";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProgramCard {
   id: string;
@@ -34,6 +36,34 @@ const Program = () => {
   const { settings: pageSettings } = usePageSettings(projectId);
   const { settings, loading } = useCategorySettings("program", projectId);
   const isPageEnabled = pageSettings?.program ?? true;
+  const [projectData, setProjectData] = useState<any>(null);
+
+  // Load project data for OG tags
+  useEffect(() => {
+    const loadProjectData = async () => {
+      if (!projectSlug) return;
+
+      const { data } = await supabase
+        .from("projects")
+        .select("name, description, og_title, og_description, og_image")
+        .eq("slug", projectSlug)
+        .maybeSingle();
+
+      if (data) {
+        setProjectData(data);
+      }
+    };
+
+    loadProjectData();
+  }, [projectSlug]);
+
+  // Set Open Graph tags
+  useOpenGraph({
+    title: projectData?.og_title || `${projectData?.name || ''} - 프로그램`,
+    description: projectData?.og_description || projectData?.description || "프로그램 안내",
+    image: projectData?.og_image,
+    url: window.location.href,
+  });
 
   useEffect(() => {
     if (!settings) return;

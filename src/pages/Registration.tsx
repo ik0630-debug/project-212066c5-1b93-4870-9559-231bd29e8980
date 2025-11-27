@@ -16,6 +16,7 @@ import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
 import { useProjectId } from "@/hooks/useProjectId";
+import { useOpenGraph } from "@/hooks/useOpenGraph";
 
 interface RegistrationField {
   id: string;
@@ -52,6 +53,34 @@ const Registration = () => {
     { id: "company", label: "소속 회사", placeholder: "회사명", type: "text", required: false },
     { id: "message", label: "특이사항", placeholder: "특별히 전달하실 말씀이 있으시면 작성해주세요", type: "textarea", required: false },
   ]);
+  const [projectData, setProjectData] = useState<any>(null);
+
+  // Load project data for OG tags
+  useEffect(() => {
+    const loadProjectData = async () => {
+      if (!projectSlug) return;
+
+      const { data } = await supabase
+        .from("projects")
+        .select("name, description, og_title, og_description, og_image")
+        .eq("slug", projectSlug)
+        .maybeSingle();
+
+      if (data) {
+        setProjectData(data);
+      }
+    };
+
+    loadProjectData();
+  }, [projectSlug]);
+
+  // Set Open Graph tags
+  useOpenGraph({
+    title: projectData?.og_title || `${projectData?.name || ''} - 참가신청`,
+    description: projectData?.og_description || projectData?.description || "참가신청 안내",
+    image: projectData?.og_image,
+    url: window.location.href,
+  });
 
   useEffect(() => {
     const loadSettings = async () => {

@@ -105,6 +105,9 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          og_description: string | null
+          og_image: string | null
+          og_title: string | null
           slug: string
           updated_at: string
         }
@@ -115,6 +118,9 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
           slug: string
           updated_at?: string
         }
@@ -125,6 +131,9 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
           slug?: string
           updated_at?: string
         }
