@@ -55,50 +55,35 @@ export const renderInfoCardSection = (props: RenderInfoCardSectionProps) => {
       
       {!isCollapsed && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor={`${sectionId}_enabled`}>사용</Label>
-            <Switch
-              id={`${sectionId}_enabled`}
-              checked={infoCardSection.enabled === "true"}
-              onCheckedChange={(checked) =>
-                onUpdateInfoCardSection(sectionId, { enabled: checked ? "true" : "false" })
-              }
-            />
+          <div className="flex justify-end mb-4">
+            <Button onClick={handleAddCard} size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              카드 추가
+            </Button>
           </div>
-          
-          {infoCardSection.enabled === "true" && (
-            <>
-              <div className="flex justify-end mb-4">
-                <Button onClick={handleAddCard} size="sm">
-                  <Plus className="w-4 h-4 mr-2" />
-                  카드 추가
-                </Button>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={(event) => handleDragEndInfoCardCards(sectionId, event)}
+          >
+            <SortableContext
+              items={(infoCardSection.cards || []).map((_: any, i: number) => i.toString())}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-4">
+                {(infoCardSection.cards || []).map((card: any, i: number) => (
+                  <SortableInfoCard
+                    key={i}
+                    id={i.toString()}
+                    card={card}
+                    cardData={card}
+                    onUpdate={(data) => handleUpdateCard(i.toString(), data)}
+                    onDelete={() => handleDeleteCard(i)}
+                  />
+                ))}
               </div>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(event) => handleDragEndInfoCardCards(sectionId, event)}
-              >
-                <SortableContext
-                  items={(infoCardSection.cards || []).map((_: any, i: number) => i.toString())}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {(infoCardSection.cards || []).map((card: any, i: number) => (
-                      <SortableInfoCard
-                        key={i}
-                        id={i.toString()}
-                        card={card}
-                        cardData={card}
-                        onUpdate={(data) => handleUpdateCard(i.toString(), data)}
-                        onDelete={() => handleDeleteCard(i)}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </>
-          )}
+            </SortableContext>
+          </DndContext>
         </div>
       )}
     </div>
