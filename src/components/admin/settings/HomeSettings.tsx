@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { Plus, ArrowUp, ArrowDown } from "lucide-react";
 import ImageUpload from "@/components/ImageUpload";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
@@ -115,7 +116,7 @@ const HomeSettings = ({
 
   const getSectionTitle = (sectionId: string): string => {
     switch (sectionId) {
-      case "hero_section": return "히어로 섹션";
+      case "hero_section": return "헤더 이미지";
       case "info_cards": return "정보 카드";
       case "description": return "행사 소개";
       case "bottom_buttons": return "하단 버튼";
@@ -142,30 +143,43 @@ const HomeSettings = ({
       case "hero_section":
         return (
           <div key={sectionId} className="space-y-4">
-            <SectionControls title="히어로 섹션" index={index} />
+            <SectionControls title="헤더 이미지" index={index} />
             <div className="grid gap-4">
-              <ImageUpload
-                value={settings.hero_image_url || ""}
-                onChange={(url) => onSettingChange("hero_image_url", url)}
-                label="배경 이미지"
-              />
-              <p className="text-sm text-muted-foreground">
-                이미지는 원본 비율로 표시되며, 최대 너비는 1000px입니다.
-              </p>
-              
-              <div>
-                <Label htmlFor="hero_overlay_opacity">배경 오버레이 투명도 (%)</Label>
-                <Input
-                  id="hero_overlay_opacity"
-                  type="number"
-                  value={settings.hero_overlay_opacity || "0"}
-                  onChange={(e) => onSettingChange("hero_overlay_opacity", e.target.value)}
-                  placeholder="0"
-                  min="0"
-                  max="100"
+              <div className="flex items-center justify-between">
+                <Label htmlFor="hero_enabled">헤더 이미지 사용</Label>
+                <Switch
+                  id="hero_enabled"
+                  checked={settings.hero_enabled === "true"}
+                  onCheckedChange={(checked) => onSettingChange("hero_enabled", checked ? "true" : "false")}
                 />
-                <p className="text-xs text-muted-foreground mt-1">0 (투명) ~ 100 (불투명)</p>
               </div>
+              
+              {settings.hero_enabled === "true" && (
+                <>
+                  <ImageUpload
+                    value={settings.hero_image_url || ""}
+                    onChange={(url) => onSettingChange("hero_image_url", url)}
+                    label="배경 이미지"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    이미지는 원본 비율로 표시되며, 최대 너비는 1000px입니다.
+                  </p>
+                  
+                  <div>
+                    <Label htmlFor="hero_overlay_opacity">배경 오버레이 투명도 (%)</Label>
+                    <Input
+                      id="hero_overlay_opacity"
+                      type="number"
+                      value={settings.hero_overlay_opacity || "0"}
+                      onChange={(e) => onSettingChange("hero_overlay_opacity", e.target.value)}
+                      placeholder="0"
+                      min="0"
+                      max="100"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">0 (투명) ~ 100 (불투명)</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         );

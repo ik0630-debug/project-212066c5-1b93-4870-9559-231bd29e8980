@@ -56,21 +56,23 @@ const Index = () => {
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
-        <header className="flex flex-col items-center justify-center">
-          <div className="relative w-full">
-            <div className="relative">
-              <div 
-                className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-                style={{ opacity: parseInt(settings.heroOverlayOpacity || "0") / 100 }}
-              />
-              <img
-                src={settings.heroImageUrl || heroImage}
-                alt="Conference Hero"
-                className="w-full h-auto object-contain"
-              />
+        {settings.heroEnabled === "true" && (
+          <header className="flex flex-col items-center justify-center">
+            <div className="relative w-full">
+              <div className="relative">
+                <div 
+                  className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
+                  style={{ opacity: parseInt(settings.heroOverlayOpacity || "0") / 100 }}
+                />
+                <img
+                  src={settings.heroImageUrl || heroImage}
+                  alt="Conference Hero"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
+        )}
 
         <main className="px-6 py-4">
           <div className="space-y-6">
