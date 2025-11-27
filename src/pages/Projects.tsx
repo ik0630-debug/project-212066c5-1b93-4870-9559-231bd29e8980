@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ProjectCreateDialog } from "@/components/admin/ProjectCreateDialog";
 import { ProjectEditDialog } from "@/components/admin/ProjectEditDialog";
 import { ProjectDeleteDialog } from "@/components/admin/ProjectDeleteDialog";
+import { ProjectPreviewDialog } from "@/components/admin/ProjectPreviewDialog";
 
 interface Project {
   id: string;
@@ -35,6 +36,7 @@ const Projects = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -127,7 +129,7 @@ const Projects = () => {
   };
 
   const handleProjectClick = (slug: string) => {
-    navigate(`/${slug}`);
+    navigate(`/${slug}/admin`);
   };
 
   const handleEdit = (project: Project, e: React.MouseEvent) => {
@@ -140,6 +142,12 @@ const Projects = () => {
     e.stopPropagation();
     setSelectedProject(project);
     setShowDeleteDialog(true);
+  };
+
+  const handlePreview = (project: Project, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedProject(project);
+    setShowPreviewDialog(true);
   };
 
   if (loading) {
@@ -288,14 +296,11 @@ const Projects = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/${project.slug}/admin`);
-                      }}
+                      onClick={(e) => handlePreview(project, e)}
                       className="h-7 text-xs"
                     >
                       <Settings className="h-3 w-3 mr-1" />
-                      설정
+                      미리보기
                     </Button>
                   </div>
                 </CardContent>
@@ -341,6 +346,12 @@ const Projects = () => {
             setShowDeleteDialog(false);
             loadProjects();
           }}
+        />
+
+        <ProjectPreviewDialog
+          open={showPreviewDialog}
+          onOpenChange={setShowPreviewDialog}
+          projectSlug={selectedProject?.slug || ""}
         />
       </div>
     </div>
