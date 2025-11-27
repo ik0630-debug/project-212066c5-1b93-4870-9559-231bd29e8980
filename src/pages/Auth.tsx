@@ -23,8 +23,8 @@ const Auth = () => {
   const [organization, setOrganization] = useState("");
   const [department, setDepartment] = useState("");
   const [position, setPosition] = useState("");
-  const [officePhone, setOfficePhone] = useState("");
   const [mobilePhone, setMobilePhone] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     // Set up auth state listener
@@ -72,6 +72,17 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate password confirmation for signup
+    if (!isLogin && password !== confirmPassword) {
+      toast({
+        title: "비밀번호 불일치",
+        description: "비밀번호와 비밀번호 확인이 일치하지 않습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -108,8 +119,8 @@ const Auth = () => {
                 name,
                 organization,
                 department: department || null,
-                position,
-                office_phone: officePhone || null,
+                position: position || null,
+                office_phone: null,
                 mobile_phone: mobilePhone,
                 email,
               },
@@ -153,7 +164,6 @@ const Auth = () => {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="홍길동"
                     required
                     className="h-12"
                   />
@@ -166,7 +176,6 @@ const Auth = () => {
                     type="text"
                     value={organization}
                     onChange={(e) => setOrganization(e.target.value)}
-                    placeholder="회사명"
                     required
                     className="h-12"
                   />
@@ -179,32 +188,17 @@ const Auth = () => {
                     type="text"
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
-                    placeholder="영업부"
                     className="h-12"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="position">직함 *</Label>
+                  <Label htmlFor="position">직함</Label>
                   <Input
                     id="position"
                     type="text"
                     value={position}
                     onChange={(e) => setPosition(e.target.value)}
-                    placeholder="대리"
-                    required
-                    className="h-12"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="officePhone">유선전화</Label>
-                  <Input
-                    id="officePhone"
-                    type="tel"
-                    value={officePhone}
-                    onChange={(e) => setOfficePhone(e.target.value)}
-                    placeholder="02-0000-0000"
                     className="h-12"
                   />
                 </div>
@@ -216,7 +210,6 @@ const Auth = () => {
                     type="tel"
                     value={mobilePhone}
                     onChange={(e) => setMobilePhone(e.target.value)}
-                    placeholder="010-0000-0000"
                     required
                     className="h-12"
                   />
@@ -225,13 +218,12 @@ const Auth = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">이메일 *</Label>
+              <Label htmlFor="email">이메일(ID) *</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="example@email.com"
                 required
                 className="h-12"
               />
@@ -244,12 +236,26 @@ const Auth = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
                 required
                 className="h-12"
                 minLength={6}
               />
             </div>
+
+            {!isLogin && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">비밀번호 확인 *</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="h-12"
+                  minLength={6}
+                />
+              </div>
+            )}
 
             <Button
               type="submit"
