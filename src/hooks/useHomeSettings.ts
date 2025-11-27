@@ -91,25 +91,31 @@ export const useHomeSettings = () => {
       if (data) {
         const newSettings = { ...defaultSettings };
 
+        console.log("Raw data from database:", data);
+
         // Load hero sections
         const heroSections = data
           .filter((s) => s.key.startsWith("home_hero_"))
           .map((s) => {
             const heroData = JSON.parse(s.value);
+            console.log("Parsed hero data:", heroData);
             return heroData;
           })
           .sort((a, b) => (a.order || 0) - (b.order || 0));
         newSettings.heroSections = heroSections;
+        console.log("Hero sections loaded:", heroSections);
 
         // Load info card sections
         const infoCardSections = data
           .filter((s) => s.key.startsWith("home_infocard_section_"))
           .map((s) => {
             const sectionData = JSON.parse(s.value);
+            console.log("Parsed info card section:", sectionData);
             return sectionData;
           })
           .sort((a, b) => (a.order || 0) - (b.order || 0));
         newSettings.infoCardSections = infoCardSections;
+        console.log("Info card sections loaded:", infoCardSections);
 
         // Load description sections
         const descriptions = data
@@ -133,14 +139,18 @@ export const useHomeSettings = () => {
 
         // Load section order
         const orderSetting = data.find((s) => s.key === "section_order");
+        console.log("Order setting found:", orderSetting);
         if (orderSetting) {
           try {
             newSettings.sectionOrder = JSON.parse(orderSetting.value);
-          } catch {
+            console.log("Section order loaded:", newSettings.sectionOrder);
+          } catch (e) {
+            console.error("Error parsing section order:", e);
             // Keep default
           }
         }
 
+        console.log("Final settings:", newSettings);
         setSettings(newSettings);
       }
     } catch (error) {
