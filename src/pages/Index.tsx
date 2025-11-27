@@ -113,41 +113,38 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 animate-fade-in">
+    <div className="min-h-screen bg-white animate-fade-in">
       {/* Header */}
-      <header className="border-b border-border bg-white/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex flex-col items-center gap-3">
-            <img src={logo} alt="M&C Communications" className="h-16 md:h-20" />
-            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
-              참가자 초청 플랫폼
+      <header className="bg-white">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex flex-col items-center gap-4">
+            <img src={logo} alt="M&C Communications" className="h-20 md:h-24" />
+            <h1 className="text-4xl md:text-5xl font-bold text-blue-600">
+              Speaker's Potal
             </h1>
-            <p className="text-gray-600 text-center text-sm md:text-base">
+            <p className="text-gray-600 text-center text-sm">
               M&C Communications 가 제공하는 발표자 지원 시스템입니다.
             </p>
           </div>
         </div>
       </header>
 
+      <div className="border-t border-gray-200"></div>
+
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
+      <main className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid lg:grid-cols-2 gap-16 items-start">
           {/* Left Side - Features */}
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                시스템 특징
-              </h2>
-            </div>
+          <div className="space-y-6">
             {features.map((feature, index) => (
-              <Card key={index} className="border-0 shadow-md hover:shadow-lg transition-all hover:-translate-y-1 bg-white">
-                <CardHeader className="p-5">
+              <Card key={index} className="border border-gray-200 shadow-sm hover:shadow-md transition-all bg-white">
+                <CardHeader className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                      <feature.icon className="w-6 h-6 text-blue-600" />
+                    <div className="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                      <feature.icon className="w-7 h-7 text-blue-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg mb-1.5 text-gray-900 font-semibold">{feature.title}</CardTitle>
+                      <CardTitle className="text-lg mb-2 text-gray-900 font-semibold">{feature.title}</CardTitle>
                       <CardDescription className="text-sm text-gray-600 leading-relaxed">
                         {feature.description}
                       </CardDescription>
@@ -160,56 +157,52 @@ const Index = () => {
 
           {/* Right Side - Admin Login */}
           <div className="lg:sticky lg:top-6">
-            <Card className="border-0 shadow-xl bg-white">
-              <CardHeader className="space-y-2 pb-5">
-                <CardTitle className="text-xl text-center font-bold text-gray-900">
+            <Card className="border border-gray-200 shadow-sm bg-white">
+              <CardHeader className="space-y-2 pb-6">
+                <CardTitle className="text-2xl text-center font-bold text-gray-900">
                   사례비 영수증 작성 시스템
                 </CardTitle>
                 <CardDescription className="text-center text-sm text-gray-600">
                   성명을 입력해주시 후 사례비 영수증을 작성하여 주십시오
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-6">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">성명을 입력해주세요</Label>
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-900">성명을 입력해주세요</Label>
                     <Input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="이메일을 입력하세요"
+                      placeholder=""
                       required
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      className="h-12 border-gray-300"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-sm font-medium text-gray-700">비밀번호</Label>
+                    <Label htmlFor="password" className="text-sm font-medium text-gray-900">비밀번호</Label>
                     <Input
                       id="password"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder=""
                       required
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      className="h-12 border-gray-300"
                       minLength={6}
                     />
                   </div>
 
                   <Button
                     type="submit"
-                    className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all"
+                    className="w-full h-14 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm transition-all"
                     disabled={loading}
                   >
                     {loading ? "처리중..." : "확인"}
                   </Button>
                 </form>
-
-                <div className="mt-5 text-center text-xs text-gray-500">
-                  문의사항이 있으시면 주최측에 연락해주세요
-                </div>
               </CardContent>
             </Card>
           </div>
