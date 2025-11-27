@@ -25,20 +25,30 @@ interface BottomButton {
   order: number;
 }
 
+interface DescriptionSection {
+  id: string;
+  enabled: string;
+  title: string;
+  content: string;
+  titleFontSize: string;
+  contentFontSize: string;
+  bgColor: string;
+}
+
+interface ButtonGroup {
+  id: string;
+  enabled: string;
+  buttons: BottomButton[];
+}
+
 interface HomeSettings {
   heroEnabled: string;
   heroImageUrl: string;
   heroOverlayOpacity: string;
   infoCardsEnabled: string;
-  descriptionEnabled: string;
-  descriptionTitle: string;
-  descriptionContent: string;
-  descriptionTitleFontSize: string;
-  descriptionContentFontSize: string;
-  descriptionBgColor: string;
-  bottomButtonsEnabled: string;
   infoCards: InfoCard[];
-  bottomButtons: BottomButton[];
+  descriptions: DescriptionSection[];
+  buttonGroups: ButtonGroup[];
   sectionOrder: string[];
 }
 
@@ -47,16 +57,10 @@ const defaultSettings: HomeSettings = {
   heroImageUrl: "",
   heroOverlayOpacity: "0",
   infoCardsEnabled: "true",
-  descriptionEnabled: "true",
-  descriptionTitle: "",
-  descriptionContent: "",
-  descriptionTitleFontSize: "24",
-  descriptionContentFontSize: "16",
-  descriptionBgColor: "",
-  bottomButtonsEnabled: "true",
   infoCards: [],
-  bottomButtons: [],
-  sectionOrder: ['hero_section', 'description', 'info_cards', 'bottom_buttons'],
+  descriptions: [],
+  buttonGroups: [],
+  sectionOrder: ['hero_section', 'info_cards'],
 };
 
 export const useHomeSettings = () => {
@@ -85,13 +89,6 @@ export const useHomeSettings = () => {
           hero_image_url: 'heroImageUrl',
           hero_overlay_opacity: 'heroOverlayOpacity',
           info_cards_enabled: 'infoCardsEnabled',
-          description_enabled: 'descriptionEnabled',
-          description_title: 'descriptionTitle',
-          description_content: 'descriptionContent',
-          description_title_font_size: 'descriptionTitleFontSize',
-          description_content_font_size: 'descriptionContentFontSize',
-          description_bg_color: 'descriptionBgColor',
-          bottom_buttons_enabled: 'bottomButtonsEnabled',
         };
 
         data.forEach((item) => {
@@ -111,15 +108,25 @@ export const useHomeSettings = () => {
           .sort((a, b) => (a.order || 0) - (b.order || 0));
         newSettings.infoCards = cards;
 
-        // Load bottom buttons
-        const buttons = data
-          .filter((s) => s.key.startsWith("home_bottom_button_"))
+        // Load description sections
+        const descriptions = data
+          .filter((s) => s.key.startsWith("home_description_"))
           .map((s) => {
-            const buttonData = JSON.parse(s.value);
-            return { id: s.id, ...buttonData };
+            const descData = JSON.parse(s.value);
+            return descData;
           })
           .sort((a, b) => (a.order || 0) - (b.order || 0));
-        newSettings.bottomButtons = buttons;
+        newSettings.descriptions = descriptions;
+
+        // Load button groups
+        const buttonGroups = data
+          .filter((s) => s.key.startsWith("home_button_group_"))
+          .map((s) => {
+            const groupData = JSON.parse(s.value);
+            return groupData;
+          })
+          .sort((a, b) => (a.order || 0) - (b.order || 0));
+        newSettings.buttonGroups = buttonGroups;
 
         // Load section order
         const orderSetting = data.find((s) => s.key === "section_order");

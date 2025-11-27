@@ -125,63 +125,69 @@ const Index = () => {
                 );
               }
               
-              if (sectionKey === 'description' && settings.descriptionEnabled === "true" && (settings.descriptionTitle || settings.descriptionContent)) {
-                const titleFontSize = settings.descriptionTitleFontSize || "24";
-                const contentFontSize = settings.descriptionContentFontSize || "16";
-                const bgColor = settings.descriptionBgColor || "";
-                
-                return (
-                  <div 
-                    key={sectionKey} 
-                    className="rounded-lg p-6 shadow-elegant border border-border"
-                    style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : undefined}
-                  >
-                    {settings.descriptionTitle && (
-                      <h2 
-                        className="font-bold text-card-foreground mb-4 whitespace-pre-line"
-                        style={{ fontSize: `${titleFontSize}px` }}
-                      >
-                        {settings.descriptionTitle}
-                      </h2>
-                    )}
-                    {settings.descriptionContent && (
-                      <p 
-                        className="text-muted-foreground leading-relaxed whitespace-pre-line"
-                        style={{ fontSize: `${contentFontSize}px` }}
-                      >
-                        {settings.descriptionContent}
-                      </p>
-                    )}
-                  </div>
-                );
+              if (sectionKey.startsWith('description_')) {
+                const description = settings.descriptions?.find((d: any) => d.id === sectionKey);
+                if (description && description.enabled === "true" && (description.title || description.content)) {
+                  const titleFontSize = description.titleFontSize || "24";
+                  const contentFontSize = description.contentFontSize || "16";
+                  const bgColor = description.bgColor || "0 0% 100%";
+                  
+                  return (
+                    <div 
+                      key={sectionKey} 
+                      className="rounded-lg p-6 shadow-elegant border border-border"
+                      style={{ backgroundColor: `hsl(${bgColor})` }}
+                    >
+                      {description.title && (
+                        <h2 
+                          className="font-bold text-card-foreground mb-4 whitespace-pre-line"
+                          style={{ fontSize: `${titleFontSize}px` }}
+                        >
+                          {description.title}
+                        </h2>
+                      )}
+                      {description.content && (
+                        <p 
+                          className="text-muted-foreground leading-relaxed whitespace-pre-line"
+                          style={{ fontSize: `${contentFontSize}px` }}
+                        >
+                          {description.content}
+                        </p>
+                      )}
+                    </div>
+                  );
+                }
               }
               
-              if (sectionKey === 'bottom_buttons' && settings.bottomButtonsEnabled === "true" && settings.bottomButtons.length > 0) {
-                return (
-                  <div key={sectionKey} className="grid grid-cols-2 gap-4">
-                    {settings.bottomButtons.map((button, index) => {
-                      const bgColor = button.bgColor || "221 83% 53%";
-                      const textColor = button.textColor || "0 0% 100%";
-                      
-                      return (
-                        <Button
-                          key={index}
-                          onClick={() => navigate(button.link)}
-                          variant="outline"
-                          size={button.size as any || "default"}
-                          className={button.fontSize || "text-sm"}
-                          style={{
-                            backgroundColor: `hsl(${bgColor})`,
-                            color: `hsl(${textColor})`,
-                            borderColor: `hsl(${bgColor})`,
-                          }}
-                        >
-                          {button.text}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                );
+              if (sectionKey.startsWith('button_group_')) {
+                const buttonGroup = settings.buttonGroups?.find((g: any) => g.id === sectionKey);
+                if (buttonGroup && buttonGroup.enabled === "true" && buttonGroup.buttons?.length > 0) {
+                  return (
+                    <div key={sectionKey} className="grid grid-cols-2 gap-4">
+                      {buttonGroup.buttons.map((button: any, index: number) => {
+                        const bgColor = button.bgColor || "221 83% 53%";
+                        const textColor = button.textColor || "0 0% 100%";
+                        
+                        return (
+                          <Button
+                            key={index}
+                            onClick={() => navigate(button.link)}
+                            variant="outline"
+                            size={button.size as any || "default"}
+                            className={button.fontSize || "text-sm"}
+                            style={{
+                              backgroundColor: `hsl(${bgColor})`,
+                              color: `hsl(${textColor})`,
+                              borderColor: `hsl(${bgColor})`,
+                            }}
+                          >
+                            {button.text}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  );
+                }
               }
               
               return null;
