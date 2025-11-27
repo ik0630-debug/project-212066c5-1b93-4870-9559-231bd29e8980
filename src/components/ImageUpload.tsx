@@ -74,7 +74,7 @@ const ImageUpload = ({ value, onChange, label, accept }: ImageUploadProps) => {
     <div className="space-y-2">
       <Label>{label}</Label>
       
-      {preview && (!accept || accept.startsWith('image/')) && (
+      {preview && (!accept || accept.startsWith('image/')) ? (
         <div className="relative rounded-lg overflow-hidden border border-border bg-muted/30">
           <img
             src={preview}
@@ -90,6 +90,10 @@ const ImageUpload = ({ value, onChange, label, accept }: ImageUploadProps) => {
           >
             <X className="h-4 w-4" />
           </Button>
+        </div>
+      ) : (!accept || accept.startsWith('image/')) && (
+        <div className="flex items-center justify-center h-48 rounded-lg border-2 border-dashed border-border bg-muted/30">
+          <p className="text-sm text-muted-foreground">이미지를 업로드하시면 여기에 표시됩니다.</p>
         </div>
       )}
       
