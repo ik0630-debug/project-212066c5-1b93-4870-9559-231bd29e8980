@@ -75,11 +75,11 @@ const ImageUpload = ({ value, onChange, label, accept }: ImageUploadProps) => {
       <Label>{label}</Label>
       
       {preview && (!accept || accept.startsWith('image/')) && (
-        <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border">
+        <div className="relative rounded-lg overflow-hidden border border-border bg-muted/30">
           <img
             src={preview}
             alt="Preview"
-            className="w-full h-full object-cover"
+            className="w-full h-auto object-contain max-h-80"
           />
           <Button
             type="button"
