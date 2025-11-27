@@ -34,6 +34,7 @@ const Registration = () => {
   const [privacyContent, setPrivacyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [defaultProjectId, setDefaultProjectId] = useState<string | null>(null);
   const { settings: enabledPages } = usePageSettings();
   const isPageEnabled = enabledPages?.registration ?? true;
   const [pageSettings, setPageSettings] = useState({
@@ -53,6 +54,17 @@ const Registration = () => {
   useEffect(() => {
     const loadSettings = async () => {
       try {
+        // Get default project ID
+        const { data: projectData } = await supabase
+          .from("projects")
+          .select("id")
+          .eq("slug", "default")
+          .single();
+        
+        if (projectData) {
+          setDefaultProjectId(projectData.id);
+        }
+
       const { data } = await supabase
         .from("site_settings")
         .select("*")
@@ -138,10 +150,15 @@ const Registration = () => {
       // Validate form data
       const validatedData = registrationSchema.parse(formData);
 
+      if (!defaultProjectId) {
+        throw new Error("프로젝트 정보를 찾을 수 없습니다");
+      }
+
       // Prepare data for database - form_data에 모든 필드 저장
       const insertData: any = {
         name: validatedData.name || null,
-        form_data: validatedData
+        form_data: validatedData,
+        project_id: defaultProjectId,
       };
 
       const { error } = await supabase

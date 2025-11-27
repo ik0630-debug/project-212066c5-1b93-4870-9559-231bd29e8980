@@ -65,6 +65,71 @@ export type Database = {
         }
         Relationships: []
       }
+      project_members: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       registrations: {
         Row: {
           company: string | null
@@ -77,6 +142,7 @@ export type Database = {
           name: string
           phone: string | null
           position: string | null
+          project_id: string
           status: string
           updated_at: string
         }
@@ -91,6 +157,7 @@ export type Database = {
           name: string
           phone?: string | null
           position?: string | null
+          project_id: string
           status?: string
           updated_at?: string
         }
@@ -105,10 +172,19 @@ export type Database = {
           name?: string
           phone?: string | null
           position?: string | null
+          project_id?: string
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "registrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       site_settings: {
         Row: {
@@ -117,6 +193,7 @@ export type Database = {
           description: string | null
           id: string
           key: string
+          project_id: string
           updated_at: string
           value: string
         }
@@ -126,6 +203,7 @@ export type Database = {
           description?: string | null
           id?: string
           key: string
+          project_id: string
           updated_at?: string
           value: string
         }
@@ -135,10 +213,19 @@ export type Database = {
           description?: string | null
           id?: string
           key?: string
+          project_id?: string
           updated_at?: string
           value?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "site_settings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -166,11 +253,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_project_role: {
+        Args: { _project_id: string; _role: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_project_member: {
+        Args: { _project_id: string; _user_id: string }
         Returns: boolean
       }
     }
