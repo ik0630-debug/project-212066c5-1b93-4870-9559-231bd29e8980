@@ -385,12 +385,37 @@ const HomeSettings = ({
 
   return (
     <div className="space-y-6">
-      {sectionOrder.map((sectionId, index) => (
-        <div key={sectionId}>
-          {renderSection(sectionId, index)}
-          {index < sectionOrder.length - 1 && <Separator className="my-6" />}
+      <div className="flex gap-2 mb-4">
+        <Button onClick={handleAddHeroSection} size="sm" variant="outline">
+          <Plus className="w-4 h-4 mr-2" />
+          헤더 이미지 추가
+        </Button>
+        <Button onClick={handleAddInfoCardSection} size="sm" variant="outline">
+          <Plus className="w-4 h-4 mr-2" />
+          정보 카드 추가
+        </Button>
+        <Button onClick={handleAddDescription} size="sm" variant="outline">
+          <Plus className="w-4 h-4 mr-2" />
+          설명 섹션 추가
+        </Button>
+        <Button onClick={handleAddButtonGroup} size="sm" variant="outline">
+          <Plus className="w-4 h-4 mr-2" />
+          버튼 그룹 추가
+        </Button>
+      </div>
+
+      {sectionOrder.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          <p>섹션이 없습니다. 위 버튼을 클릭하여 섹션을 추가하세요.</p>
         </div>
-      ))}
+      ) : (
+        sectionOrder.map((sectionId, index) => (
+          <div key={sectionId}>
+            {renderSection(sectionId, index)}
+            {index < sectionOrder.length - 1 && <Separator className="my-6" />}
+          </div>
+        ))
+      )}
     </div>
   );
 };
