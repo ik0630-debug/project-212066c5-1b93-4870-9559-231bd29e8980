@@ -24,6 +24,7 @@ const Program = () => {
   const [headerColor, setHeaderColor] = useState("");
   const [heroImage, setHeroImage] = useState("");
   const [heroOverlayOpacity, setHeroOverlayOpacity] = useState("0");
+  const [heroEnabled, setHeroEnabled] = useState(true);
   const [programCards, setProgramCards] = useState<ProgramCard[]>([]);
   const [loading, setLoading] = useState(true);
   const { settings: pageSettings } = usePageSettings();
@@ -52,12 +53,14 @@ const Program = () => {
         const colorSetting = settings.find((s) => s.key === "program_header_color");
         const heroImageSetting = settings.find((s) => s.key === "program_hero_image");
         const heroOverlaySetting = settings.find((s) => s.key === "program_hero_overlay_opacity");
+        const heroEnabledSetting = settings.find((s) => s.key === "program_hero_enabled");
 
         if (titleSetting) setPageTitle(titleSetting.value);
         if (descSetting) setPageDescription(descSetting.value);
         if (colorSetting) setHeaderColor(colorSetting.value);
         if (heroImageSetting) setHeroImage(heroImageSetting.value);
         if (heroOverlaySetting) setHeroOverlayOpacity(heroOverlaySetting.value);
+        if (heroEnabledSetting) setHeroEnabled(heroEnabledSetting.value === "true");
 
         // Load program cards
         const cards = settings
@@ -123,7 +126,7 @@ const Program = () => {
         </header>
 
         {/* Hero Image Section */}
-        {heroImage && (
+        {heroEnabled && heroImage && (
           <div className="relative w-full -mt-4">
             <div 
               className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
