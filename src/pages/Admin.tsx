@@ -6,15 +6,17 @@ import { useAdminAuth } from "@/hooks/admin/useAdminAuth";
 import { useRegistrations } from "@/hooks/admin/useRegistrations";
 import { useUsers } from "@/hooks/admin/useUsers";
 import { useSettings } from "@/hooks/admin/useSettings";
+import { useProjectMembers } from "@/hooks/admin/useProjectMembers";
 
 const Admin = () => {
   const navigate = useNavigate();
   const { userRole, loading, signOut } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'page-settings' | 'config'>('registrations');
+  const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'members' | 'page-settings' | 'config'>('registrations');
   const [activeSettingsTab, setActiveSettingsTab] = useState(0);
 
   const { registrations, registrationFields: registrationFormFields, deleteRegistration } = useRegistrations();
   const { users, toggleAdmin, toggleRegistrationManager, approveUser, rejectUser } = useUsers();
+  const { members: projectMembers, inviteMember, updateMemberRole, removeMember } = useProjectMembers();
   const {
     settings,
     registrationSettings,
@@ -78,6 +80,10 @@ const Admin = () => {
           onToggleRegistrationManager={toggleRegistrationManager}
           onApproveUser={approveUser}
           onRejectUser={rejectUser}
+          projectMembers={projectMembers}
+          onUpdateMemberRole={updateMemberRole}
+          onRemoveMember={removeMember}
+          onInviteMember={inviteMember}
           settingsTabProps={{
             activeTab: activeSettingsTab,
             onTabChange: setActiveSettingsTab,
