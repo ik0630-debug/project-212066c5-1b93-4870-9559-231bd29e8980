@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminTabs from "@/components/admin/AdminTabs";
+import { Button } from "@/components/ui/button";
+import { Bug } from "lucide-react";
 import { useAdminAuth } from "@/hooks/admin/useAdminAuth";
 import { useRegistrations } from "@/hooks/admin/useRegistrations";
 import { useUsers } from "@/hooks/admin/useUsers";
@@ -83,6 +85,18 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background animate-fade-in">
       <AdminHeader onBack={() => navigate(`/${projectSlug}`)} onSignOut={signOut} />
+      
+      <div className="px-6 py-4 border-b">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => navigate(`/${projectSlug}/admin/debug`)}
+          className="gap-2"
+        >
+          <Bug className="w-4 h-4" />
+          RLS 디버그
+        </Button>
+      </div>
       
       <main className="px-6 py-8">
         <AdminTabs
