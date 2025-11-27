@@ -1,17 +1,35 @@
 import { supabase } from "@/integrations/supabase/client";
 
-let settingsCache: Record<string, boolean> | null = null;
-let cachePromise: Promise<Record<string, boolean>> | null = null;
+let settingsCache: Record<string, Record<string, boolean>> = {};
+let cachePromises: Record<string, Promise<Record<string, boolean>>> = {};
 
-const loadAllSettings = async (): Promise<Record<string, boolean>> => {
-  if (settingsCache) return settingsCache;
-  if (cachePromise) return cachePromise;
+const loadAllSettings = async (projectSlug?: string): Promise<Record<string, boolean>> => {
+  const cacheKey = projectSlug || 'default';
+  
+  if (settingsCache[cacheKey]) return settingsCache[cacheKey];
+  if (cachePromises[cacheKey]) return cachePromises[cacheKey];
 
-  cachePromise = (async () => {
+  cachePromises[cacheKey] = (async () => {
+    if (!projectSlug) {
+      return {};
+    }
+
+    // Get project ID from slug
+    const { data: projectData } = await supabase
+      .from('projects')
+      .select('id')
+      .eq('slug', projectSlug)
+      .maybeSingle();
+
+    if (!projectData) {
+      return {};
+    }
+
     const { data } = await supabase
       .from('site_settings')
       .select('*')
-      .in('key', ['program_enabled', 'registration_enabled', 'location_enabled']);
+      .in('key', ['program_enabled', 'registration_enabled', 'location_enabled'])
+      .eq('project_id', projectData.id);
     
     const cache: Record<string, boolean> = {};
     data?.forEach((setting) => {
@@ -19,21 +37,21 @@ const loadAllSettings = async (): Promise<Record<string, boolean>> => {
       cache[category] = setting.value === "true";
     });
     
-    settingsCache = cache;
-    cachePromise = null;
+    settingsCache[cacheKey] = cache;
+    delete cachePromises[cacheKey];
     return cache;
   })();
 
-  return cachePromise;
+  return cachePromises[cacheKey];
 };
 
-export const checkPageEnabled = async (category: string): Promise<boolean> => {
-  const settings = await loadAllSettings();
+export const checkPageEnabled = async (category: string, projectSlug?: string): Promise<boolean> => {
+  const settings = await loadAllSettings(projectSlug);
   return settings[category] ?? true;
 };
 
 export const getNextEnabledPage = async (currentPage: string, direction: 'left' | 'right', projectSlug?: string): Promise<string> => {
-  const settings = await loadAllSettings();
+  const settings = await loadAllSettings(projectSlug);
   const prefix = projectSlug ? `/${projectSlug}` : '';
   const pageOrder = [`${prefix}`, `${prefix}/program`, `${prefix}/registration`, `${prefix}/location`];
   const currentIndex = pageOrder.indexOf(currentPage);
