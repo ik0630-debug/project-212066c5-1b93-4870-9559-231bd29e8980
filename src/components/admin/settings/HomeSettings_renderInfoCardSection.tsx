@@ -27,7 +27,7 @@ export const renderInfoCardSection = (props: RenderInfoCardSectionProps) => {
   if (!infoCardSection) return null;
 
   const handleAddCard = () => {
-    const newCards = [...(infoCardSection.cards || []), { title: "", content: "", icon: "Info", titleFontSize: "16", contentFontSize: "14" }];
+    const newCards = [...(infoCardSection.cards || []), { title: "", content: "", icon: "Info", titleFontSize: "18", contentFontSize: "16" }];
     onUpdateInfoCardSection(sectionId, { cards: newCards });
   };
 

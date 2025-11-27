@@ -61,9 +61,9 @@ export const renderDescriptionSection = (props: RenderSectionsProps) => {
             <Input
               id={`${sectionId}_title_font_size`}
               type="number"
-              value={description.titleFontSize || "24"}
+              value={description.titleFontSize || "18"}
               onChange={(e) => onUpdateDescription(sectionId, { titleFontSize: e.target.value })}
-              placeholder="24"
+              placeholder="18"
               min="12"
               max="72"
             />
@@ -112,7 +112,7 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
   if (!buttonGroup) return null;
 
   const handleAddButton = () => {
-    const newButtons = [...(buttonGroup.buttons || []), { text: "", link: "" }];
+    const newButtons = [...(buttonGroup.buttons || []), { text: "", link: "", fontSize: "text-lg" }];
     onUpdateButtonGroup(sectionId, { buttons: newButtons });
   };
 
