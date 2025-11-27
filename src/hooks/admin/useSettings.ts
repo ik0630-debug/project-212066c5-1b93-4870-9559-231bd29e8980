@@ -76,7 +76,7 @@ export const useSettings = () => {
     const loadedDownloadFiles: any = {};
     const registrationSettingsData: any = {};
 
-    data?.forEach(({ key, value }) => {
+    data?.forEach(({ key, value, category }) => {
       // Handle section orders first (they don't follow the category prefix pattern)
       if (key === "sectionOrder" || key === "section_order") {
         try {
@@ -93,7 +93,7 @@ export const useSettings = () => {
 
       const keyParts = key.split("_");
       
-      switch (keyParts[0]) {
+      switch (category) {
         case "home":
           if (key.startsWith("home_hero_")) {
             try {
