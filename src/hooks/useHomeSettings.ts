@@ -132,7 +132,7 @@ export const useHomeSettings = () => {
         newSettings.buttonGroups = buttonGroups;
 
         // Load section order
-        const orderSetting = data.find((s) => s.key === "sectionOrder");
+        const orderSetting = data.find((s) => s.key === "section_order");
         if (orderSetting) {
           try {
             newSettings.sectionOrder = JSON.parse(orderSetting.value);
