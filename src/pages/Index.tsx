@@ -119,8 +119,8 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex flex-col items-center gap-4">
             <img src={logo} alt="M&C Communications" className="h-30 md:h-36" />
-            <h1 className="text-4xl md:text-5xl font-bold text-blue-600">
-              Speaker's Potal
+            <h1 className="text-2xl font-bold text-gray-900">
+              참가자 초청 플랫폼
             </h1>
             <p className="text-gray-600 text-center text-sm">
               M&C Communications 가 제공하는 발표자 지원 시스템입니다.
