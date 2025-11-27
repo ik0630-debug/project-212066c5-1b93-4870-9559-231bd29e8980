@@ -69,7 +69,7 @@ const Index = () => {
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
-      .in("role", ["admin", "registration_manager"])
+      .in("role", ["master", "mnc_admin", "project_staff"])
       .maybeSingle();
     
     if (roleData) {

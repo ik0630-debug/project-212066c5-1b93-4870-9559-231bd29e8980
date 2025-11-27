@@ -14,51 +14,51 @@ export const useUsers = () => {
     
     const usersWithRoles = await Promise.all(
       (profilesData || []).map(async (profile) => {
-        const { data: adminRole } = await supabase
+        const { data: mncAdminRole } = await supabase
           .from("user_roles")
           .select("role")
           .eq("user_id", profile.user_id)
-          .eq("role", "admin")
+          .eq("role", "mnc_admin")
           .maybeSingle();
         
-        const { data: regManagerRole } = await supabase
+        const { data: projectStaffRole } = await supabase
           .from("user_roles")
           .select("role")
           .eq("user_id", profile.user_id)
-          .eq("role", "registration_manager")
+          .eq("role", "project_staff")
           .maybeSingle();
         
         return { 
           ...profile, 
-          is_admin: !!adminRole,
-          is_registration_manager: !!regManagerRole
+          is_mnc_admin: !!mncAdminRole,
+          is_project_staff: !!projectStaffRole
         };
       })
     );
     setUsers(usersWithRoles);
   };
 
-  const toggleAdmin = async (userId: string, isCurrentlyAdmin: boolean) => {
+  const toggleMncAdmin = async (userId: string, isCurrentlyAdmin: boolean) => {
     try {
       if (isCurrentlyAdmin) {
         const { error } = await supabase
           .from("user_roles")
           .delete()
           .eq("user_id", userId)
-          .eq("role", "admin");
+          .eq("role", "mnc_admin");
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from("user_roles")
-          .insert({ user_id: userId, role: "admin" });
+          .insert([{ user_id: userId, role: "mnc_admin" }]);
         if (error) throw error;
       }
       
       toast({
         title: "권한 변경 완료",
         description: isCurrentlyAdmin
-          ? "관리자 권한이 해제되었습니다."
-          : "관리자 권한이 부여되었습니다.",
+          ? "M&C 관리자 권한이 해제되었습니다."
+          : "M&C 관리자 권한이 부여되었습니다.",
       });
       
       loadUsers();
@@ -134,27 +134,27 @@ export const useUsers = () => {
     loadUsers();
   }, []);
 
-  const toggleRegistrationManager = async (userId: string, isCurrentlyManager: boolean) => {
+  const toggleProjectStaff = async (userId: string, isCurrentlyStaff: boolean) => {
     try {
-      if (isCurrentlyManager) {
+      if (isCurrentlyStaff) {
         const { error } = await supabase
           .from("user_roles")
           .delete()
           .eq("user_id", userId)
-          .eq("role", "registration_manager");
+          .eq("role", "project_staff");
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from("user_roles")
-          .insert({ user_id: userId, role: "registration_manager" });
+          .insert([{ user_id: userId, role: "project_staff" }]);
         if (error) throw error;
       }
       
       toast({
         title: "권한 변경 완료",
-        description: isCurrentlyManager
-          ? "등록 관리자 권한이 해제되었습니다."
-          : "등록 관리자 권한이 부여되었습니다.",
+        description: isCurrentlyStaff
+          ? "프로젝트 담당자 권한이 해제되었습니다."
+          : "프로젝트 담당자 권한이 부여되었습니다.",
       });
       
       loadUsers();
@@ -170,8 +170,8 @@ export const useUsers = () => {
   return {
     users,
     loadUsers,
-    toggleAdmin,
-    toggleRegistrationManager,
+    toggleMncAdmin,
+    toggleProjectStaff,
     approveUser,
     rejectUser,
   };

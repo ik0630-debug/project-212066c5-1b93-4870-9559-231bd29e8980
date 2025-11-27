@@ -55,7 +55,7 @@ const Admin = () => {
   } = useSettings();
 
   const { registrations, registrationFields: registrationFormFields, deleteRegistration } = useRegistrations(defaultProjectId);
-  const { users, toggleAdmin, toggleRegistrationManager, approveUser, rejectUser } = useUsers();
+  const { users, toggleMncAdmin, toggleProjectStaff, approveUser, rejectUser } = useUsers();
 
   // Set project ID from URL
   useEffect(() => {
@@ -93,8 +93,8 @@ const Admin = () => {
           registrationFormFields={registrationFormFields}
           users={users}
           onDeleteRegistration={deleteRegistration}
-          onToggleAdmin={toggleAdmin}
-          onToggleRegistrationManager={toggleRegistrationManager}
+          onToggleMncAdmin={toggleMncAdmin}
+          onToggleProjectStaff={toggleProjectStaff}
           onApproveUser={approveUser}
           onRejectUser={rejectUser}
           projectMembers={projectMembers}

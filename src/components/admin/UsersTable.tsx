@@ -4,11 +4,11 @@ import { Shield, ShieldOff } from "lucide-react";
 
 interface UsersTableProps {
   users: any[];
-  onToggleAdmin: (userId: string, isCurrentlyAdmin: boolean) => void;
-  onToggleRegistrationManager: (userId: string, isCurrentlyManager: boolean) => void;
+  onToggleMncAdmin: (userId: string, isCurrentlyMncAdmin: boolean) => void;
+  onToggleProjectStaff: (userId: string, isCurrentlyProjectStaff: boolean) => void;
 }
 
-const UsersTable = ({ users, onToggleAdmin, onToggleRegistrationManager }: UsersTableProps) => {
+const UsersTable = ({ users, onToggleMncAdmin, onToggleProjectStaff }: UsersTableProps) => {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">사용자 목록</h2>
@@ -30,33 +30,33 @@ const UsersTable = ({ users, onToggleAdmin, onToggleRegistrationManager }: Users
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.organization}</TableCell>
                 <TableCell>
-                  {user.is_admin ? "전체 관리자" : user.is_registration_manager ? "등록 관리자" : "일반"}
+                  {user.is_mnc_admin ? "M&C 관리자" : user.is_project_staff ? "프로젝트 담당자" : "일반"}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button
-                      variant={user.is_admin ? "destructive" : "default"}
+                      variant={user.is_mnc_admin ? "destructive" : "default"}
                       size="sm"
-                      onClick={() => onToggleAdmin(user.user_id, user.is_admin)}
+                      onClick={() => onToggleMncAdmin(user.user_id, user.is_mnc_admin)}
                     >
-                      {user.is_admin ? (
+                      {user.is_mnc_admin ? (
                         <>
                           <ShieldOff className="w-4 h-4 mr-2" />
-                          전체 관리자 해제
+                          M&C 관리자 해제
                         </>
                       ) : (
                         <>
                           <Shield className="w-4 h-4 mr-2" />
-                          전체 관리자
+                          M&C 관리자
                         </>
                       )}
                     </Button>
                     <Button
-                      variant={user.is_registration_manager ? "destructive" : "secondary"}
+                      variant={user.is_project_staff ? "destructive" : "secondary"}
                       size="sm"
-                      onClick={() => onToggleRegistrationManager(user.user_id, user.is_registration_manager)}
+                      onClick={() => onToggleProjectStaff(user.user_id, user.is_project_staff)}
                     >
-                      {user.is_registration_manager ? "등록 관리자 해제" : "등록 관리자"}
+                      {user.is_project_staff ? "프로젝트 담당자 해제" : "프로젝트 담당자"}
                     </Button>
                   </div>
                 </TableCell>
