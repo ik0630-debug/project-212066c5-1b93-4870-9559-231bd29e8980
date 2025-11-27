@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import * as LucideIcons from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
-import heroImage from "@/assets/hero-image.jpg";
 import { useHomeSettings } from "@/hooks/useHomeSettings";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
@@ -66,17 +65,23 @@ const Index = () => {
                   return (
                     <header key={sectionKey} className="flex flex-col items-center justify-center -mx-6 -mt-4">
                       <div className="relative w-full">
-                        <div className="relative">
-                          <div 
-                            className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-                            style={{ opacity: parseInt(heroSection.overlayOpacity || "0") / 100 }}
-                          />
-                          <img
-                            src={heroSection.imageUrl || heroImage}
-                            alt="Conference Hero"
-                            className="w-full h-auto object-contain"
-                          />
-                        </div>
+                        {heroSection.imageUrl ? (
+                          <div className="relative">
+                            <div 
+                              className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
+                              style={{ opacity: parseInt(heroSection.overlayOpacity || "0") / 100 }}
+                            />
+                            <img
+                              src={heroSection.imageUrl}
+                              alt="Conference Hero"
+                              className="w-full h-auto object-contain"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center h-48 bg-muted/30 border-2 border-dashed border-border">
+                            <p className="text-muted-foreground">이미지를 업로드하시면 여기에 표시됩니다.</p>
+                          </div>
+                        )}
                       </div>
                     </header>
                   );
