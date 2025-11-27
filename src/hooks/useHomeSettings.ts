@@ -41,26 +41,33 @@ interface ButtonGroup {
   buttons: BottomButton[];
 }
 
+interface HeroSection {
+  id: string;
+  enabled: string;
+  imageUrl: string;
+  overlayOpacity: string;
+}
+
+interface InfoCardSection {
+  id: string;
+  enabled: string;
+  cards: InfoCard[];
+}
+
 interface HomeSettings {
-  heroEnabled: string;
-  heroImageUrl: string;
-  heroOverlayOpacity: string;
-  infoCardsEnabled: string;
-  infoCards: InfoCard[];
+  heroSections: HeroSection[];
+  infoCardSections: InfoCardSection[];
   descriptions: DescriptionSection[];
   buttonGroups: ButtonGroup[];
   sectionOrder: string[];
 }
 
 const defaultSettings: HomeSettings = {
-  heroEnabled: "true",
-  heroImageUrl: "",
-  heroOverlayOpacity: "0",
-  infoCardsEnabled: "true",
-  infoCards: [],
+  heroSections: [],
+  infoCardSections: [],
   descriptions: [],
   buttonGroups: [],
-  sectionOrder: ['hero_section', 'info_cards'],
+  sectionOrder: [],
 };
 
 export const useHomeSettings = () => {
@@ -83,30 +90,25 @@ export const useHomeSettings = () => {
       if (data) {
         const newSettings = { ...defaultSettings };
 
-        // Load simple settings
-        const settingMap: Record<string, keyof HomeSettings> = {
-          hero_enabled: 'heroEnabled',
-          hero_image_url: 'heroImageUrl',
-          hero_overlay_opacity: 'heroOverlayOpacity',
-          info_cards_enabled: 'infoCardsEnabled',
-        };
-
-        data.forEach((item) => {
-          const settingKey = settingMap[item.key];
-          if (settingKey) {
-            (newSettings as any)[settingKey] = item.value;
-          }
-        });
-
-        // Load info cards
-        const cards = data
-          .filter((s) => s.key.startsWith("home_info_card_"))
+        // Load hero sections
+        const heroSections = data
+          .filter((s) => s.key.startsWith("home_hero_"))
           .map((s) => {
-            const cardData = JSON.parse(s.value);
-            return { id: s.id, ...cardData };
+            const heroData = JSON.parse(s.value);
+            return heroData;
           })
           .sort((a, b) => (a.order || 0) - (b.order || 0));
-        newSettings.infoCards = cards;
+        newSettings.heroSections = heroSections;
+
+        // Load info card sections
+        const infoCardSections = data
+          .filter((s) => s.key.startsWith("home_info_card_section_"))
+          .map((s) => {
+            const sectionData = JSON.parse(s.value);
+            return sectionData;
+          })
+          .sort((a, b) => (a.order || 0) - (b.order || 0));
+        newSettings.infoCardSections = infoCardSections;
 
         // Load description sections
         const descriptions = data

@@ -13,7 +13,8 @@ interface SettingsTabsProps {
   settings: any;
   registrationSettings: any;
   registrationFields: any[];
-  infoCards: any[];
+  heroSections: any[];
+  infoCardSections: any[];
   descriptions: any[];
   buttonGroups: any[];
   programCards: any[];
@@ -25,7 +26,8 @@ interface SettingsTabsProps {
   onSettingChange: (key: string, value: string) => void;
   onRegistrationSettingsChange: (settings: any) => void;
   onRegistrationFieldsChange: (fields: any[]) => void;
-  onInfoCardsChange: (cards: any[]) => void;
+  onHeroSectionsChange: (sections: any[]) => void;
+  onInfoCardSectionsChange: (sections: any[]) => void;
   onDescriptionsChange: (descriptions: any[]) => void;
   onButtonGroupsChange: (groups: any[]) => void;
   onProgramCardsChange: (cards: any[]) => void;
@@ -45,7 +47,8 @@ const SettingsTabs = ({
   settings,
   registrationSettings,
   registrationFields,
-  infoCards,
+  heroSections,
+  infoCardSections,
   descriptions,
   buttonGroups,
   programCards,
@@ -57,7 +60,8 @@ const SettingsTabs = ({
   onSettingChange,
   onRegistrationSettingsChange,
   onRegistrationFieldsChange,
-  onInfoCardsChange,
+  onHeroSectionsChange,
+  onInfoCardSectionsChange,
   onDescriptionsChange,
   onButtonGroupsChange,
   onProgramCardsChange,
@@ -85,12 +89,14 @@ const SettingsTabs = ({
         return (
           <HomeSettings
             settings={settings}
-            infoCards={infoCards}
+            heroSections={heroSections}
+            infoCardSections={infoCardSections}
             descriptions={descriptions}
             buttonGroups={buttonGroups}
             sectionOrder={sectionOrder}
             onSettingChange={onSettingChange}
-            onInfoCardsChange={onInfoCardsChange}
+            onHeroSectionsChange={onHeroSectionsChange}
+            onInfoCardSectionsChange={onInfoCardSectionsChange}
             onDescriptionsChange={onDescriptionsChange}
             onButtonGroupsChange={onButtonGroupsChange}
             onSectionOrderChange={onSectionOrderChange}
