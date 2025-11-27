@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from "@supabase/supabase-js";
-import { Shield, FileText, Clock } from "lucide-react";
+import { Smartphone, UserPlus, Users } from "lucide-react";
 import logo from "@/assets/mnc-logo.png";
 
 const Index = () => {
@@ -96,19 +96,19 @@ const Index = () => {
 
   const features = [
     {
-      icon: FileText,
-      title: "간편한 영수증 발급",
-      description: "성명만 입력하면 간편하게 영수증을 발급받을 수 있습니다",
+      icon: Smartphone,
+      title: "맞춤형 정보 제공",
+      description: "참가자가 필요한 정보만 담아 언제든 모바일로 확인이 가능합니다.",
     },
     {
-      icon: Shield,
-      title: "안전한 정보 보호",
-      description: "본인 확인을 통해 안전하게 영수증을 발급합니다",
+      icon: UserPlus,
+      title: "간편한 참가 등록",
+      description: "간단한 입력으로 등록이 가능하고, 신청 확인과 취소가 가능합니다.",
     },
     {
-      icon: Clock,
-      title: "실시간 발급",
-      description: "언제든지 필요할 때 즉시 영수증을 발급받을 수 있습니다",
+      icon: Users,
+      title: "실시간 확인 및 관리",
+      description: "참가자 현황을 담당자 누구나 쉽게 확인할 수 있습니다.",
     },
   ];
 
