@@ -204,6 +204,7 @@ const HomeSettings = ({
     const newGroup = {
       id: newId,
       enabled: "true",
+      alignment: "center",
       buttons: [],
       order: buttonGroups.length,
     };

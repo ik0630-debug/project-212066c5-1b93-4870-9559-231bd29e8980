@@ -38,6 +38,7 @@ interface DescriptionSection {
 interface ButtonGroup {
   id: string;
   enabled: string;
+  alignment?: string;
   buttons: BottomButton[];
 }
 
