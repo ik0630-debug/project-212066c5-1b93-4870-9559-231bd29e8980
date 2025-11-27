@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { GripVertical, Trash2 } from "lucide-react";
 import IconPicker from "@/components/IconPicker";
+import { ColorPicker } from "@/components/ColorPicker";
 
 interface SortableCardProps {
   id: string;
@@ -98,6 +99,32 @@ const SortableInfoCard = ({
           }
           placeholder="2024년 12월 15일 (금)&#10;오전 9:00 - 오후 6:00"
           rows={3}
+        />
+      </div>
+
+      <div>
+        <ColorPicker
+          value={cardData.bgColor || "0 0% 100%"}
+          onChange={(color) =>
+            onUpdate({
+              ...cardData,
+              bgColor: color,
+            })
+          }
+          label="배경 색상"
+        />
+      </div>
+
+      <div>
+        <ColorPicker
+          value={cardData.iconColor || "221 83% 53%"}
+          onChange={(color) =>
+            onUpdate({
+              ...cardData,
+              iconColor: color,
+            })
+          }
+          label="아이콘 색상"
         />
       </div>
     </div>
