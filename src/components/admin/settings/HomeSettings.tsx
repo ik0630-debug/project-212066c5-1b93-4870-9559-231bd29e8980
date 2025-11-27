@@ -119,8 +119,8 @@ const HomeSettings = ({
     switch (sectionId) {
       case "hero_section": return "헤더 이미지";
       case "info_cards": return "정보 카드";
-      case "description": return "행사 소개";
-      case "bottom_buttons": return "하단 버튼";
+      case "description": return "설명 섹션";
+      case "bottom_buttons": return "버튼";
       default: return sectionId;
     }
   };
@@ -232,7 +232,7 @@ const HomeSettings = ({
           <div key={sectionId} className="space-y-4">
             <SectionControls title={getSectionTitle(sectionId)} index={index} />
             <div className="flex items-center justify-between mb-4">
-              <Label htmlFor="description_enabled">행사 소개 사용</Label>
+              <Label htmlFor="description_enabled">설명 섹션 사용</Label>
               <Switch
                 id="description_enabled"
                 checked={settings.description_enabled === "true"}
@@ -304,7 +304,7 @@ const HomeSettings = ({
           <div key={sectionId} className="space-y-4">
             <SectionControls title={getSectionTitle(sectionId)} index={index} />
             <div className="flex items-center justify-between mb-4">
-              <Label htmlFor="bottom_buttons_enabled">하단 버튼 사용</Label>
+              <Label htmlFor="bottom_buttons_enabled">버튼 사용</Label>
               <Switch
                 id="bottom_buttons_enabled"
                 checked={settings.bottom_buttons_enabled === "true"}
