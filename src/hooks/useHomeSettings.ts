@@ -18,6 +18,8 @@ interface BottomButton {
   variant: string;
   size?: string;
   fontSize?: string;
+  bgColor?: string;
+  textColor?: string;
   order: number;
 }
 

@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GripVertical, Trash2 } from "lucide-react";
+import { ColorPicker } from "@/components/ColorPicker";
 
 interface SortableButtonProps {
   id: string;
@@ -161,6 +162,32 @@ const SortableBottomButton = ({
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      <div>
+        <ColorPicker
+          value={buttonData.bgColor || "221 83% 53%"}
+          onChange={(color) =>
+            onUpdate(button.id, {
+              ...buttonData,
+              bgColor: color,
+            })
+          }
+          label="배경 색상"
+        />
+      </div>
+
+      <div>
+        <ColorPicker
+          value={buttonData.textColor || "0 0% 100%"}
+          onChange={(color) =>
+            onUpdate(button.id, {
+              ...buttonData,
+              textColor: color,
+            })
+          }
+          label="텍스트 색상"
+        />
       </div>
     </div>
   );
