@@ -69,10 +69,9 @@ const Index = () => {
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
-      .in("role", ["master", "mnc_admin", "project_staff"])
-      .maybeSingle();
+      .in("role", ["master", "mnc_admin", "project_staff"]);
     
-    if (roleData) {
+    if (roleData && roleData.length > 0) {
       navigate("/projects");
     } else {
       toast({
