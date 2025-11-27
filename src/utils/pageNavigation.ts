@@ -32,18 +32,19 @@ export const checkPageEnabled = async (category: string): Promise<boolean> => {
   return settings[category] ?? true;
 };
 
-export const getNextEnabledPage = async (currentPage: string, direction: 'left' | 'right'): Promise<string> => {
+export const getNextEnabledPage = async (currentPage: string, direction: 'left' | 'right', projectSlug?: string): Promise<string> => {
   const settings = await loadAllSettings();
-  const pageOrder = ['/', '/program', '/registration', '/location'];
+  const prefix = projectSlug ? `/${projectSlug}` : '';
+  const pageOrder = [`${prefix}`, `${prefix}/program`, `${prefix}/registration`, `${prefix}/location`];
   const currentIndex = pageOrder.indexOf(currentPage);
   
   if (direction === 'left') {
     // 왼쪽으로 스와이프 = 다음 페이지
     for (let i = currentIndex + 1; i < pageOrder.length; i++) {
       const page = pageOrder[i];
-      if (page === '/') return page; // 홈은 항상 활성화
+      if (page === prefix || page === `${prefix}`) return page; // 홈은 항상 활성화
       
-      const category = page.substring(1); // '/program' -> 'program'
+      const category = page.substring(prefix.length + 1); // '/:slug/program' -> 'program'
       const isEnabled = settings[category] ?? true;
       if (isEnabled) return page;
     }
@@ -53,9 +54,9 @@ export const getNextEnabledPage = async (currentPage: string, direction: 'left' 
     // 오른쪽으로 스와이프 = 이전 페이지
     for (let i = currentIndex - 1; i >= 0; i--) {
       const page = pageOrder[i];
-      if (page === '/') return page; // 홈은 항상 활성화
+      if (page === prefix || page === `${prefix}`) return page; // 홈은 항상 활성화
       
-      const category = page.substring(1);
+      const category = page.substring(prefix.length + 1);
       const isEnabled = settings[category] ?? true;
       if (isEnabled) return page;
     }

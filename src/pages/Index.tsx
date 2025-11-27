@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import MobileNavigation from "@/components/MobileNavigation";
 import { useHomeSettings } from "@/hooks/useHomeSettings";
@@ -11,13 +11,14 @@ import { HeroImage } from "@/components/HeroImage";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { projectSlug } = useParams();
   const { projectId } = useProjectId();
   const { settings, loading } = useHomeSettings(projectId);
 
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: async () => {
-      const nextPage = await getNextEnabledPage('/', 'left');
+      const nextPage = await getNextEnabledPage(`/${projectSlug}`, 'left', projectSlug);
       navigate(nextPage);
     },
     trackMouse: false,
