@@ -102,7 +102,7 @@ export const useHomeSettings = () => {
 
         // Load info card sections
         const infoCardSections = data
-          .filter((s) => s.key.startsWith("home_info_card_section_"))
+          .filter((s) => s.key.startsWith("home_infocard_section_"))
           .map((s) => {
             const sectionData = JSON.parse(s.value);
             return sectionData;
@@ -131,7 +131,7 @@ export const useHomeSettings = () => {
         newSettings.buttonGroups = buttonGroups;
 
         // Load section order
-        const orderSetting = data.find((s) => s.key === "section_order");
+        const orderSetting = data.find((s) => s.key === "sectionOrder");
         if (orderSetting) {
           try {
             newSettings.sectionOrder = JSON.parse(orderSetting.value);
