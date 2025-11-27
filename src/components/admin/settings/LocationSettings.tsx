@@ -293,6 +293,15 @@ const LocationSettings = ({
                   placeholder="https://maps.google.com/..."
                 />
               </div>
+              <div>
+                <Label htmlFor="location_map_url_label">지도 URL 버튼 텍스트</Label>
+                <Input
+                  id="location_map_url_label"
+                  value={settings.location_map_url_label || "지도 앱에서 열기"}
+                  onChange={(e) => onSettingChange("location_map_url_label", e.target.value)}
+                  placeholder="지도 앱에서 열기"
+                />
+              </div>
             </div>
           </div>
         );

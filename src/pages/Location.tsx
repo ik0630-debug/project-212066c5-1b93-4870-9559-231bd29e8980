@@ -19,6 +19,7 @@ const Location = () => {
   const [locationName, setLocationName] = useState("");
   const [locationAddress, setLocationAddress] = useState("");
   const [locationMapUrl, setLocationMapUrl] = useState("");
+  const [locationMapUrlLabel, setLocationMapUrlLabel] = useState("지도 앱에서 열기");
   const [locationPhone, setLocationPhone] = useState("");
   const [locationEmail, setLocationEmail] = useState("");
   const [descriptionTitle, setDescriptionTitle] = useState("");
@@ -78,6 +79,9 @@ const Location = () => {
           break;
         case 'location_map_url':
           setLocationMapUrl(setting.value);
+          break;
+        case 'location_map_url_label':
+          setLocationMapUrlLabel(setting.value);
           break;
         case 'location_phone':
           setLocationPhone(setting.value);
@@ -236,7 +240,7 @@ const Location = () => {
                   className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
                 >
                   <Navigation className="w-4 h-4" />
-                  지도 앱에서 열기
+                  {locationMapUrlLabel}
                 </a>
               </div>
             </div>
