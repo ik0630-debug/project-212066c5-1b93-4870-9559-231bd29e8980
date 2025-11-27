@@ -52,14 +52,6 @@ const Index = () => {
     return <div className="min-h-screen bg-background flex items-center justify-center">로딩 중...</div>;
   }
 
-  console.log('Index: settings loaded', {
-    sectionOrder: settings.sectionOrder,
-    heroSections: settings.heroSections?.length,
-    infoCardSections: settings.infoCardSections?.length,
-    descriptions: settings.descriptions?.length,
-    buttonGroups: settings.buttonGroups?.length,
-  });
-
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
@@ -98,7 +90,6 @@ const Index = () => {
 
               // Render info card sections
               if (sectionKey.startsWith('infocard_section_')) {
-                console.log('Checking infocard section:', sectionKey, settings.infoCardSections);
                 const infoCardSection = settings.infoCardSections?.find((s: any) => s.id === sectionKey);
                 if (infoCardSection && infoCardSection.enabled === "true" && infoCardSection.cards?.length > 0) {
                   return (
