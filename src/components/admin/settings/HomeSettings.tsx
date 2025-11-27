@@ -360,7 +360,7 @@ const HomeSettings = ({
       } as any);
     }
 
-    if (sectionId.startsWith("info_card_section_")) {
+    if (sectionId.startsWith("infocard_section_") || sectionId.startsWith("info_card_section_")) {
       return renderInfoCardSection({
         sectionId,
         index,
