@@ -116,13 +116,13 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 animate-fade-in">
       {/* Header */}
       <header className="border-b border-border bg-white/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex flex-col items-center gap-3">
-            <img src={logo} alt="M&C Communications" className="h-16 md:h-20" />
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex flex-col items-center gap-2">
+            <img src={logo} alt="M&C Communications" className="h-10 md:h-12" />
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
               참가자 초청 플랫폼
             </h1>
-            <p className="text-gray-600 text-center text-lg">
+            <p className="text-gray-600 text-center text-sm md:text-base">
               M&C Communications 가 제공하는 발표자 지원 시스템입니다.
             </p>
           </div>
@@ -130,25 +130,25 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Left Side - Features */}
-          <div className="space-y-5">
+          <div className="space-y-4">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 시스템 특징
               </h2>
             </div>
             {features.map((feature, index) => (
-              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
-                <CardHeader className="pb-5">
-                  <div className="flex items-start gap-5">
-                    <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                      <feature.icon className="w-7 h-7 text-blue-600" />
+              <Card key={index} className="border-0 shadow-md hover:shadow-lg transition-all hover:-translate-y-1 bg-white">
+                <CardHeader className="p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                      <feature.icon className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-xl mb-2 text-gray-900">{feature.title}</CardTitle>
-                      <CardDescription className="text-base text-gray-600 leading-relaxed">
+                      <CardTitle className="text-lg mb-1.5 text-gray-900 font-semibold">{feature.title}</CardTitle>
+                      <CardDescription className="text-sm text-gray-600 leading-relaxed">
                         {feature.description}
                       </CardDescription>
                     </div>
@@ -160,17 +160,17 @@ const Index = () => {
 
           {/* Right Side - Admin Login */}
           <div className="lg:sticky lg:top-6">
-            <Card className="border-0 shadow-2xl bg-white">
-              <CardHeader className="space-y-3 pb-6">
-                <CardTitle className="text-2xl text-center font-bold text-gray-900">
+            <Card className="border-0 shadow-xl bg-white">
+              <CardHeader className="space-y-2 pb-5">
+                <CardTitle className="text-xl text-center font-bold text-gray-900">
                   사례비 영수증 작성 시스템
                 </CardTitle>
-                <CardDescription className="text-center text-base text-gray-600">
+                <CardDescription className="text-center text-sm text-gray-600">
                   성명을 입력해주시 후 사례비 영수증을 작성하여 주십시오
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-medium text-gray-700">성명을 입력해주세요</Label>
                     <Input
@@ -180,7 +180,7 @@ const Index = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="이메일을 입력하세요"
                       required
-                      className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                     />
                   </div>
 
@@ -193,22 +193,21 @@ const Index = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       required
-                      className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                       minLength={6}
                     />
                   </div>
 
                   <Button
                     type="submit"
-                    className="w-full h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-                    style={{ backgroundColor: 'hsl(217 91% 35%)', color: 'white' }}
+                    className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all"
                     disabled={loading}
                   >
                     {loading ? "처리중..." : "확인"}
                   </Button>
                 </form>
 
-                <div className="mt-6 text-center text-sm text-gray-500">
+                <div className="mt-5 text-center text-xs text-gray-500">
                   문의사항이 있으시면 주최측에 연락해주세요
                 </div>
               </CardContent>
