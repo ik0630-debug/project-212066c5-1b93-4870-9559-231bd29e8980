@@ -9,9 +9,10 @@ interface CategorySettingsResult {
 /**
  * Generic hook to load and subscribe to site_settings for specific categories
  * @param categories - Single category string or array of categories to load
+ * @param projectId - Project ID to filter settings
  * @returns Object with settings array and loading state
  */
-export const useCategorySettings = (categories: string | string[]): CategorySettingsResult => {
+export const useCategorySettings = (categories: string | string[], projectId?: string | null): CategorySettingsResult => {
   const [settings, setSettings] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,11 +20,19 @@ export const useCategorySettings = (categories: string | string[]): CategorySett
 
   useEffect(() => {
     const loadSettings = async () => {
+      if (!projectId) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const { data } = await supabase
+        let query = supabase
           .from('site_settings')
           .select('*')
-          .in('category', categoryArray);
+          .in('category', categoryArray)
+          .eq('project_id', projectId);
+
+        const { data } = await query;
         
         if (data) {
           setSettings(data);
@@ -36,6 +45,8 @@ export const useCategorySettings = (categories: string | string[]): CategorySett
     };
 
     loadSettings();
+
+    if (!projectId) return;
 
     // Subscribe to realtime changes for these categories
     const channel = supabase
@@ -65,7 +76,7 @@ export const useCategorySettings = (categories: string | string[]): CategorySett
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [categoryArray.join(',')]);
+  }, [categoryArray.join(','), projectId]);
 
   return { settings, loading };
 };

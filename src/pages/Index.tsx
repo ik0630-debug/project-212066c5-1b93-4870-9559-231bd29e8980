@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import MobileNavigation from "@/components/MobileNavigation";
 import { useHomeSettings } from "@/hooks/useHomeSettings";
+import { useProjectId } from "@/hooks/useProjectId";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { getIconComponent } from "@/utils/iconUtils";
@@ -10,7 +11,8 @@ import { HeroImage } from "@/components/HeroImage";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { settings, loading } = useHomeSettings();
+  const { projectId } = useProjectId();
+  const { settings, loading } = useHomeSettings(projectId);
 
 
   const swipeHandlers = useSwipeable({

@@ -16,9 +16,8 @@ const Admin = () => {
   const [activeTab, setActiveTab] = useState<'registrations' | 'users' | 'members' | 'page-settings' | 'config'>('registrations');
   const [activeSettingsTab, setActiveSettingsTab] = useState(0);
 
-  const { registrations, registrationFields: registrationFormFields, deleteRegistration } = useRegistrations();
-  const { users, toggleAdmin, toggleRegistrationManager, approveUser, rejectUser } = useUsers();
-  const { members: projectMembers, inviteMember, updateMemberRole, removeMember } = useProjectMembers();
+  const { members: projectMembers, inviteMember, updateMemberRole, removeMember, projectId: memberProjectId } = useProjectMembers();
+  
   const {
     settings,
     registrationSettings,
@@ -33,6 +32,7 @@ const Admin = () => {
     downloadFiles,
     sectionOrder,
     locationSectionOrder,
+    defaultProjectId,
     setRegistrationSettings,
     setRegistrationFields,
     setHeroSections,
@@ -50,12 +50,26 @@ const Admin = () => {
     handleSettingChange,
     saveSectionOrder,
     saveLocationSectionOrder,
+    setDefaultProjectId,
   } = useSettings();
 
+  const { registrations, registrationFields: registrationFormFields, deleteRegistration } = useRegistrations(defaultProjectId);
+  const { users, toggleAdmin, toggleRegistrationManager, approveUser, rejectUser } = useUsers();
+
+  // Set project ID from URL
   useEffect(() => {
-    console.log('Admin: Loading settings...');
-    loadSettings();
-  }, [loadSettings]);
+    if (memberProjectId && !defaultProjectId) {
+      setDefaultProjectId(memberProjectId);
+    }
+  }, [memberProjectId, defaultProjectId, setDefaultProjectId]);
+
+  // Load settings once project ID is set
+  useEffect(() => {
+    if (defaultProjectId) {
+      console.log('Admin: Loading settings for project:', defaultProjectId);
+      loadSettings();
+    }
+  }, [defaultProjectId, loadSettings]);
 
   if (loading) {
     return (

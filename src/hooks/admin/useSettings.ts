@@ -61,8 +61,16 @@ export const useSettings = () => {
   ]);
 
   const loadSettings = useCallback(async () => {
-    console.log('useSettings: Loading settings from database...');
-    const { data } = await supabase.from("site_settings").select("*");
+    if (!defaultProjectId) {
+      console.log('useSettings: No project ID yet, waiting...');
+      return;
+    }
+
+    console.log('useSettings: Loading settings from database for project:', defaultProjectId);
+    const { data } = await supabase
+      .from("site_settings")
+      .select("*")
+      .eq("project_id", defaultProjectId);
     
     console.log('useSettings: Loaded data:', data?.length, 'records');
     
@@ -202,7 +210,7 @@ export const useSettings = () => {
     
     setSettings(settingsMap);
     setRegistrationSettings(prev => ({ ...prev, ...registrationSettingsData }));
-  }, []);
+  }, [defaultProjectId]);
 
   const getCategoryFromKey = (key: string): string => {
     if (key.startsWith("hero_")) return "home";
@@ -386,6 +394,7 @@ export const useSettings = () => {
     downloadFiles,
     sectionOrder,
     locationSectionOrder,
+    defaultProjectId,
     
     // Setters
     setSettings,
@@ -401,6 +410,7 @@ export const useSettings = () => {
     setDownloadFiles,
     setSectionOrder,
     setLocationSectionOrder,
+    setDefaultProjectId,
     
     // Functions
     loadSettings,

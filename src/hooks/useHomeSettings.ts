@@ -71,16 +71,22 @@ const defaultSettings: HomeSettings = {
   sectionOrder: [],
 };
 
-export const useHomeSettings = () => {
+export const useHomeSettings = (projectId?: string | null) => {
   const [settings, setSettings] = useState<HomeSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
 
   const loadSettings = async () => {
+    if (!projectId) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("site_settings")
         .select("*")
-        .eq("category", "home");
+        .eq("category", "home")
+        .eq("project_id", projectId);
 
       if (error) {
         console.error("Error loading home settings:", error);
@@ -153,6 +159,8 @@ export const useHomeSettings = () => {
   useEffect(() => {
     loadSettings();
 
+    if (!projectId) return;
+
     // Subscribe to realtime changes
     const channel = supabase
       .channel('home-settings-changes')
@@ -162,7 +170,7 @@ export const useHomeSettings = () => {
           event: '*',
           schema: 'public',
           table: 'site_settings',
-          filter: 'category=eq.home'
+          filter: `category=eq.home,project_id=eq.${projectId}`
         },
         (payload) => {
           // Only reload if data actually changed
@@ -176,7 +184,7 @@ export const useHomeSettings = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [projectId]);
 
   return { settings, loading };
 };
