@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      page_views: {
+        Row: {
+          created_at: string
+          id: string
+          page_path: string
+          project_id: string
+          referrer: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          page_path: string
+          project_id: string
+          referrer?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          page_path?: string
+          project_id?: string
+          referrer?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_views_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           approved: boolean | null
