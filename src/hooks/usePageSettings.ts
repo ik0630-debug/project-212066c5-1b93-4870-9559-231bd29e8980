@@ -7,59 +7,73 @@ interface PageSettings {
   location: boolean;
 }
 
-let cachedSettings: PageSettings | null = null;
-let loadingPromise: Promise<PageSettings> | null = null;
+const DEFAULT_SETTINGS: PageSettings = {
+  program: true,
+  registration: true,
+  location: true,
+};
 
 export const usePageSettings = () => {
-  const [settings, setSettings] = useState<PageSettings | null>(cachedSettings);
-  const [loading, setLoading] = useState(!cachedSettings);
+  const [settings, setSettings] = useState<PageSettings>(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (cachedSettings) {
-      return;
-    }
+    const loadSettings = async () => {
+      try {
+        const { data } = await supabase
+          .from("site_settings")
+          .select("*")
+          .in("key", ["program_enabled", "registration_enabled", "location_enabled"]);
 
-    if (loadingPromise) {
-      loadingPromise.then((result) => {
-        setSettings(result);
+        if (data) {
+          const programSetting = data.find((s) => s.key === "program_enabled");
+          const registrationSetting = data.find((s) => s.key === "registration_enabled");
+          const locationSetting = data.find((s) => s.key === "location_enabled");
+          
+          setSettings({
+            program: programSetting ? programSetting.value === "true" : true,
+            registration: registrationSetting ? registrationSetting.value === "true" : true,
+            location: locationSetting ? locationSetting.value === "true" : true,
+          });
+        }
+      } catch (error) {
+        console.error("Error loading page settings:", error);
+      } finally {
         setLoading(false);
-      });
-      return;
-    }
+      }
+    };
 
-    loadingPromise = loadPageSettings();
-    loadingPromise.then((result) => {
-      cachedSettings = result;
-      setSettings(result);
-      setLoading(false);
-      loadingPromise = null;
-    });
+    loadSettings();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('page-settings-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'site_settings',
+        },
+        (payload) => {
+          const newRecord = payload.new as any;
+          const oldRecord = payload.old as any;
+          const affectedKey = newRecord?.key || oldRecord?.key;
+          
+          // Only reload if page enable/disable settings changed
+          if (affectedKey && ['program_enabled', 'registration_enabled', 'location_enabled'].includes(affectedKey)) {
+            if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE' || payload.eventType === 'DELETE') {
+              loadSettings();
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return { settings, loading };
-};
-
-const loadPageSettings = async (): Promise<PageSettings> => {
-  try {
-    const { data: settings } = await supabase
-      .from("site_settings")
-      .select("*")
-      .in("key", ["program_enabled", "registration_enabled", "location_enabled"]);
-
-    if (settings) {
-      const programSetting = settings.find((s) => s.key === "program_enabled");
-      const registrationSetting = settings.find((s) => s.key === "registration_enabled");
-      const locationSetting = settings.find((s) => s.key === "location_enabled");
-      
-      return {
-        program: programSetting ? programSetting.value === "true" : true,
-        registration: registrationSetting ? registrationSetting.value === "true" : true,
-        location: locationSetting ? locationSetting.value === "true" : true,
-      };
-    }
-  } catch (error) {
-    console.error("Error loading page settings:", error);
-  }
-
-  return { program: true, registration: true, location: true };
 };
