@@ -177,8 +177,11 @@ const Index = () => {
               if (sectionKey.startsWith('button_group_')) {
                 const buttonGroup = settings.buttonGroups?.find((g: any) => g.id === sectionKey);
                 if (buttonGroup && buttonGroup.enabled === "true" && buttonGroup.buttons?.length > 0) {
+                  const alignment = buttonGroup.alignment || "center";
+                  const alignmentClass = alignment === "left" ? "justify-start" : alignment === "right" ? "justify-end" : "justify-center";
+                  
                   return (
-                    <div key={sectionKey} className="grid grid-cols-2 gap-4">
+                    <div key={sectionKey} className={`flex ${alignmentClass} gap-4 flex-wrap`}>
                       {buttonGroup.buttons.map((button: any, index: number) => {
                         const bgColor = button.bgColor || "221 83% 53%";
                         const textColor = button.textColor || "0 0% 100%";
