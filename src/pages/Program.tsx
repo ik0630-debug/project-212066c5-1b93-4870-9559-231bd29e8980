@@ -7,6 +7,7 @@ import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
 import { getIconComponent } from "@/utils/iconUtils";
 import { useCategorySettings } from "@/hooks/useCategorySettings";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 
 interface ProgramCard {
   id: string;
@@ -80,11 +81,7 @@ const Program = () => {
   });
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">로딩 중...</p>
-      </div>
-    );
+    return <LoadingSkeleton type="program" />;
   }
 
   return (
