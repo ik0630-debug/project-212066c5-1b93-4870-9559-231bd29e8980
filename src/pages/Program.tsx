@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import MobileNavigation from "@/components/MobileNavigation";
-import { supabase } from "@/integrations/supabase/client";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
 import { getIconComponent } from "@/utils/iconUtils";
+import { useCategorySettings } from "@/hooks/useCategorySettings";
 
 interface ProgramCard {
   id: string;
@@ -26,27 +26,14 @@ const Program = () => {
   const [heroOverlayOpacity, setHeroOverlayOpacity] = useState("0");
   const [heroEnabled, setHeroEnabled] = useState(true);
   const [programCards, setProgramCards] = useState<ProgramCard[]>([]);
-  const [loading, setLoading] = useState(true);
   const { settings: pageSettings } = usePageSettings();
+  const { settings, loading } = useCategorySettings("program");
   const isPageEnabled = pageSettings?.program ?? true;
 
   useEffect(() => {
-    loadProgramData();
-  }, []);
+    if (!settings) return;
 
-  const loadProgramData = async () => {
     try {
-      const { data: settings, error } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("category", "program");
-
-      if (error) {
-        console.error("Error loading program data:", error);
-        return;
-      }
-
-      if (settings) {
         // Load page title and description
         const titleSetting = settings.find((s) => s.key === "program_title");
         const descSetting = settings.find((s) => s.key === "program_description");
@@ -75,13 +62,10 @@ const Program = () => {
           .sort((a, b) => (a.order || 0) - (b.order || 0));
 
         setProgramCards(cards);
-      }
     } catch (error) {
-      console.error("Error in loadProgramData:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error parsing program data:", error);
     }
-  };
+  }, [settings]);
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: async () => {
