@@ -385,20 +385,40 @@ const HomeSettings = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-2 mb-4">
-        <Button onClick={handleAddHeroSection} size="sm" variant="outline">
+      <div className="flex flex-wrap gap-3 mb-6">
+        <Button 
+          onClick={handleAddHeroSection} 
+          size="default" 
+          variant="secondary"
+          className="shadow-sm hover:shadow-md transition-shadow"
+        >
           <Plus className="w-4 h-4 mr-2" />
           헤더 이미지 추가
         </Button>
-        <Button onClick={handleAddInfoCardSection} size="sm" variant="outline">
-          <Plus className="w-4 h-4 mr-2" />
-          정보 카드 추가
-        </Button>
-        <Button onClick={handleAddDescription} size="sm" variant="outline">
+        <Button 
+          onClick={handleAddDescription} 
+          size="default" 
+          variant="secondary"
+          className="shadow-sm hover:shadow-md transition-shadow"
+        >
           <Plus className="w-4 h-4 mr-2" />
           설명 섹션 추가
         </Button>
-        <Button onClick={handleAddButtonGroup} size="sm" variant="outline">
+        <Button 
+          onClick={handleAddInfoCardSection} 
+          size="default" 
+          variant="secondary"
+          className="shadow-sm hover:shadow-md transition-shadow"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          정보 카드 추가
+        </Button>
+        <Button 
+          onClick={handleAddButtonGroup} 
+          size="default" 
+          variant="secondary"
+          className="shadow-sm hover:shadow-md transition-shadow"
+        >
           <Plus className="w-4 h-4 mr-2" />
           버튼 그룹 추가
         </Button>
@@ -410,9 +430,8 @@ const HomeSettings = ({
         </div>
       ) : (
         sectionOrder.map((sectionId, index) => (
-          <div key={sectionId}>
+          <div key={sectionId} className="mb-8">
             {renderSection(sectionId, index)}
-            {index < sectionOrder.length - 1 && <Separator className="my-6" />}
           </div>
         ))
       )}
