@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export const useSettings = () => {
   const { toast } = useToast();
+  const [defaultProjectId, setDefaultProjectId] = useState<string | null>(null);
   
   const [heroSections, setHeroSections] = useState<any[]>([]);
   const [infoCardSections, setInfoCardSections] = useState<any[]>([]);
@@ -216,84 +217,101 @@ export const useSettings = () => {
 
   const saveSettings = async (options?: { silent?: boolean }) => {
     try {
+      if (!defaultProjectId) {
+        throw new Error("Project ID not found");
+      }
+
       const settingsToSave = [
         ...Object.entries(settings).map(([key, value]) => ({
           category: getCategoryFromKey(key),
           key,
           value: value.toString(),
+          project_id: defaultProjectId,
         })),
         ...Object.entries(registrationSettings).map(([key, value]) => ({
           category: "registration",
           key,
           value: value.toString(),
+          project_id: defaultProjectId,
         })),
         {
           category: "registration",
           key: "registration_fields",
           value: JSON.stringify(registrationFields),
+          project_id: defaultProjectId,
         },
         // Save hero sections
         ...heroSections.map((hero, index) => ({
           category: "home",
           key: `home_hero_${index}`,
           value: JSON.stringify({ ...hero, order: index }),
+          project_id: defaultProjectId,
         })),
         // Save info card sections
         ...infoCardSections.map((section, index) => ({
           category: "home",
           key: `home_info_card_section_${index}`,
           value: JSON.stringify({ ...section, order: index }),
+          project_id: defaultProjectId,
         })),
         // Save descriptions
         ...descriptions.map((desc, index) => ({
           category: "home",
           key: `home_description_${index}`,
           value: JSON.stringify({ ...desc, order: index }),
+          project_id: defaultProjectId,
         })),
         // Save button groups
         ...buttonGroups.map((group, index) => ({
           category: "home",
           key: `home_button_group_${index}`,
           value: JSON.stringify({ ...group, order: index }),
+          project_id: defaultProjectId,
         })),
         // Save program cards
         ...programCards.map((card, index) => ({
           category: "program",
           key: `program_card_${index}`,
           value: JSON.stringify({ ...card, order: index }),
+          project_id: defaultProjectId,
         })),
         // Save transport cards
         ...transportCards.map((card, index) => ({
           category: "location",
           key: `transport_card_${index}`,
           value: JSON.stringify({ ...card, order: index }),
+          project_id: defaultProjectId,
         })),
         // Save location bottom buttons
         ...locationBottomButtons.map((button, index) => ({
           category: "location",
           key: `location_bottom_button_${index}`,
           value: JSON.stringify({ ...button, order: index }),
+          project_id: defaultProjectId,
         })),
         // Save download files
         ...downloadFiles.map((file, index) => ({
           category: "location",
           key: `location_download_file_${index}`,
           value: JSON.stringify({ ...file, order: index }),
+          project_id: defaultProjectId,
         })),
         // Save section orders
         {
           category: "home",
           key: "section_order",
           value: JSON.stringify(sectionOrder),
+          project_id: defaultProjectId,
         },
         {
           category: "location",
           key: "location_section_order",
           value: JSON.stringify(locationSectionOrder),
+          project_id: defaultProjectId,
         },
       ];
 
-      await supabase.from("site_settings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      await supabase.from("site_settings").delete().eq("project_id", defaultProjectId);
       const { error } = await supabase.from("site_settings").insert(settingsToSave);
 
       if (error) throw error;
@@ -319,11 +337,16 @@ export const useSettings = () => {
 
   const saveSectionOrder = async (order: string[]) => {
     try {
-      await supabase.from("site_settings").delete().eq("key", "section_order");
+      if (!defaultProjectId) return;
+      
+      await supabase.from("site_settings").delete()
+        .eq("key", "section_order")
+        .eq("project_id", defaultProjectId);
       await supabase.from("site_settings").insert({
         category: "home",
         key: "section_order",
         value: JSON.stringify(order),
+        project_id: defaultProjectId,
       });
     } catch (error) {
       console.error("Error saving section order:", error);
@@ -332,11 +355,16 @@ export const useSettings = () => {
 
   const saveLocationSectionOrder = async (order: string[]) => {
     try {
-      await supabase.from("site_settings").delete().eq("key", "location_section_order");
+      if (!defaultProjectId) return;
+      
+      await supabase.from("site_settings").delete()
+        .eq("key", "location_section_order")
+        .eq("project_id", defaultProjectId);
       await supabase.from("site_settings").insert({
         category: "location",
         key: "location_section_order",
         value: JSON.stringify(order),
+        project_id: defaultProjectId,
       });
     } catch (error) {
       console.error("Error saving location section order:", error);
