@@ -13,15 +13,19 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import SortableInfoCard from "@/components/SortableInfoCard";
 import SortableBottomButton from "@/components/SortableBottomButton";
 import { renderDescriptionSection, renderButtonGroupSection } from "./HomeSettings_renderSections";
+import { renderHeroSection } from "./HomeSettings_renderHeroSection";
+import { renderInfoCardSection } from "./HomeSettings_renderInfoCardSection";
 
 interface HomeSettingsProps {
   settings: any;
-  infoCards: any[];
+  heroSections: any[];
+  infoCardSections: any[];
   descriptions: any[];
   buttonGroups: any[];
   sectionOrder: string[];
   onSettingChange: (key: string, value: string) => void;
-  onInfoCardsChange: (cards: any[]) => void;
+  onHeroSectionsChange: (sections: any[]) => void;
+  onInfoCardSectionsChange: (sections: any[]) => void;
   onDescriptionsChange: (descriptions: any[]) => void;
   onButtonGroupsChange: (groups: any[]) => void;
   onSectionOrderChange: (order: string[]) => void;
@@ -31,12 +35,14 @@ interface HomeSettingsProps {
 
 const HomeSettings = ({
   settings,
-  infoCards,
+  heroSections,
+  infoCardSections,
   descriptions,
   buttonGroups,
   sectionOrder,
   onSettingChange,
-  onInfoCardsChange,
+  onHeroSectionsChange,
+  onInfoCardSectionsChange,
   onDescriptionsChange,
   onButtonGroupsChange,
   onSectionOrderChange,
@@ -54,27 +60,88 @@ const HomeSettings = ({
     setPreviewKey(prev => prev + 1);
   };
 
-  const handleAddInfoCard = () => {
-    onInfoCardsChange([...infoCards, { title: "", description: "", icon: "Info" }]);
+  const handleAddHeroSection = () => {
+    const newId = `hero_${Date.now()}`;
+    const newHero = {
+      id: newId,
+      enabled: "true",
+      imageUrl: "",
+      overlayOpacity: "0",
+      order: heroSections.length,
+    };
+    onHeroSectionsChange([...heroSections, newHero]);
+    onSectionOrderChange([...sectionOrder, newId]);
+    onSaveSectionOrder([...sectionOrder, newId]);
   };
 
-  const handleUpdateInfoCard = (id: string, data: any) => {
-    const index = parseInt(id);
-    const newCards = [...infoCards];
-    newCards[index] = { ...newCards[index], ...data };
-    onInfoCardsChange(newCards);
+  const handleUpdateHeroSection = (id: string, data: any) => {
+    const newHeroSections = heroSections.map((hero) =>
+      hero.id === id ? { ...hero, ...data } : hero
+    );
+    onHeroSectionsChange(newHeroSections);
   };
 
-  const handleDeleteInfoCard = (index: number) => {
-    onInfoCardsChange(infoCards.filter((_, i) => i !== index));
+  const handleDeleteHeroSection = (id: string) => {
+    onHeroSectionsChange(heroSections.filter((hero) => hero.id !== id));
+    const newOrder = sectionOrder.filter((sectionId) => sectionId !== id);
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
   };
 
-  const handleDragEndInfoCards = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = infoCards.findIndex((_, i) => i.toString() === active.id);
-      const newIndex = infoCards.findIndex((_, i) => i.toString() === over.id);
-      onInfoCardsChange(arrayMove(infoCards, oldIndex, newIndex));
+  const handleCopyHeroSection = (id: string) => {
+    const heroToCopy = heroSections.find((hero) => hero.id === id);
+    if (heroToCopy) {
+      const newId = `hero_${Date.now()}`;
+      const newHero = { ...heroToCopy, id: newId, order: heroSections.length };
+      onHeroSectionsChange([...heroSections, newHero]);
+      
+      const indexInOrder = sectionOrder.indexOf(id);
+      const newOrder = [...sectionOrder];
+      newOrder.splice(indexInOrder + 1, 0, newId);
+      onSectionOrderChange(newOrder);
+      onSaveSectionOrder(newOrder);
+    }
+  };
+
+  const handleAddInfoCardSection = () => {
+    const newId = `info_card_section_${Date.now()}`;
+    const newSection = {
+      id: newId,
+      enabled: "true",
+      cards: [],
+      order: infoCardSections.length,
+    };
+    onInfoCardSectionsChange([...infoCardSections, newSection]);
+    onSectionOrderChange([...sectionOrder, newId]);
+    onSaveSectionOrder([...sectionOrder, newId]);
+  };
+
+  const handleUpdateInfoCardSection = (id: string, data: any) => {
+    const newSections = infoCardSections.map((section) =>
+      section.id === id ? { ...section, ...data } : section
+    );
+    onInfoCardSectionsChange(newSections);
+  };
+
+  const handleDeleteInfoCardSection = (id: string) => {
+    onInfoCardSectionsChange(infoCardSections.filter((section) => section.id !== id));
+    const newOrder = sectionOrder.filter((sectionId) => sectionId !== id);
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
+  const handleCopyInfoCardSection = (id: string) => {
+    const sectionToCopy = infoCardSections.find((section) => section.id === id);
+    if (sectionToCopy) {
+      const newId = `info_card_section_${Date.now()}`;
+      const newSection = { ...sectionToCopy, id: newId, order: infoCardSections.length };
+      onInfoCardSectionsChange([...infoCardSections, newSection]);
+      
+      const indexInOrder = sectionOrder.indexOf(id);
+      const newOrder = [...sectionOrder];
+      newOrder.splice(indexInOrder + 1, 0, newId);
+      onSectionOrderChange(newOrder);
+      onSaveSectionOrder(newOrder);
     }
   };
 
@@ -185,8 +252,8 @@ const HomeSettings = ({
   };
 
   const getSectionTitle = (sectionId: string): string => {
-    if (sectionId === "hero_section") return "헤더 이미지";
-    if (sectionId === "info_cards") return "정보 카드";
+    if (sectionId.startsWith("hero_")) return "헤더 이미지";
+    if (sectionId.startsWith("info_card_section_")) return "정보 카드";
     if (sectionId.startsWith("description_")) return "설명 섹션";
     if (sectionId.startsWith("button_group_")) return "버튼";
     return sectionId;
@@ -216,6 +283,19 @@ const HomeSettings = ({
     </div>
   );
 
+  const handleDragEndInfoCardCards = (sectionId: string, event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const section = infoCardSections.find((s) => s.id === sectionId);
+      if (section) {
+        const oldIndex = parseInt(active.id as string);
+        const newIndex = parseInt(over.id as string);
+        const newCards = arrayMove(section.cards, oldIndex, newIndex);
+        handleUpdateInfoCardSection(sectionId, { cards: newCards });
+      }
+    }
+  };
+
   const handleDragEndButtonGroup = (groupId: string, event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -230,92 +310,32 @@ const HomeSettings = ({
   };
 
   const renderSection = (sectionId: string, index: number) => {
-    if (sectionId === "hero_section") {
-      return (
-        <div key={sectionId} className="space-y-4">
-          <SectionControls title="헤더 이미지" index={index} />
-          <div className="grid gap-4">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="hero_enabled">헤더 이미지 사용</Label>
-              <Switch
-                id="hero_enabled"
-                checked={settings.hero_enabled === "true"}
-                onCheckedChange={(checked) => onSettingChange("hero_enabled", checked ? "true" : "false")}
-              />
-            </div>
-            
-            {settings.hero_enabled === "true" && (
-              <>
-                <ImageUpload
-                  value={settings.hero_image_url || ""}
-                  onChange={(url) => onSettingChange("hero_image_url", url)}
-                  label="배경 이미지"
-                />
-                <p className="text-sm text-muted-foreground">
-                  이미지는 원본 비율로 표시되며, 최대 너비는 1000px입니다.
-                </p>
-                
-                <div>
-                  <Label htmlFor="hero_overlay_opacity">배경 오버레이 투명도 (%)</Label>
-                  <Input
-                    id="hero_overlay_opacity"
-                    type="number"
-                    value={settings.hero_overlay_opacity || "0"}
-                    onChange={(e) => onSettingChange("hero_overlay_opacity", e.target.value)}
-                    placeholder="0"
-                    min="0"
-                    max="100"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">0 (투명) ~ 100 (불투명)</p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      );
+    if (sectionId.startsWith("hero_")) {
+      return renderHeroSection({
+        sectionId,
+        index,
+        heroSections,
+        SectionControls,
+        onUpdateHeroSection: handleUpdateHeroSection,
+        onCopyHeroSection: handleCopyHeroSection,
+        onDeleteHeroSection: handleDeleteHeroSection,
+        getSectionTitle,
+      } as any);
     }
 
-    if (sectionId === "info_cards") {
-      return (
-        <div key={sectionId} className="space-y-4">
-          <SectionControls title={getSectionTitle(sectionId)} index={index} />
-          <div className="flex items-center justify-between mb-4">
-            <Label htmlFor="info_cards_enabled">정보 카드 사용</Label>
-            <Switch
-              id="info_cards_enabled"
-              checked={settings.info_cards_enabled === "true"}
-              onCheckedChange={(checked) => onSettingChange("info_cards_enabled", checked ? "true" : "false")}
-            />
-          </div>
-          
-          {settings.info_cards_enabled === "true" && (
-            <>
-              <div className="flex justify-end mb-4">
-                <Button onClick={handleAddInfoCard} size="sm">
-                  <Plus className="w-4 h-4 mr-2" />
-                  카드 추가
-                </Button>
-              </div>
-              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndInfoCards}>
-                <SortableContext items={infoCards.map((_, i) => i.toString())} strategy={verticalListSortingStrategy}>
-                  <div className="space-y-4">
-                    {infoCards.map((card, i) => (
-                      <SortableInfoCard
-                        key={i}
-                        id={i.toString()}
-                        card={card}
-                        cardData={card}
-                        onUpdate={(data) => handleUpdateInfoCard(i.toString(), data)}
-                        onDelete={() => handleDeleteInfoCard(i)}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </>
-          )}
-        </div>
-      );
+    if (sectionId.startsWith("info_card_section_")) {
+      return renderInfoCardSection({
+        sectionId,
+        index,
+        infoCardSections,
+        sensors,
+        SectionControls,
+        onUpdateInfoCardSection: handleUpdateInfoCardSection,
+        onCopyInfoCardSection: handleCopyInfoCardSection,
+        onDeleteInfoCardSection: handleDeleteInfoCardSection,
+        handleDragEndInfoCardCards,
+        getSectionTitle,
+      } as any);
     }
 
     if (sectionId.startsWith("description_")) {
@@ -324,17 +344,17 @@ const HomeSettings = ({
         index,
         settings,
         descriptions,
-        buttonGroups,
+        buttonGroups: [],
         sensors,
         SectionControls,
         onSettingChange,
         onUpdateDescription: handleUpdateDescription,
         onDeleteDescription: handleDeleteDescription,
         onCopyDescription: handleCopyDescription,
-        onUpdateButtonGroup: handleUpdateButtonGroup,
-        onDeleteButtonGroup: handleDeleteButtonGroup,
-        onCopyButtonGroup: handleCopyButtonGroup,
-        handleDragEndBottomButtons: handleDragEndButtonGroup,
+        onUpdateButtonGroup: () => {},
+        onDeleteButtonGroup: () => {},
+        onCopyButtonGroup: () => {},
+        handleDragEndBottomButtons: () => {},
         getSectionTitle,
       });
     }

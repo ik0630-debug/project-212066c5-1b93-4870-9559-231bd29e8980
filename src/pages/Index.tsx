@@ -56,73 +56,83 @@ const Index = () => {
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20">
       <div className="max-w-[800px] mx-auto">
-        {settings.heroEnabled === "true" && (
-          <header className="flex flex-col items-center justify-center">
-            <div className="relative w-full">
-              <div className="relative">
-                <div 
-                  className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
-                  style={{ opacity: parseInt(settings.heroOverlayOpacity || "0") / 100 }}
-                />
-                <img
-                  src={settings.heroImageUrl || heroImage}
-                  alt="Conference Hero"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
-            </div>
-          </header>
-        )}
-
         <main className="px-6 py-4">
           <div className="space-y-6">
             {settings.sectionOrder.map((sectionKey) => {
-              if (sectionKey === 'info_cards' && settings.infoCardsEnabled === "true" && settings.infoCards.length > 0) {
-                return (
-                  <div key={sectionKey} className="grid gap-4">
-                    {settings.infoCards.map((card, index) => {
-                      const IconComponent = getIconComponent(card.icon);
-                      const bgColor = card.bgColor || "0 0% 100%";
-                      const iconColor = card.iconColor || "221 83% 53%";
-                      const titleFontSize = card.titleFontSize || "18";
-                      const contentFontSize = card.contentFontSize || "14";
-                      
-                      return (
-                        <div 
-                          key={index} 
-                          className="rounded-lg p-5 shadow-elegant border border-border"
-                          style={{ backgroundColor: `hsl(${bgColor})` }}
-                        >
-                          <div className="flex items-start gap-4">
-                            <div 
-                              className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: `hsl(${iconColor} / 0.1)` }}
-                            >
-                              <IconComponent 
-                                className="w-6 h-6" 
-                                style={{ color: `hsl(${iconColor})` }}
-                              />
-                            </div>
-                            <div>
-                              <h3 
-                                className="font-bold text-card-foreground mb-1"
-                                style={{ fontSize: `${titleFontSize}px` }}
+              // Render hero sections
+              if (sectionKey.startsWith('hero_')) {
+                const heroSection = settings.heroSections?.find((h: any) => h.id === sectionKey);
+                if (heroSection && heroSection.enabled === "true") {
+                  return (
+                    <header key={sectionKey} className="flex flex-col items-center justify-center -mx-6 -mt-4">
+                      <div className="relative w-full">
+                        <div className="relative">
+                          <div 
+                            className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
+                            style={{ opacity: parseInt(heroSection.overlayOpacity || "0") / 100 }}
+                          />
+                          <img
+                            src={heroSection.imageUrl || heroImage}
+                            alt="Conference Hero"
+                            className="w-full h-auto object-contain"
+                          />
+                        </div>
+                      </div>
+                    </header>
+                  );
+                }
+              }
+
+              // Render info card sections
+              if (sectionKey.startsWith('info_card_section_')) {
+                const infoCardSection = settings.infoCardSections?.find((s: any) => s.id === sectionKey);
+                if (infoCardSection && infoCardSection.enabled === "true" && infoCardSection.cards?.length > 0) {
+                  return (
+                    <div key={sectionKey} className="grid gap-4">
+                      {infoCardSection.cards.map((card: any, index: number) => {
+                        const IconComponent = getIconComponent(card.icon);
+                        const bgColor = card.bgColor || "0 0% 100%";
+                        const iconColor = card.iconColor || "221 83% 53%";
+                        const titleFontSize = card.titleFontSize || "18";
+                        const contentFontSize = card.contentFontSize || "14";
+                        
+                        return (
+                          <div 
+                            key={index} 
+                            className="rounded-lg p-5 shadow-elegant border border-border"
+                            style={{ backgroundColor: `hsl(${bgColor})` }}
+                          >
+                            <div className="flex items-start gap-4">
+                              <div 
+                                className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
+                                style={{ backgroundColor: `hsl(${iconColor} / 0.1)` }}
                               >
-                                {card.title}
-                              </h3>
-                              <p 
-                                className="text-muted-foreground whitespace-pre-line"
-                                style={{ fontSize: `${contentFontSize}px` }}
-                              >
-                                {card.content}
-                              </p>
+                                <IconComponent 
+                                  className="w-6 h-6" 
+                                  style={{ color: `hsl(${iconColor})` }}
+                                />
+                              </div>
+                              <div>
+                                <h3 
+                                  className="font-bold text-card-foreground mb-1"
+                                  style={{ fontSize: `${titleFontSize}px` }}
+                                >
+                                  {card.title}
+                                </h3>
+                                <p 
+                                  className="text-muted-foreground whitespace-pre-line"
+                                  style={{ fontSize: `${contentFontSize}px` }}
+                                >
+                                  {card.content}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
+                        );
+                      })}
+                    </div>
+                  );
+                }
               }
               
               if (sectionKey.startsWith('description_')) {

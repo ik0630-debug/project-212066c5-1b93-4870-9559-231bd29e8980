@@ -5,17 +5,15 @@ import { useToast } from "@/hooks/use-toast";
 export const useSettings = () => {
   const { toast } = useToast();
   
-  const [infoCards, setInfoCards] = useState<any[]>([]);
+  const [heroSections, setHeroSections] = useState<any[]>([]);
+  const [infoCardSections, setInfoCardSections] = useState<any[]>([]);
   const [descriptions, setDescriptions] = useState<any[]>([]);
   const [buttonGroups, setButtonGroups] = useState<any[]>([]);
   const [programCards, setProgramCards] = useState<any[]>([]);
   const [transportCards, setTransportCards] = useState<any[]>([]);
   const [locationBottomButtons, setLocationBottomButtons] = useState<any[]>([]);
   const [downloadFiles, setDownloadFiles] = useState<any[]>([]);
-  const [sectionOrder, setSectionOrder] = useState<string[]>([
-    "hero_section",
-    "info_cards",
-  ]);
+  const [sectionOrder, setSectionOrder] = useState<string[]>([]);
   const [locationSectionOrder, setLocationSectionOrder] = useState<string[]>([
     "description_buttons",
     "location_info",
@@ -24,10 +22,6 @@ export const useSettings = () => {
   ]);
   
   const [settings, setSettings] = useState<any>({
-    hero_enabled: "true",
-    hero_image_url: "",
-    hero_overlay_opacity: "0",
-    info_cards_enabled: "true",
     program_title: "",
     program_description: "",
     program_header_color: "220 70% 25%",
@@ -72,7 +66,8 @@ export const useSettings = () => {
     console.log('useSettings: Loaded data:', data?.length, 'records');
     
     const settingsMap: any = {};
-    const loadedInfoCards: any = {};
+    const loadedHeroSections: any = {};
+    const loadedInfoCardSections: any = {};
     const loadedDescriptions: any = {};
     const loadedButtonGroups: any = {};
     const loadedProgramCards: any = {};
@@ -100,11 +95,17 @@ export const useSettings = () => {
       
       switch (keyParts[0]) {
         case "home":
-          if (key.startsWith("home_info_card_")) {
+          if (key.startsWith("home_hero_")) {
             try {
               const parsed = JSON.parse(value);
               const index = parsed.order || 0;
-              loadedInfoCards[index] = parsed;
+              loadedHeroSections[index] = parsed;
+            } catch {}
+          } else if (key.startsWith("home_info_card_section_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedInfoCardSections[index] = parsed;
             } catch {}
           } else if (key.startsWith("home_description_")) {
             try {
@@ -172,19 +173,22 @@ export const useSettings = () => {
       }
     });
 
-    const cards = Object.values(loadedInfoCards).filter((card: any) => card.title);
+    const heroSectionsArray = Object.values(loadedHeroSections).filter((hero: any) => hero.id);
+    const infoCardSectionsArray = Object.values(loadedInfoCardSections).filter((section: any) => section.id);
     const descriptionsArray = Object.values(loadedDescriptions).filter((desc: any) => desc.id);
     const buttonGroupsArray = Object.values(loadedButtonGroups).filter((group: any) => group.id);
     const locationButtons = Object.values(loadedLocationBottomButtons).filter((btn: any) => btn.text);
     const downloadFilesArray = Object.values(loadedDownloadFiles).filter((file: any) => file.name && file.url);
     
-    console.log('useSettings: Loaded info cards:', cards.length);
+    console.log('useSettings: Loaded hero sections:', heroSectionsArray.length);
+    console.log('useSettings: Loaded info card sections:', infoCardSectionsArray.length);
     console.log('useSettings: Loaded descriptions:', descriptionsArray.length);
     console.log('useSettings: Loaded button groups:', buttonGroupsArray.length);
     console.log('useSettings: Loaded location bottom buttons:', locationButtons.length);
     console.log('useSettings: Loaded download files:', downloadFilesArray.length);
     
-    setInfoCards(cards);
+    setHeroSections(heroSectionsArray);
+    setInfoCardSections(infoCardSectionsArray);
     setDescriptions(descriptionsArray);
     setButtonGroups(buttonGroupsArray);
     setLocationBottomButtons(locationButtons);
@@ -228,11 +232,17 @@ export const useSettings = () => {
           key: "registration_fields",
           value: JSON.stringify(registrationFields),
         },
-        // Save info cards
-        ...infoCards.map((card, index) => ({
+        // Save hero sections
+        ...heroSections.map((hero, index) => ({
           category: "home",
-          key: `home_info_card_${index}`,
-          value: JSON.stringify({ ...card, order: index }),
+          key: `home_hero_${index}`,
+          value: JSON.stringify({ ...hero, order: index }),
+        })),
+        // Save info card sections
+        ...infoCardSections.map((section, index) => ({
+          category: "home",
+          key: `home_info_card_section_${index}`,
+          value: JSON.stringify({ ...section, order: index }),
         })),
         // Save descriptions
         ...descriptions.map((desc, index) => ({
@@ -338,7 +348,8 @@ export const useSettings = () => {
     settings,
     registrationSettings,
     registrationFields,
-    infoCards,
+    heroSections,
+    infoCardSections,
     descriptions,
     buttonGroups,
     programCards,
@@ -352,7 +363,8 @@ export const useSettings = () => {
     setSettings,
     setRegistrationSettings,
     setRegistrationFields,
-    setInfoCards,
+    setHeroSections,
+    setInfoCardSections,
     setDescriptions,
     setButtonGroups,
     setProgramCards,
