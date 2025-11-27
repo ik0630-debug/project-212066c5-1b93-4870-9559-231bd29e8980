@@ -25,15 +25,7 @@ export const useSettings = () => {
   ]);
   
   const [settings, setSettings] = useState<any>({
-    hero_use_text: "true",
-    hero_text_content: "",
-    hero_use_button: "true",
-    hero_button_position: "inside",
-    hero_button_text: "",
-    hero_button_url: "",
-    hero_button_bg_color: "",
-    hero_button_text_color: "",
-    hero_button_text_size: "",
+    hero_image_url: "",
     hero_overlay_opacity: "0",
     description_title: "",
     description_content: "",
