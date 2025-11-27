@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
@@ -16,7 +16,10 @@ export const ProjectPreviewDialog = ({ open, onOpenChange, projectSlug }: Projec
       <DialogContent className="max-w-[400px] h-[90vh] p-0 gap-0">
         <DialogHeader className="px-6 py-4 border-b">
           <div className="flex items-center justify-between">
-            <DialogTitle>초청장 미리보기</DialogTitle>
+            <div>
+              <DialogTitle>초청장 미리보기</DialogTitle>
+              <DialogDescription>모바일 화면으로 프로젝트를 미리 볼 수 있습니다</DialogDescription>
+            </div>
             <Button
               variant="ghost"
               size="icon"
