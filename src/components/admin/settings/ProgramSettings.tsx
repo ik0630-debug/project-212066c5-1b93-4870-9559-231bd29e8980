@@ -8,6 +8,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { ColorPicker } from "@/components/ColorPicker";
 import { SortableProgramCard } from "@/components/SortableProgramCard";
+import ImageUpload from "@/components/ImageUpload";
 
 interface ProgramSettingsProps {
   settings: any;
@@ -107,6 +108,32 @@ const ProgramSettings = ({
             <ColorPicker
               value={settings.program_header_color || ""}
               onChange={(color) => onSettingChange("program_header_color", color)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Hero Image Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">헤더 이미지</h3>
+        <div className="space-y-4">
+          <div>
+            <ImageUpload
+              label="배경 이미지"
+              value={settings.program_hero_image || ""}
+              onChange={(value) => onSettingChange("program_hero_image", value)}
+            />
+          </div>
+          <div>
+            <Label>오버레이 투명도 (%)</Label>
+            <Input
+              type="number"
+              min="0"
+              max="100"
+              value={settings.program_hero_overlay_opacity || "0"}
+              onChange={(e) => onSettingChange("program_hero_overlay_opacity", e.target.value)}
             />
           </div>
         </div>

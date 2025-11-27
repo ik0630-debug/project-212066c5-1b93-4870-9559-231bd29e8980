@@ -22,6 +22,8 @@ const Program = () => {
   const [pageTitle, setPageTitle] = useState("");
   const [pageDescription, setPageDescription] = useState("");
   const [headerColor, setHeaderColor] = useState("");
+  const [heroImage, setHeroImage] = useState("");
+  const [heroOverlayOpacity, setHeroOverlayOpacity] = useState("0");
   const [programCards, setProgramCards] = useState<ProgramCard[]>([]);
   const [loading, setLoading] = useState(true);
   const { settings: pageSettings } = usePageSettings();
@@ -48,10 +50,14 @@ const Program = () => {
         const titleSetting = settings.find((s) => s.key === "program_title");
         const descSetting = settings.find((s) => s.key === "program_description");
         const colorSetting = settings.find((s) => s.key === "program_header_color");
+        const heroImageSetting = settings.find((s) => s.key === "program_hero_image");
+        const heroOverlaySetting = settings.find((s) => s.key === "program_hero_overlay_opacity");
 
         if (titleSetting) setPageTitle(titleSetting.value);
         if (descSetting) setPageDescription(descSetting.value);
         if (colorSetting) setHeaderColor(colorSetting.value);
+        if (heroImageSetting) setHeroImage(heroImageSetting.value);
+        if (heroOverlaySetting) setHeroOverlayOpacity(heroOverlaySetting.value);
 
         // Load program cards
         const cards = settings
@@ -115,6 +121,21 @@ const Program = () => {
             </p>
           )}
         </header>
+
+        {/* Hero Image Section */}
+        {heroImage && (
+          <div className="relative w-full -mt-4">
+            <div 
+              className="absolute inset-0 bg-gradient-hero z-10 pointer-events-none" 
+              style={{ opacity: parseInt(heroOverlayOpacity || "0") / 100 }}
+            />
+            <img
+              src={heroImage}
+              alt="Program Hero"
+              className="w-full h-auto object-contain"
+            />
+          </div>
+        )}
 
         {/* Program Schedule */}
         <main className="px-6 py-8">
