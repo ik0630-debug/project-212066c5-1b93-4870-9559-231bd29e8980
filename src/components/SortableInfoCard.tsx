@@ -108,14 +108,14 @@ const SortableInfoCard = ({
           <Input
             id={`title-font-${id}`}
             type="number"
-            value={cardData.titleFontSize || "18"}
+            value={cardData.titleFontSize || "16"}
             onChange={(e) =>
               onUpdate({
                 ...cardData,
                 titleFontSize: e.target.value,
               })
             }
-            placeholder="18"
+            placeholder="16"
             min="12"
             max="48"
           />

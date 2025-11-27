@@ -261,7 +261,7 @@ const HomeSettings = ({
 
   const getSectionTitle = (sectionId: string): string => {
     if (sectionId.startsWith("hero_")) return "헤더 이미지";
-    if (sectionId.startsWith("info_card_section_")) return "정보 카드";
+    if (sectionId.startsWith("info_card_section_") || sectionId.startsWith("infocard_section_")) return "정보 섹션";
     if (sectionId.startsWith("description_")) return "설명 섹션";
     if (sectionId.startsWith("button_group_")) return "버튼";
     return sectionId;

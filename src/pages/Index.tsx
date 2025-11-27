@@ -98,7 +98,7 @@ const Index = () => {
                         const IconComponent = getIconComponent(card.icon);
                         const bgColor = card.bgColor || "0 0% 100%";
                         const iconColor = card.iconColor || "221 83% 53%";
-                        const titleFontSize = card.titleFontSize || "18";
+                        const titleFontSize = card.titleFontSize || "16";
                         const contentFontSize = card.contentFontSize || "14";
                         
                         return (
