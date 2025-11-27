@@ -13,6 +13,7 @@ import Location from "./pages/Location";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
+import Projects from "./pages/Projects";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,15 +26,22 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/program" element={<Program />} />
-            <Route path="/registration" element={<Registration />} />
-            <Route path="/registration/check" element={<RegistrationCheck />} />
-            <Route path="/registration/verify" element={<RegistrationVerify />} />
-            <Route path="/location" element={<Location />} />
+            <Route path="/projects" element={<Projects />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/admin" element={<Admin />} />
             <Route path="/profile" element={<Profile />} />
+            
+            {/* Project-specific routes */}
+            <Route path="/:projectSlug" element={<Index />} />
+            <Route path="/:projectSlug/program" element={<Program />} />
+            <Route path="/:projectSlug/registration" element={<Registration />} />
+            <Route path="/:projectSlug/registration/check" element={<RegistrationCheck />} />
+            <Route path="/:projectSlug/registration/verify" element={<RegistrationVerify />} />
+            <Route path="/:projectSlug/location" element={<Location />} />
+            <Route path="/:projectSlug/admin" element={<Admin />} />
+            
+            {/* Redirect root to projects list */}
+            <Route path="/" element={<Projects />} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
