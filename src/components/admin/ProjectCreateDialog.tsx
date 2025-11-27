@@ -38,7 +38,7 @@ export const ProjectCreateDialog = ({ open, onOpenChange, onSuccess }: ProjectCr
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
-  const [templateProjectId, setTemplateProjectId] = useState<string>("");
+  const [templateProjectId, setTemplateProjectId] = useState<string>("none");
   const [availableProjects, setAvailableProjects] = useState<TemplateProject[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -66,10 +66,6 @@ export const ProjectCreateDialog = ({ open, onOpenChange, onSuccess }: ProjectCr
 
       if (projects) {
         setAvailableProjects(projects);
-        // Set first project as default template
-        if (projects.length > 0) {
-          setTemplateProjectId(projects[0].id);
-        }
       }
     };
 
@@ -130,7 +126,7 @@ export const ProjectCreateDialog = ({ open, onOpenChange, onSuccess }: ProjectCr
       if (memberError) throw memberError;
 
       // 3. Copy settings from template project if selected
-      if (templateProjectId) {
+      if (templateProjectId && templateProjectId !== "none") {
         const { data: templateSettings } = await supabase
           .from("site_settings")
           .select("*")
@@ -155,7 +151,7 @@ export const ProjectCreateDialog = ({ open, onOpenChange, onSuccess }: ProjectCr
       setName("");
       setSlug("");
       setDescription("");
-      setTemplateProjectId("");
+      setTemplateProjectId("none");
       
       // Navigate to new project
       navigate(`/${project.slug}`);
@@ -219,7 +215,7 @@ export const ProjectCreateDialog = ({ open, onOpenChange, onSuccess }: ProjectCr
                   <SelectValue placeholder="템플릿 선택 안 함" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">템플릿 없이 생성</SelectItem>
+                  <SelectItem value="none">템플릿 없이 생성</SelectItem>
                   {availableProjects.map((project) => (
                     <SelectItem key={project.id} value={project.id}>
                       {project.name} ({project.slug})
