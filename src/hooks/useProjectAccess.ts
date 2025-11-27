@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -23,12 +23,19 @@ export const useProjectAccess = (): ProjectAccess => {
   const { projectSlug } = useParams();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const hasShownErrorRef = useRef(false);
 
   useEffect(() => {
+    let isMounted = true;
+    
     const checkAccess = async () => {
       try {
+        setLoading(true);
+        
         // Get current user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (!isMounted) return;
         
         if (userError || !user) {
           setLoading(false);
@@ -47,12 +54,19 @@ export const useProjectAccess = (): ProjectAccess => {
           .eq("slug", projectSlug)
           .single();
 
+        if (!isMounted) return;
+
         if (projectError || !project) {
-          toast({
-            title: "프로젝트를 찾을 수 없습니다",
-            variant: "destructive",
-          });
-          navigate("/projects");
+          if (!hasShownErrorRef.current) {
+            hasShownErrorRef.current = true;
+            toast({
+              title: "프로젝트를 찾을 수 없습니다",
+              variant: "destructive",
+            });
+            setTimeout(() => {
+              navigate("/projects", { replace: true });
+            }, 100);
+          }
           return;
         }
 
@@ -66,31 +80,48 @@ export const useProjectAccess = (): ProjectAccess => {
           .eq("user_id", user.id)
           .single();
 
+        if (!isMounted) return;
+
         if (memberError || !membership) {
-          toast({
-            title: "접근 권한이 없습니다",
-            description: "이 프로젝트의 멤버가 아닙니다",
-            variant: "destructive",
-          });
-          navigate("/projects");
+          if (!hasShownErrorRef.current) {
+            hasShownErrorRef.current = true;
+            toast({
+              title: "접근 권한이 없습니다",
+              description: "이 프로젝트의 멤버가 아닙니다",
+              variant: "destructive",
+            });
+            setTimeout(() => {
+              navigate("/projects", { replace: true });
+            }, 100);
+          }
           return;
         }
 
         setRole(membership.role as ProjectRole);
       } catch (error: any) {
+        if (!isMounted) return;
         console.error("Access check error:", error);
-        toast({
-          title: "오류가 발생했습니다",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (!hasShownErrorRef.current) {
+          hasShownErrorRef.current = true;
+          toast({
+            title: "오류가 발생했습니다",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     checkAccess();
-  }, [projectSlug, navigate, toast]);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [projectSlug]);
 
   const isOwner = role === "owner";
   const isAdmin = role === "admin" || isOwner;
