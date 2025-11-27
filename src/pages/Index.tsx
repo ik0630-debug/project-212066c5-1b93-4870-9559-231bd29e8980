@@ -84,6 +84,8 @@ const Index = () => {
                       const IconComponent = getIconComponent(card.icon);
                       const bgColor = card.bgColor || "0 0% 100%";
                       const iconColor = card.iconColor || "221 83% 53%";
+                      const titleFontSize = card.titleFontSize || "18";
+                      const contentFontSize = card.contentFontSize || "14";
                       
                       return (
                         <div 
@@ -102,8 +104,18 @@ const Index = () => {
                               />
                             </div>
                             <div>
-                              <h3 className="text-lg font-bold text-card-foreground mb-1">{card.title}</h3>
-                              <p className="text-muted-foreground whitespace-pre-line">{card.content}</p>
+                              <h3 
+                                className="font-bold text-card-foreground mb-1"
+                                style={{ fontSize: `${titleFontSize}px` }}
+                              >
+                                {card.title}
+                              </h3>
+                              <p 
+                                className="text-muted-foreground whitespace-pre-line"
+                                style={{ fontSize: `${contentFontSize}px` }}
+                              >
+                                {card.content}
+                              </p>
                             </div>
                           </div>
                         </div>

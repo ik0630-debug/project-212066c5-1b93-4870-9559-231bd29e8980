@@ -102,6 +102,43 @@ const SortableInfoCard = ({
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor={`title-font-${id}`}>제목 폰트 크기 (px)</Label>
+          <Input
+            id={`title-font-${id}`}
+            type="number"
+            value={cardData.titleFontSize || "18"}
+            onChange={(e) =>
+              onUpdate({
+                ...cardData,
+                titleFontSize: e.target.value,
+              })
+            }
+            placeholder="18"
+            min="12"
+            max="48"
+          />
+        </div>
+        <div>
+          <Label htmlFor={`content-font-${id}`}>내용 폰트 크기 (px)</Label>
+          <Input
+            id={`content-font-${id}`}
+            type="number"
+            value={cardData.contentFontSize || "14"}
+            onChange={(e) =>
+              onUpdate({
+                ...cardData,
+                contentFontSize: e.target.value,
+              })
+            }
+            placeholder="14"
+            min="12"
+            max="32"
+          />
+        </div>
+      </div>
+
       <div>
         <ColorPicker
           value={cardData.bgColor || "0 0% 100%"}

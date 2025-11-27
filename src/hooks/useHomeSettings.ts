@@ -6,6 +6,8 @@ interface InfoCard {
   icon: string;
   title: string;
   content: string;
+  titleFontSize?: string;
+  contentFontSize?: string;
   bgColor?: string;
   iconColor?: string;
   order: number;
