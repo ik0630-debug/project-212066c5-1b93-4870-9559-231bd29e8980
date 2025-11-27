@@ -117,9 +117,9 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border bg-white/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex flex-col items-center gap-2">
-            <img src={logo} alt="M&C Communications" className="h-10 md:h-12" />
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+          <div className="flex flex-col items-center gap-3">
+            <img src={logo} alt="M&C Communications" className="h-16 md:h-20" />
+            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
               참가자 초청 플랫폼
             </h1>
             <p className="text-gray-600 text-center text-sm md:text-base">
