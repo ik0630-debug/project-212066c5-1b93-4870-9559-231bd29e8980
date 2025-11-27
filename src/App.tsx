@@ -68,8 +68,8 @@ const App = () => (
               </ProtectedRoute>
             } />
             
-            {/* Redirect root to projects list */}
-            <Route path="/" element={<Projects />} />
+            {/* Root path - Admin login page */}
+            <Route path="/" element={<Index />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
