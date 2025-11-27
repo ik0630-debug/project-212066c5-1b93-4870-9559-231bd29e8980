@@ -6,16 +6,15 @@ export const useSettings = () => {
   const { toast } = useToast();
   
   const [infoCards, setInfoCards] = useState<any[]>([]);
-  const [bottomButtons, setBottomButtons] = useState<any[]>([]);
+  const [descriptions, setDescriptions] = useState<any[]>([]);
+  const [buttonGroups, setButtonGroups] = useState<any[]>([]);
   const [programCards, setProgramCards] = useState<any[]>([]);
   const [transportCards, setTransportCards] = useState<any[]>([]);
   const [locationBottomButtons, setLocationBottomButtons] = useState<any[]>([]);
   const [downloadFiles, setDownloadFiles] = useState<any[]>([]);
   const [sectionOrder, setSectionOrder] = useState<string[]>([
     "hero_section",
-    "description",
     "info_cards",
-    "bottom_buttons",
   ]);
   const [locationSectionOrder, setLocationSectionOrder] = useState<string[]>([
     "description_buttons",
@@ -29,13 +28,6 @@ export const useSettings = () => {
     hero_image_url: "",
     hero_overlay_opacity: "0",
     info_cards_enabled: "true",
-    description_enabled: "true",
-    description_title: "",
-    description_content: "",
-    description_title_font_size: "24",
-    description_content_font_size: "16",
-    description_bg_color: "",
-    bottom_buttons_enabled: "true",
     program_title: "",
     program_description: "",
     program_header_color: "220 70% 25%",
@@ -81,7 +73,8 @@ export const useSettings = () => {
     
     const settingsMap: any = {};
     const loadedInfoCards: any = {};
-    const loadedBottomButtons: any = {};
+    const loadedDescriptions: any = {};
+    const loadedButtonGroups: any = {};
     const loadedProgramCards: any = {};
     const loadedTransportCards: any = {};
     const loadedLocationBottomButtons: any = {};
@@ -113,11 +106,17 @@ export const useSettings = () => {
               const index = parsed.order || 0;
               loadedInfoCards[index] = parsed;
             } catch {}
-          } else if (key.startsWith("home_bottom_button_")) {
+          } else if (key.startsWith("home_description_")) {
             try {
               const parsed = JSON.parse(value);
               const index = parsed.order || 0;
-              loadedBottomButtons[index] = parsed;
+              loadedDescriptions[index] = parsed;
+            } catch {}
+          } else if (key.startsWith("home_button_group_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedButtonGroups[index] = parsed;
           } catch {}
           } else {
             settingsMap[key] = value;
@@ -174,17 +173,20 @@ export const useSettings = () => {
     });
 
     const cards = Object.values(loadedInfoCards).filter((card: any) => card.title);
-    const buttons = Object.values(loadedBottomButtons).filter((btn: any) => btn.text);
+    const descriptionsArray = Object.values(loadedDescriptions).filter((desc: any) => desc.id);
+    const buttonGroupsArray = Object.values(loadedButtonGroups).filter((group: any) => group.id);
     const locationButtons = Object.values(loadedLocationBottomButtons).filter((btn: any) => btn.text);
     const downloadFilesArray = Object.values(loadedDownloadFiles).filter((file: any) => file.name && file.url);
     
     console.log('useSettings: Loaded info cards:', cards.length);
-    console.log('useSettings: Loaded bottom buttons:', buttons.length);
+    console.log('useSettings: Loaded descriptions:', descriptionsArray.length);
+    console.log('useSettings: Loaded button groups:', buttonGroupsArray.length);
     console.log('useSettings: Loaded location bottom buttons:', locationButtons.length);
     console.log('useSettings: Loaded download files:', downloadFilesArray.length);
     
     setInfoCards(cards);
-    setBottomButtons(buttons);
+    setDescriptions(descriptionsArray);
+    setButtonGroups(buttonGroupsArray);
     setLocationBottomButtons(locationButtons);
     setDownloadFiles(downloadFilesArray);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
@@ -232,11 +234,17 @@ export const useSettings = () => {
           key: `home_info_card_${index}`,
           value: JSON.stringify({ ...card, order: index }),
         })),
-        // Save bottom buttons
-        ...bottomButtons.map((button, index) => ({
+        // Save descriptions
+        ...descriptions.map((desc, index) => ({
           category: "home",
-          key: `home_bottom_button_${index}`,
-          value: JSON.stringify({ ...button, order: index }),
+          key: `home_description_${index}`,
+          value: JSON.stringify({ ...desc, order: index }),
+        })),
+        // Save button groups
+        ...buttonGroups.map((group, index) => ({
+          category: "home",
+          key: `home_button_group_${index}`,
+          value: JSON.stringify({ ...group, order: index }),
         })),
         // Save program cards
         ...programCards.map((card, index) => ({
@@ -331,7 +339,8 @@ export const useSettings = () => {
     registrationSettings,
     registrationFields,
     infoCards,
-    bottomButtons,
+    descriptions,
+    buttonGroups,
     programCards,
     transportCards,
     locationBottomButtons,
@@ -344,7 +353,8 @@ export const useSettings = () => {
     setRegistrationSettings,
     setRegistrationFields,
     setInfoCards,
-    setBottomButtons,
+    setDescriptions,
+    setButtonGroups,
     setProgramCards,
     setTransportCards,
     setLocationBottomButtons,
