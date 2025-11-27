@@ -147,17 +147,27 @@ const Index = () => {
               if (sectionKey === 'bottom_buttons' && settings.bottomButtonsEnabled === "true" && settings.bottomButtons.length > 0) {
                 return (
                   <div key={sectionKey} className="grid grid-cols-2 gap-4">
-                    {settings.bottomButtons.map((button, index) => (
-                      <Button
-                        key={index}
-                        onClick={() => navigate(button.link)}
-                        variant={button.variant as any || "outline"}
-                        size={button.size as any || "default"}
-                        className={button.fontSize || "text-sm"}
-                      >
-                        {button.text}
-                      </Button>
-                    ))}
+                    {settings.bottomButtons.map((button, index) => {
+                      const bgColor = button.bgColor || "221 83% 53%";
+                      const textColor = button.textColor || "0 0% 100%";
+                      
+                      return (
+                        <Button
+                          key={index}
+                          onClick={() => navigate(button.link)}
+                          variant="outline"
+                          size={button.size as any || "default"}
+                          className={button.fontSize || "text-sm"}
+                          style={{
+                            backgroundColor: `hsl(${bgColor})`,
+                            color: `hsl(${textColor})`,
+                            borderColor: `hsl(${bgColor})`,
+                          }}
+                        >
+                          {button.text}
+                        </Button>
+                      );
+                    })}
                   </div>
                 );
               }
