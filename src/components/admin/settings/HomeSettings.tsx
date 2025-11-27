@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Copy, ArrowUp, ArrowDown, Trash2, Plus } from "lucide-react";
+import { Copy, ArrowUp, ArrowDown, Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import ImageUpload from "@/components/ImageUpload";
 import { ColorPicker } from "@/components/ColorPicker";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
@@ -50,11 +50,19 @@ const HomeSettings = ({
   onSave,
 }: HomeSettingsProps) => {
   const [previewKey, setPreviewKey] = useState(0);
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
   
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
+
+  const toggleSection = (sectionId: string) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
 
   const refreshPreview = () => {
     setPreviewKey(prev => prev + 1);
@@ -259,29 +267,55 @@ const HomeSettings = ({
     return sectionId;
   };
 
-  const SectionControls = ({ title, index, onCopy, onDelete }: { title: string; index: number; onCopy?: () => void; onDelete?: () => void }) => (
-    <div className="flex items-center justify-between mb-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <div className="flex gap-2">
-        {onCopy && (
-          <Button variant="outline" size="sm" onClick={onCopy}>
-            <Copy className="w-4 h-4" />
+  const SectionControls = ({ 
+    title, 
+    index, 
+    sectionId, 
+    onCopy, 
+    onDelete 
+  }: { 
+    title: string; 
+    index: number; 
+    sectionId: string;
+    onCopy?: () => void; 
+    onDelete?: () => void;
+  }) => {
+    const isCollapsed = collapsedSections[sectionId];
+    
+    return (
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => toggleSection(sectionId)}
+            className="hover:bg-secondary"
+          >
+            {isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
           </Button>
-        )}
-        {onDelete && (
-          <Button variant="outline" size="sm" onClick={onDelete}>
-            <Trash2 className="w-4 h-4" />
+          <h3 className="text-lg font-semibold">{title}</h3>
+        </div>
+        <div className="flex gap-2">
+          {onCopy && (
+            <Button variant="outline" size="sm" onClick={onCopy}>
+              <Copy className="w-4 h-4" />
+            </Button>
+          )}
+          {onDelete && (
+            <Button variant="outline" size="sm" onClick={onDelete}>
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={() => handleMoveSectionUp(index)} disabled={index === 0}>
+            <ArrowUp className="w-4 h-4" />
           </Button>
-        )}
-        <Button variant="outline" size="sm" onClick={() => handleMoveSectionUp(index)} disabled={index === 0}>
-          <ArrowUp className="w-4 h-4" />
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => handleMoveSectionDown(index)} disabled={index === sectionOrder.length - 1}>
-          <ArrowDown className="w-4 h-4" />
-        </Button>
+          <Button variant="outline" size="sm" onClick={() => handleMoveSectionDown(index)} disabled={index === sectionOrder.length - 1}>
+            <ArrowDown className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const handleDragEndInfoCardCards = (sectionId: string, event: DragEndEvent) => {
     const { active, over } = event;
@@ -310,6 +344,8 @@ const HomeSettings = ({
   };
 
   const renderSection = (sectionId: string, index: number) => {
+    const isCollapsed = collapsedSections[sectionId];
+    
     if (sectionId.startsWith("hero_")) {
       return renderHeroSection({
         sectionId,
@@ -320,6 +356,7 @@ const HomeSettings = ({
         onCopyHeroSection: handleCopyHeroSection,
         onDeleteHeroSection: handleDeleteHeroSection,
         getSectionTitle,
+        isCollapsed,
       } as any);
     }
 
@@ -335,6 +372,7 @@ const HomeSettings = ({
         onDeleteInfoCardSection: handleDeleteInfoCardSection,
         handleDragEndInfoCardCards,
         getSectionTitle,
+        isCollapsed,
       } as any);
     }
 
@@ -356,6 +394,7 @@ const HomeSettings = ({
         onCopyButtonGroup: () => {},
         handleDragEndBottomButtons: () => {},
         getSectionTitle,
+        isCollapsed,
       });
     }
 
@@ -377,6 +416,7 @@ const HomeSettings = ({
         onCopyButtonGroup: handleCopyButtonGroup,
         handleDragEndBottomButtons: handleDragEndButtonGroup,
         getSectionTitle,
+        isCollapsed,
       });
     }
 
