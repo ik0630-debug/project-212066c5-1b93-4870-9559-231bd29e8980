@@ -5,6 +5,7 @@ import { useHomeSettings } from "@/hooks/useHomeSettings";
 import { useSwipeable } from "react-swipeable";
 import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { getIconComponent } from "@/utils/iconUtils";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Index = () => {
   });
 
   if (loading) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">로딩 중...</div>;
+    return <LoadingSkeleton type="home" />;
   }
 
   return (

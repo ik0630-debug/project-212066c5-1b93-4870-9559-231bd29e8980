@@ -8,6 +8,7 @@ import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
 import { getIconComponent } from "@/utils/iconUtils";
 import { useCategorySettings } from "@/hooks/useCategorySettings";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 
 const Location = () => {
   const navigate = useNavigate();
@@ -299,7 +300,7 @@ const Location = () => {
   });
 
   if (loading) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">로딩 중...</div>;
+    return <LoadingSkeleton type="location" />;
   }
 
   return (
