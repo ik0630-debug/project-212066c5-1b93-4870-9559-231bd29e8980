@@ -7,6 +7,14 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from "@supabase/supabase-js";
 import logo from "@/assets/mnc-logo.png";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -18,6 +26,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   
   // Additional signup fields
   const [name, setName] = useState("");
@@ -175,15 +184,8 @@ const Auth = () => {
           await supabase.auth.signOut();
         }
 
-        toast({
-          title: "회원가입이 완료되었습니다.",
-          description: "관리자 확인 후 이용이 가능합니다.",
-        });
-        
-        // Redirect to home page after a short delay
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+        // Show success dialog instead of toast
+        setShowSuccessDialog(true);
       }
     } catch (error: any) {
       toast({
@@ -197,7 +199,27 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 animate-fade-in">
+    <>
+      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>회원가입이 완료되었습니다!</AlertDialogTitle>
+            <AlertDialogDescription>
+              관리자 확인 후 이용이 가능합니다. 승인 완료 시 로그인하실 수 있습니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button onClick={() => {
+              setShowSuccessDialog(false);
+              navigate("/");
+            }}>
+              확인
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 animate-fade-in">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 py-6">
@@ -362,7 +384,8 @@ const Auth = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
