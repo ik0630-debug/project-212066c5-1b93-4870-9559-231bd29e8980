@@ -164,8 +164,11 @@ export const useHomeSettings = () => {
           table: 'site_settings',
           filter: 'category=eq.home'
         },
-        () => {
-          loadSettings();
+        (payload) => {
+          // Only reload if data actually changed
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE' || payload.eventType === 'DELETE') {
+            loadSettings();
+          }
         }
       )
       .subscribe();

@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import * as LucideIcons from "lucide-react";
 import MobileNavigation from "@/components/MobileNavigation";
 import { useHomeSettings } from "@/hooks/useHomeSettings";
@@ -10,29 +8,7 @@ import { getNextEnabledPage } from "@/utils/pageNavigation";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { settings, loading } = useHomeSettings();
-
-  useEffect(() => {
-    checkUserStatus();
-  }, []);
-
-  const checkUserStatus = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    setIsLoggedIn(!!session);
-    
-    if (session) {
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", session.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      
-      setIsAdmin(!!data);
-    }
-  };
 
   const getIconComponent = (iconName: string) => {
     const Icon = (LucideIcons as any)[iconName];
