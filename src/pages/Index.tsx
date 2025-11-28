@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import logo from "@/assets/mnc-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,13 +21,20 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
+    // Only run auth redirect logic if we're on the root path "/"
+    // Don't interfere with project-specific routes like "/:projectSlug"
+    const isRootPath = location.pathname === "/";
+    if (!isRootPath) {
+      return;
+    }
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
+        if (session?.user && isRootPath) {
           setTimeout(() => {
             checkAdminAndRedirect(session.user.id);
           }, 0);
@@ -39,13 +47,13 @@ const Index = () => {
       setSession(session);
       setUser(session?.user ?? null);
       
-      if (session?.user) {
+      if (session?.user && isRootPath) {
         checkAdminAndRedirect(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   const checkAdminAndRedirect = async (userId: string) => {
     // Check if profile is approved
