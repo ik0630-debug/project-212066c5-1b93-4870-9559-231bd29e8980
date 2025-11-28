@@ -12,7 +12,6 @@ import RegistrationVerify from "./pages/RegistrationVerify";
 import Location from "./pages/Location";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
-import AdminDebug from "./pages/AdminDebug";
 import Profile from "./pages/Profile";
 import Projects from "./pages/Projects";
 import NotFound from "./pages/NotFound";
@@ -66,11 +65,6 @@ const App = () => (
             <Route path="/:projectSlug/admin" element={
               <ProtectedRoute requireAdmin>
                 <Admin />
-              </ProtectedRoute>
-            } />
-            <Route path="/:projectSlug/admin/debug" element={
-              <ProtectedRoute requireAdmin>
-                <AdminDebug />
               </ProtectedRoute>
             } />
             
