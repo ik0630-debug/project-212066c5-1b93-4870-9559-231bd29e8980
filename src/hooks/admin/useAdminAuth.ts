@@ -27,15 +27,14 @@ export const useAdminAuth = () => {
         .from("user_roles")
         .select("role")
         .eq("user_id", session.user.id)
-        .in("role", ["master", "mnc_admin", "project_staff"])
-        .maybeSingle();
+        .in("role", ["master", "mnc_admin", "project_staff"]);
       
-      if (!roleData) {
+      if (!roleData || roleData.length === 0) {
         navigate("/");
         return;
       }
       
-      setUserRole(roleData.role as 'master' | 'mnc_admin' | 'project_staff');
+      setUserRole(roleData[0].role as 'master' | 'mnc_admin' | 'project_staff');
     } catch (error) {
       navigate("/auth");
     } finally {
