@@ -26,7 +26,10 @@ export const useProjectAccess = (): ProjectAccess => {
   const hasShownErrorRef = useRef(false);
 
   useEffect(() => {
+    // Reset error flag when projectSlug changes
+    hasShownErrorRef.current = false;
     let isMounted = true;
+    let shouldNavigate = false;
     
     const checkAccess = async () => {
       try {
@@ -57,15 +60,14 @@ export const useProjectAccess = (): ProjectAccess => {
         if (!isMounted) return;
 
         if (projectError || !project) {
-          if (!hasShownErrorRef.current) {
+          if (!hasShownErrorRef.current && isMounted) {
             hasShownErrorRef.current = true;
+            shouldNavigate = true;
             toast({
               title: "프로젝트를 찾을 수 없습니다",
               variant: "destructive",
             });
-            setTimeout(() => {
-              navigate("/projects", { replace: true });
-            }, 100);
+            navigate("/projects", { replace: true });
           }
           return;
         }
@@ -83,16 +85,15 @@ export const useProjectAccess = (): ProjectAccess => {
         if (!isMounted) return;
 
         if (memberError || !membership) {
-          if (!hasShownErrorRef.current) {
+          if (!hasShownErrorRef.current && isMounted) {
             hasShownErrorRef.current = true;
+            shouldNavigate = true;
             toast({
               title: "접근 권한이 없습니다",
               description: "이 프로젝트의 멤버가 아닙니다",
               variant: "destructive",
             });
-            setTimeout(() => {
-              navigate("/projects", { replace: true });
-            }, 100);
+            navigate("/projects", { replace: true });
           }
           return;
         }
@@ -110,7 +111,8 @@ export const useProjectAccess = (): ProjectAccess => {
           });
         }
       } finally {
-        if (isMounted) {
+        // Only set loading to false if we're not navigating away
+        if (isMounted && !shouldNavigate) {
           setLoading(false);
         }
       }
