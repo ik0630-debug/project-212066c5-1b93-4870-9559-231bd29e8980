@@ -32,9 +32,10 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             
             {/* Project-specific routes - all require member access */}
-            <Route path="/:projectSlug" element={
-              <ProtectedRoute>
-                <Index />
+            {/* More specific routes first */}
+            <Route path="/:projectSlug/admin" element={
+              <ProtectedRoute requireAdmin>
+                <Admin />
               </ProtectedRoute>
             } />
             <Route path="/:projectSlug/program" element={
@@ -62,9 +63,9 @@ const App = () => (
                 <Location />
               </ProtectedRoute>
             } />
-            <Route path="/:projectSlug/admin" element={
-              <ProtectedRoute requireAdmin>
-                <Admin />
+            <Route path="/:projectSlug" element={
+              <ProtectedRoute>
+                <Index />
               </ProtectedRoute>
             } />
             
