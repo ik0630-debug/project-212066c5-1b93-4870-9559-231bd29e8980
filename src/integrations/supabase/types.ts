@@ -132,7 +132,7 @@ export type Database = {
       projects: {
         Row: {
           created_at: string
-          created_by: string | null
+          created_by: string
           description: string | null
           id: string
           is_active: boolean
@@ -145,7 +145,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by?: string | null
+          created_by: string
           description?: string | null
           id?: string
           is_active?: boolean
@@ -158,7 +158,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           description?: string | null
           id?: string
           is_active?: boolean
