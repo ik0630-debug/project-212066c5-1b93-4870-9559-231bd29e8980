@@ -35,32 +35,35 @@ const ProjectHome = () => {
   const renderDescriptionSection = (section: any) => {
     if (section.enabled === "false") return null;
     const bgColor = section.backgroundColor || section.bgColor || "";
-    const titleSize = section.titleFontSize || "32";
+    const titleSize = section.titleFontSize || "24";
     const contentSize = section.contentFontSize || "16";
 
     return (
-      <section
-        key={section.id}
-        className="py-12 px-6"
-        style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : undefined}
-      >
-        <div className="max-w-4xl mx-auto text-center space-y-4">
-          {section.title && (
-            <h2
-              className="font-bold"
-              style={{ fontSize: `${titleSize}px` }}
-            >
-              {section.title}
-            </h2>
-          )}
-          {section.content && (
-            <p
-              className="whitespace-pre-wrap"
-              style={{ fontSize: `${contentSize}px` }}
-            >
-              {section.content}
-            </p>
-          )}
+      <section key={section.id} className="py-12 px-6 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <Card
+            className="overflow-hidden border-0 shadow-sm"
+            style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : { backgroundColor: 'white' }}
+          >
+            <CardContent className="p-8 space-y-4 text-center">
+              {section.title && (
+                <h2
+                  className="font-bold"
+                  style={{ fontSize: `${titleSize}px` }}
+                >
+                  {section.title}
+                </h2>
+              )}
+              {section.content && (
+                <p
+                  className="text-gray-600 whitespace-pre-wrap"
+                  style={{ fontSize: `${contentSize}px` }}
+                >
+                  {section.content}
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </section>
     );
