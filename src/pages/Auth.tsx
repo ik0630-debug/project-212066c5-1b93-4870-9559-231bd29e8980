@@ -56,22 +56,7 @@ const Auth = () => {
   };
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Check admin role after login
-          setTimeout(() => {
-            checkAdminAndRedirect(session.user.id);
-          }, 0);
-        }
-      }
-    );
-
-    // Check for existing session
+    // Check for existing session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -81,39 +66,87 @@ const Auth = () => {
       }
     });
 
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
+    );
+
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const checkAdminAndRedirect = async (userId: string) => {
-    // Check if profile is approved
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("approved")
-      .eq("user_id", userId)
-      .single();
-    
-    if (profileData && !profileData.approved) {
+    try {
+      console.log("Checking admin status for user:", userId);
+      
+      // Check if profile is approved
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("approved")
+        .eq("user_id", userId)
+        .single();
+      
+      console.log("Profile data:", profileData, "Error:", profileError);
+      
+      if (profileError) {
+        console.error("Profile query error:", profileError);
+        toast({
+          title: "오류 발생",
+          description: "프로필 정보를 불러올 수 없습니다.",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+        return;
+      }
+      
+      if (profileData && !profileData.approved) {
+        toast({
+          title: "승인 대기 중",
+          description: "관리자 승인 후 이용이 가능합니다.",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+        return;
+      }
+      
+      // Check user roles
+      const { data: roleData, error: roleError } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .in("role", ["master", "mnc_admin", "project_staff"]);
+      
+      console.log("Role data:", roleData, "Error:", roleError);
+      
+      if (roleError) {
+        console.error("Role query error:", roleError);
+        toast({
+          title: "오류 발생",
+          description: "권한 정보를 불러올 수 없습니다.",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+        return;
+      }
+      
+      if (roleData && roleData.length > 0) {
+        console.log("Redirecting to /projects");
+        navigate("/projects");
+      } else {
+        toast({
+          title: "접근 권한 없음",
+          description: "관리자 권한이 필요합니다.",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+      }
+    } catch (error) {
+      console.error("Unexpected error in checkAdminAndRedirect:", error);
       toast({
-        title: "승인 대기 중",
-        description: "관리자 승인 후 이용이 가능합니다.",
-        variant: "destructive",
-      });
-      await supabase.auth.signOut();
-      return;
-    }
-    
-    const { data: roleData } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .in("role", ["master", "mnc_admin", "project_staff"]);
-    
-    if (roleData && roleData.length > 0) {
-      navigate("/projects");
-    } else {
-      toast({
-        title: "접근 권한 없음",
-        description: "관리자 권한이 필요합니다.",
+        title: "오류 발생",
+        description: "로그인 처리 중 문제가 발생했습니다.",
         variant: "destructive",
       });
       await supabase.auth.signOut();
@@ -137,7 +170,7 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -148,6 +181,11 @@ const Auth = () => {
           title: "로그인 성공!",
           description: "환영합니다.",
         });
+
+        // Directly check and redirect after successful login
+        if (data.user) {
+          await checkAdminAndRedirect(data.user.id);
+        }
       } else {
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email,
