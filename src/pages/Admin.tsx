@@ -105,6 +105,7 @@ const Admin = () => {
           settingsTabProps={{
             activeTab: activeSettingsTab,
             onTabChange: setActiveSettingsTab,
+            projectSlug,
             settings,
             registrationSettings,
             registrationFields,

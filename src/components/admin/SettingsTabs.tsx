@@ -10,6 +10,7 @@ import RegistrationSettings from "./settings/RegistrationSettings";
 interface SettingsTabsProps {
   activeTab: number;
   onTabChange: (tab: number) => void;
+  projectSlug?: string;
   settings: any;
   registrationSettings: any;
   registrationFields: any[];
@@ -44,6 +45,7 @@ interface SettingsTabsProps {
 const SettingsTabs = ({
   activeTab,
   onTabChange,
+  projectSlug,
   settings,
   registrationSettings,
   registrationFields,
@@ -187,11 +189,13 @@ const SettingsTabs = ({
             <iframe
               key={previewKey}
               src={
-                activeTab === 0 ? "/" :
-                activeTab === 1 ? "/program" :
-                activeTab === 2 ? "/registration" :
-                activeTab === 3 ? "/location" :
-                "/"
+                projectSlug ? (
+                  activeTab === 0 ? `/${projectSlug}?preview=true` :
+                  activeTab === 1 ? `/${projectSlug}/program?preview=true` :
+                  activeTab === 2 ? `/${projectSlug}/registration?preview=true` :
+                  activeTab === 3 ? `/${projectSlug}/location?preview=true` :
+                  `/${projectSlug}?preview=true`
+                ) : "/"
               }
               className="w-full h-full border-0"
               title="Preview"
