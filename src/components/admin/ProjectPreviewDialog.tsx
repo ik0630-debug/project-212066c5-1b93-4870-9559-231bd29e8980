@@ -9,10 +9,11 @@ interface ProjectPreviewDialogProps {
 }
 
 export const ProjectPreviewDialog = ({ open, onOpenChange, projectSlug }: ProjectPreviewDialogProps) => {
-  const previewUrl = `/${projectSlug}`;
+  const previewUrl = `/${projectSlug}?preview=true`;
+  const publicUrl = `/${projectSlug}`;
 
   const handleOpenInNewTab = () => {
-    window.open(previewUrl, '_blank');
+    window.open(publicUrl, '_blank');
   };
 
   return (

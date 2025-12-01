@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { useProjectAccess } from "@/hooks/useProjectAccess";
 
 interface ProtectedRouteProps {
@@ -13,7 +13,14 @@ export const ProtectedRoute = ({
   requireAdmin = false,
   requireEdit = false,
 }: ProtectedRouteProps) => {
+  const [searchParams] = useSearchParams();
+  const isPreview = searchParams.get('preview') === 'true';
   const { loading, role, canManageSettings, canEdit } = useProjectAccess();
+
+  // Preview mode bypasses authentication
+  if (isPreview) {
+    return <>{children}</>;
+  }
 
   if (loading) {
     return (
