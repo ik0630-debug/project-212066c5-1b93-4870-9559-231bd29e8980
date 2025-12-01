@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Users, FileText, Calendar, MapPin, Settings, Home, LogOut } from "lucide-react";
+import { Plus, Edit, Trash2, Users, FileText, Calendar, MapPin, Eye, Home, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectCreateDialog } from "@/components/admin/ProjectCreateDialog";
 import { ProjectEditDialog } from "@/components/admin/ProjectEditDialog";
@@ -299,7 +299,7 @@ const Projects = () => {
                       onClick={(e) => handlePreview(project, e)}
                       className="h-7 text-xs"
                     >
-                      <Settings className="h-3 w-3 mr-1" />
+                      <Eye className="h-3 w-3 mr-1" />
                       미리보기
                     </Button>
                   </div>
