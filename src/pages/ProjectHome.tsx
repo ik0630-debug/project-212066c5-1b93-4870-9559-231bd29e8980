@@ -71,17 +71,17 @@ const ProjectHome = () => {
     if (!section.cards || section.cards.length === 0) return null;
 
     return (
-      <section key={section.id} className="py-12 px-6">
-        <div className="max-w-6xl mx-auto">
+      <section key={section.id} className="py-12 px-6 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
           {section.title && (
             <h2 className="text-3xl font-bold text-center mb-8">
               {section.title}
             </h2>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-4">
             {section.cards.map((card: any) => {
               const IconComponent = (Icons as any)[card.icon || "Star"];
-              const titleSize = card.titleFontSize || "20";
+              const titleSize = card.titleFontSize || "18";
               const contentSize = card.contentFontSize || "14";
               const bgColor = card.bgColor || card.backgroundColor || "";
               const iconColor = card.iconColor || "220 70% 50%";
@@ -89,37 +89,40 @@ const ProjectHome = () => {
               return (
                 <Card
                   key={card.id}
-                  className="overflow-hidden"
-                  style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : undefined}
+                  className="overflow-hidden border-0 shadow-sm"
+                  style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : { backgroundColor: 'white' }}
                 >
-                  <CardContent className="p-6 space-y-4">
-                    {IconComponent && (
-                      <div
-                        className="w-12 h-12 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: `hsl(${iconColor} / 0.1)` }}
-                      >
-                        <IconComponent
-                          className="w-6 h-6"
-                          style={{ color: `hsl(${iconColor})` }}
-                        />
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      {IconComponent && (
+                        <div
+                          className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `hsl(${iconColor})` }}
+                        >
+                          <IconComponent
+                            className="w-7 h-7 text-white"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        {card.title && (
+                          <h3
+                            className="font-bold mb-2"
+                            style={{ fontSize: `${titleSize}px` }}
+                          >
+                            {card.title}
+                          </h3>
+                        )}
+                        {card.content && (
+                          <p
+                            className="text-gray-600 whitespace-pre-wrap"
+                            style={{ fontSize: `${contentSize}px` }}
+                          >
+                            {card.content}
+                          </p>
+                        )}
                       </div>
-                    )}
-                    {card.title && (
-                      <h3
-                        className="font-bold"
-                        style={{ fontSize: `${titleSize}px` }}
-                      >
-                        {card.title}
-                      </h3>
-                    )}
-                    {card.content && (
-                      <p
-                        className="whitespace-pre-wrap"
-                        style={{ fontSize: `${contentSize}px` }}
-                      >
-                        {card.content}
-                      </p>
-                    )}
+                    </div>
                   </CardContent>
                 </Card>
               );
