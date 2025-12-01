@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,12 +21,39 @@ export const useProjectAccess = (): ProjectAccess => {
   const [role, setRole] = useState<ProjectRole>(null);
   const [loading, setLoading] = useState(true);
   const { projectSlug } = useParams();
+  const [searchParams] = useSearchParams();
+  const isPreview = searchParams.get('preview') === 'true';
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAccess = async () => {
       try {
+        // Preview mode: skip authentication checks
+        if (isPreview) {
+          if (!projectSlug) {
+            setLoading(false);
+            return;
+          }
+
+          const { data: project, error: projectError } = await supabase
+            .from("projects")
+            .select("id")
+            .eq("slug", projectSlug)
+            .single();
+
+          if (projectError || !project) {
+            setLoading(false);
+            return;
+          }
+
+          setProjectId(project.id);
+          setRole("viewer"); // Set a default role for preview mode
+          setLoading(false);
+          return;
+        }
+
+        // Normal mode: check authentication
         // Get current user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
@@ -90,7 +117,7 @@ export const useProjectAccess = (): ProjectAccess => {
     };
 
     checkAccess();
-  }, [projectSlug, navigate, toast]);
+  }, [projectSlug, navigate, toast, isPreview]);
 
   const isOwner = role === "owner";
   const isAdmin = role === "admin" || isOwner;
