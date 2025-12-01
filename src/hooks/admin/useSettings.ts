@@ -11,6 +11,11 @@ export const useSettings = () => {
   const [descriptions, setDescriptions] = useState<any[]>([]);
   const [buttonGroups, setButtonGroups] = useState<any[]>([]);
   const [programCards, setProgramCards] = useState<any[]>([]);
+  const [programHeroSections, setProgramHeroSections] = useState<any[]>([]);
+  const [programDescriptions, setProgramDescriptions] = useState<any[]>([]);
+  const [programInfoCardSections, setProgramInfoCardSections] = useState<any[]>([]);
+  const [programButtonGroups, setProgramButtonGroups] = useState<any[]>([]);
+  const [programSectionOrder, setProgramSectionOrder] = useState<string[]>([]);
   const [transportCards, setTransportCards] = useState<any[]>([]);
   const [locationBottomButtons, setLocationBottomButtons] = useState<any[]>([]);
   const [downloadFiles, setDownloadFiles] = useState<any[]>([]);
@@ -80,6 +85,10 @@ export const useSettings = () => {
     const loadedDescriptions: any = {};
     const loadedButtonGroups: any = {};
     const loadedProgramCards: any = {};
+    const loadedProgramHeroSections: any = {};
+    const loadedProgramDescriptions: any = {};
+    const loadedProgramInfoCardSections: any = {};
+    const loadedProgramButtonGroups: any = {};
     const loadedTransportCards: any = {};
     const loadedLocationBottomButtons: any = {};
     const loadedDownloadFiles: any = {};
@@ -90,6 +99,12 @@ export const useSettings = () => {
       if (key === "sectionOrder" || key === "section_order") {
         try {
           setSectionOrder(JSON.parse(value));
+        } catch {}
+        return;
+      }
+      if (key === "program_section_order") {
+        try {
+          setProgramSectionOrder(JSON.parse(value));
         } catch {}
         return;
       }
@@ -133,7 +148,31 @@ export const useSettings = () => {
           }
           break;
         case "program":
-          if (key.startsWith("program_card_")) {
+          if (key.startsWith("program_hero_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedProgramHeroSections[index] = parsed;
+            } catch {}
+          } else if (key.startsWith("program_info_card_section_") || key.startsWith("program_info_cards_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedProgramInfoCardSections[index] = parsed;
+            } catch {}
+          } else if (key.startsWith("program_description_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedProgramDescriptions[index] = parsed;
+            } catch {}
+          } else if (key.startsWith("program_button_group_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedProgramButtonGroups[index] = parsed;
+            } catch {}
+          } else if (key.startsWith("program_card_")) {
             try {
               const parsed = JSON.parse(value);
               const index = parsed.order || 0;
@@ -186,6 +225,10 @@ export const useSettings = () => {
     const infoCardSectionsArray = Object.values(loadedInfoCardSections).filter((section: any) => section.id);
     const descriptionsArray = Object.values(loadedDescriptions).filter((desc: any) => desc.id);
     const buttonGroupsArray = Object.values(loadedButtonGroups).filter((group: any) => group.id);
+    const programHeroSectionsArray = Object.values(loadedProgramHeroSections).filter((hero: any) => hero.id);
+    const programInfoCardSectionsArray = Object.values(loadedProgramInfoCardSections).filter((section: any) => section.id);
+    const programDescriptionsArray = Object.values(loadedProgramDescriptions).filter((desc: any) => desc.id);
+    const programButtonGroupsArray = Object.values(loadedProgramButtonGroups).filter((group: any) => group.id);
     const locationButtons = Object.values(loadedLocationBottomButtons).filter((btn: any) => btn.text);
     const downloadFilesArray = Object.values(loadedDownloadFiles).filter((file: any) => file.name && file.url);
     
@@ -193,6 +236,10 @@ export const useSettings = () => {
     console.log('useSettings: Loaded info card sections:', infoCardSectionsArray.length);
     console.log('useSettings: Loaded descriptions:', descriptionsArray.length);
     console.log('useSettings: Loaded button groups:', buttonGroupsArray.length);
+    console.log('useSettings: Loaded program hero sections:', programHeroSectionsArray.length);
+    console.log('useSettings: Loaded program info card sections:', programInfoCardSectionsArray.length);
+    console.log('useSettings: Loaded program descriptions:', programDescriptionsArray.length);
+    console.log('useSettings: Loaded program button groups:', programButtonGroupsArray.length);
     console.log('useSettings: Loaded location bottom buttons:', locationButtons.length);
     console.log('useSettings: Loaded download files:', downloadFilesArray.length);
     
@@ -338,6 +385,10 @@ export const useSettings = () => {
       setButtonGroups(buttonGroupsArray);
     }
     
+    setProgramHeroSections(programHeroSectionsArray);
+    setProgramInfoCardSections(programInfoCardSectionsArray);
+    setProgramDescriptions(programDescriptionsArray);
+    setProgramButtonGroups(programButtonGroupsArray);
     setLocationBottomButtons(locationButtons);
     setDownloadFiles(downloadFilesArray);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
@@ -421,6 +472,34 @@ export const useSettings = () => {
           value: JSON.stringify({ ...card, order: index }),
           project_id: defaultProjectId,
         })),
+        // Save program hero sections
+        ...programHeroSections.map((hero, index) => ({
+          category: "program",
+          key: `program_hero_${index}`,
+          value: JSON.stringify({ ...hero, order: index }),
+          project_id: defaultProjectId,
+        })),
+        // Save program info card sections
+        ...programInfoCardSections.map((section, index) => ({
+          category: "program",
+          key: `program_info_cards_${index}`,
+          value: JSON.stringify({ ...section, order: index }),
+          project_id: defaultProjectId,
+        })),
+        // Save program descriptions
+        ...programDescriptions.map((desc, index) => ({
+          category: "program",
+          key: `program_description_${index}`,
+          value: JSON.stringify({ ...desc, order: index }),
+          project_id: defaultProjectId,
+        })),
+        // Save program button groups
+        ...programButtonGroups.map((group, index) => ({
+          category: "program",
+          key: `program_button_group_${index}`,
+          value: JSON.stringify({ ...group, order: index }),
+          project_id: defaultProjectId,
+        })),
         // Save transport cards
         ...transportCards.map((card, index) => ({
           category: "location",
@@ -447,6 +526,12 @@ export const useSettings = () => {
           category: "home",
           key: "section_order",
           value: JSON.stringify(sectionOrder),
+          project_id: defaultProjectId,
+        },
+        {
+          category: "program",
+          key: "program_section_order",
+          value: JSON.stringify(programSectionOrder),
           project_id: defaultProjectId,
         },
         {
@@ -499,6 +584,24 @@ export const useSettings = () => {
     }
   };
 
+  const saveProgramSectionOrder = async (order: string[]) => {
+    try {
+      if (!defaultProjectId) return;
+      
+      await supabase.from("site_settings").delete()
+        .eq("key", "program_section_order")
+        .eq("project_id", defaultProjectId);
+      await supabase.from("site_settings").insert({
+        category: "program",
+        key: "program_section_order",
+        value: JSON.stringify(order),
+        project_id: defaultProjectId,
+      });
+    } catch (error) {
+      console.error("Error saving program section order:", error);
+    }
+  };
+
   const saveLocationSectionOrder = async (order: string[]) => {
     try {
       if (!defaultProjectId) return;
@@ -527,6 +630,11 @@ export const useSettings = () => {
     descriptions,
     buttonGroups,
     programCards,
+    programHeroSections,
+    programDescriptions,
+    programInfoCardSections,
+    programButtonGroups,
+    programSectionOrder,
     transportCards,
     locationBottomButtons,
     downloadFiles,
@@ -543,6 +651,11 @@ export const useSettings = () => {
     setDescriptions,
     setButtonGroups,
     setProgramCards,
+    setProgramHeroSections,
+    setProgramDescriptions,
+    setProgramInfoCardSections,
+    setProgramButtonGroups,
+    setProgramSectionOrder,
     setTransportCards,
     setLocationBottomButtons,
     setDownloadFiles,
@@ -555,6 +668,7 @@ export const useSettings = () => {
     saveSettings,
     handleSettingChange,
     saveSectionOrder,
+    saveProgramSectionOrder,
     saveLocationSectionOrder,
   };
 };
