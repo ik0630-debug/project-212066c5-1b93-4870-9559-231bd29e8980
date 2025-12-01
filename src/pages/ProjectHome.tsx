@@ -43,7 +43,7 @@ const ProjectHome = () => {
       <section key={section.id} className="py-8 px-6 bg-gray-50">
         <div className="max-w-3xl mx-auto">
           <Card
-            className="overflow-hidden border-0 shadow-sm"
+            className="overflow-hidden border-0 shadow-md"
             style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : { backgroundColor: 'white' }}
           >
             <CardContent className="p-8 space-y-3 text-left">
@@ -87,14 +87,14 @@ const ProjectHome = () => {
             return (
               <Card
                 key={card.id}
-                className="overflow-hidden border-0 shadow-sm"
+                className="overflow-hidden border-0 shadow-md"
                 style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : { backgroundColor: 'white' }}
               >
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     {IconComponent && (
                       <div
-                        className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: `hsl(${iconColor} / 0.15)` }}
                       >
                         <IconComponent
