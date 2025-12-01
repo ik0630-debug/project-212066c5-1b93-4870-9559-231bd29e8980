@@ -14,6 +14,8 @@ const ProjectHome = () => {
   const { projectId } = useProjectId();
   const { settings, loading } = useHomeSettings(projectId);
 
+  console.log('ProjectHome:', { projectSlug, projectId, loading, sectionsCount: settings.sectionOrder?.length });
+
   if (loading) {
     return <LoadingSkeleton />;
   }
