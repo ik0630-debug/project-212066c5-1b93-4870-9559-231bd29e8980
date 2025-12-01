@@ -17,8 +17,11 @@ export const ProtectedRoute = ({
   const isPreview = searchParams.get('preview') === 'true';
   const { loading, role, canManageSettings, canEdit } = useProjectAccess();
 
+  console.log('ProtectedRoute:', { isPreview, loading, role });
+
   // Preview mode bypasses authentication
   if (isPreview) {
+    console.log('ProtectedRoute: Preview mode - bypassing auth');
     return <>{children}</>;
   }
 

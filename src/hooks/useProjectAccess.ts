@@ -29,8 +29,11 @@ export const useProjectAccess = (): ProjectAccess => {
   useEffect(() => {
     const checkAccess = async () => {
       try {
+        console.log('useProjectAccess: Starting check', { projectSlug, isPreview });
+        
         // Preview mode: skip authentication checks
         if (isPreview) {
+          console.log('useProjectAccess: Preview mode detected');
           if (!projectSlug) {
             setLoading(false);
             return;
@@ -42,6 +45,8 @@ export const useProjectAccess = (): ProjectAccess => {
             .eq("slug", projectSlug)
             .single();
 
+          console.log('useProjectAccess: Preview project loaded', { project, projectError });
+
           if (projectError || !project) {
             setLoading(false);
             return;
@@ -50,6 +55,7 @@ export const useProjectAccess = (): ProjectAccess => {
           setProjectId(project.id);
           setRole("viewer"); // Set a default role for preview mode
           setLoading(false);
+          console.log('useProjectAccess: Preview mode setup complete');
           return;
         }
 
