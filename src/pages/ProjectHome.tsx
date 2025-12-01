@@ -77,7 +77,7 @@ const ProjectHome = () => {
       <section key={section.id} className="py-12 px-6 bg-gray-50">
         <div className="max-w-4xl mx-auto">
           {section.title && (
-            <h2 className="text-3xl font-bold text-center mb-8">
+            <h2 className="text-lg font-bold mb-8">
               {section.title}
             </h2>
           )}
@@ -152,7 +152,7 @@ const ProjectHome = () => {
       <section key={group.id} className="py-12 px-6">
         <div className="max-w-4xl mx-auto">
           {group.title && (
-            <h2 className="text-3xl font-bold text-center mb-8">
+            <h2 className="text-lg font-bold text-center mb-8">
               {group.title}
             </h2>
           )}
