@@ -22,12 +22,20 @@ export const ProjectPreviewDialog = ({ open, onOpenChange, projectSlug }: Projec
   const previewUrl = `/${projectSlug}?preview=true`;
   const publicUrl = `/${projectSlug}`;
 
+  console.log('ProjectPreviewDialog:', { open, projectSlug, previewUrl });
+
   const handleOpenInNewTab = () => {
     window.open(publicUrl, '_blank');
   };
 
   const currentDevice = deviceSizes[deviceType];
   const isMobile = deviceType === 'mobile';
+
+  // Don't render if projectSlug is empty
+  if (!projectSlug) {
+    console.error('ProjectPreviewDialog: No projectSlug provided!');
+    return null;
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
