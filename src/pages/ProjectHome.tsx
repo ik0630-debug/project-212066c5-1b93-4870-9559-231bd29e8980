@@ -35,7 +35,7 @@ const ProjectHome = () => {
   const renderDescriptionSection = (section: any) => {
     if (section.enabled === "false") return null;
     const bgColor = section.backgroundColor || section.bgColor || "";
-    const titleSize = section.titleFontSize || "24";
+    const titleSize = section.titleFontSize || "18";
     const contentSize = section.contentFontSize || "16";
 
     return (
@@ -45,7 +45,7 @@ const ProjectHome = () => {
             className="overflow-hidden border-0 shadow-sm"
             style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : { backgroundColor: 'white' }}
           >
-            <CardContent className="p-8 space-y-4 text-center">
+            <CardContent className="p-8 space-y-4 text-left">
               {section.title && (
                 <h2
                   className="font-bold"
