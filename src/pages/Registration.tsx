@@ -315,13 +315,20 @@ const Registration = () => {
             </div>
           </main>
         ) : (
-          <main className="px-6 py-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <main className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
           {fields.map((field) => (
-            <div key={field.id} className="space-y-2">
-              <Label htmlFor={field.id} className="flex items-center gap-2">
-                {field.id === "name" && <User className="w-4 h-4 text-primary" />}
-                {field.label} {field.required && "*"}
+            <div key={field.id} className="bg-white rounded-lg p-5 shadow-sm border-0">
+              <Label 
+                htmlFor={field.id} 
+                className="text-base font-semibold mb-3 block flex items-center gap-2"
+              >
+                {field.id === "name" && <User className="w-5 h-5 text-primary" />}
+                {field.id === "email" && <Mail className="w-5 h-5 text-primary" />}
+                {field.id === "phone" && <Phone className="w-5 h-5 text-primary" />}
+                {field.id === "company" && <Building className="w-5 h-5 text-primary" />}
+                {field.label}
+                {field.required && <span className="text-red-500">*</span>}
               </Label>
               {field.type === "textarea" ? (
                 <Textarea
@@ -332,14 +339,14 @@ const Registration = () => {
                   placeholder={field.placeholder}
                   required={field.required}
                   rows={4}
-                  className="resize-none"
+                  className="resize-none border-gray-200"
                 />
               ) : field.type === "select" ? (
                 <Select
                   value={formData[field.id] || ""}
                   onValueChange={(value) => setFormData({ ...formData, [field.id]: value })}
                 >
-                  <SelectTrigger className="h-12">
+                  <SelectTrigger className="h-12 border-gray-200">
                     <SelectValue placeholder={field.placeholder} />
                   </SelectTrigger>
                   <SelectContent>
@@ -359,7 +366,7 @@ const Registration = () => {
                   onChange={handleChange}
                   placeholder={field.placeholder}
                   required={field.required}
-                  className="h-12"
+                  className="h-12 border-gray-200"
                   maxLength={field.type === "tel" ? 13 : undefined}
                 />
               )}
@@ -367,34 +374,36 @@ const Registration = () => {
           ))}
 
           {/* 개인정보 동의 체크박스 */}
-          <div className="flex items-start gap-3 pt-4 border-t border-border">
-            <Checkbox
-              id="privacy-agreement"
-              checked={agreedToPrivacy}
-              onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)}
-              className="mt-1"
-            />
-            <div className="flex-1">
-              <Label htmlFor="privacy-agreement" className="cursor-pointer text-sm">
-                개인정보 수집, 이용에 동의합니다. *
-              </Label>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="link" className="h-auto p-0 text-xs text-primary">
-                    내용 상세 보기
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>개인정보 수집 및 이용 동의</DialogTitle>
-                  </DialogHeader>
-                  <DialogDescription asChild>
-                    <div className="whitespace-pre-line text-sm text-foreground">
-                      {privacyContent || "개인정보 수집 및 이용 동의 내용이 설정되지 않았습니다."}
-                    </div>
-                  </DialogDescription>
-                </DialogContent>
-              </Dialog>
+          <div className="bg-white rounded-lg p-5 shadow-sm border-0">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="privacy-agreement"
+                checked={agreedToPrivacy}
+                onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)}
+                className="mt-1"
+              />
+              <div className="flex-1">
+                <Label htmlFor="privacy-agreement" className="cursor-pointer text-sm font-semibold">
+                  개인정보 수집, 이용에 동의합니다. <span className="text-red-500">*</span>
+                </Label>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="link" className="h-auto p-0 text-xs text-primary">
+                      내용 상세 보기
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>개인정보 수집 및 이용 동의</DialogTitle>
+                    </DialogHeader>
+                    <DialogDescription asChild>
+                      <div className="whitespace-pre-line text-sm text-foreground">
+                        {privacyContent || "개인정보 수집 및 이용 동의 내용이 설정되지 않았습니다."}
+                      </div>
+                    </DialogDescription>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </div>
 
@@ -402,16 +411,16 @@ const Registration = () => {
             <Button
               type="submit"
               disabled={!agreedToPrivacy || isSubmitting}
-              className="w-full h-12 bg-gradient-accent text-accent-foreground font-bold shadow-glow hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-14 text-base font-semibold shadow-sm"
             >
-              {isSubmitting ? "신청 중..." : "신청하기"}
+              {isSubmitting ? "신청 중..." : "참가 신청하기"}
             </Button>
             
             <Button
               type="button"
-              onClick={() => navigate("/registration/check")}
+              onClick={() => navigate(`/${projectSlug}/registration/check`)}
               variant="outline"
-              className="w-full h-12 bg-[hsl(220,70%,20%)] text-white border-[hsl(220,70%,30%)] hover:bg-[hsl(220,70%,25%)] hover:text-white font-semibold transition-colors"
+              className="w-full h-12 font-semibold"
             >
               참가 신청 확인
             </Button>
