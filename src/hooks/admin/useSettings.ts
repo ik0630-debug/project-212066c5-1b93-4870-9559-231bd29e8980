@@ -196,10 +196,148 @@ export const useSettings = () => {
     console.log('useSettings: Loaded location bottom buttons:', locationButtons.length);
     console.log('useSettings: Loaded download files:', downloadFilesArray.length);
     
-    setHeroSections(heroSectionsArray);
-    setInfoCardSections(infoCardSectionsArray);
-    setDescriptions(descriptionsArray);
-    setButtonGroups(buttonGroupsArray);
+    // 홈 섹션이 모두 비어있으면 기본 섹션들 생성
+    const isHomeSectionsEmpty = heroSectionsArray.length === 0 && 
+                                infoCardSectionsArray.length === 0 && 
+                                descriptionsArray.length === 0 && 
+                                buttonGroupsArray.length === 0;
+    
+    if (isHomeSectionsEmpty) {
+      console.log('useSettings: Creating default home sections...');
+      
+      // 기본 Hero 섹션
+      const defaultHero = {
+        id: 'hero_1',
+        imageUrl: '',
+        overlayOpacity: '30',
+        order: 0,
+      };
+      
+      // 기본 Description 섹션
+      const defaultDescription = {
+        id: 'description_1',
+        title: '환영합니다',
+        content: '이곳은 프로젝트 소개 영역입니다.\n관리자 페이지에서 이 내용을 수정할 수 있습니다.',
+        titleFontSize: '32',
+        contentFontSize: '16',
+        backgroundColor: '',
+        order: 0,
+      };
+      
+      // 기본 Info Card 섹션
+      const defaultInfoCardSection = {
+        id: 'infocard_section_1',
+        title: '주요 특징',
+        cards: [
+          {
+            id: 'card_1',
+            icon: 'Star',
+            title: '첫 번째 특징',
+            content: '여기에 첫 번째 특징을 설명합니다.',
+            titleFontSize: '20',
+            contentFontSize: '14',
+            bgColor: '',
+            iconColor: '220 70% 50%',
+          },
+          {
+            id: 'card_2',
+            icon: 'Zap',
+            title: '두 번째 특징',
+            content: '여기에 두 번째 특징을 설명합니다.',
+            titleFontSize: '20',
+            contentFontSize: '14',
+            bgColor: '',
+            iconColor: '220 70% 50%',
+          },
+          {
+            id: 'card_3',
+            icon: 'Heart',
+            title: '세 번째 특징',
+            content: '여기에 세 번째 특징을 설명합니다.',
+            titleFontSize: '20',
+            contentFontSize: '14',
+            bgColor: '',
+            iconColor: '220 70% 50%',
+          },
+        ],
+        order: 0,
+      };
+      
+      // 기본 Button Group
+      const defaultButtonGroup = {
+        id: 'button_group_1',
+        title: '지금 시작하기',
+        buttons: [
+          {
+            id: 'button_1',
+            text: '참가 신청',
+            link: '/registration',
+            bgColor: '220 70% 50%',
+            textColor: '0 0% 100%',
+          },
+          {
+            id: 'button_2',
+            text: '자세히 보기',
+            link: '/program',
+            bgColor: '0 0% 95%',
+            textColor: '220 70% 20%',
+          },
+        ],
+        order: 0,
+      };
+      
+      const defaultSectionOrder = ['hero_1', 'description_1', 'infocard_section_1', 'button_group_1'];
+      
+      // 상태 업데이트
+      setHeroSections([defaultHero]);
+      setDescriptions([defaultDescription]);
+      setInfoCardSections([defaultInfoCardSection]);
+      setButtonGroups([defaultButtonGroup]);
+      setSectionOrder(defaultSectionOrder);
+      
+      // 데이터베이스에 저장
+      const defaultSettings = [
+        {
+          category: "home",
+          key: "home_hero_0",
+          value: JSON.stringify(defaultHero),
+          project_id: defaultProjectId,
+        },
+        {
+          category: "home",
+          key: "home_description_0",
+          value: JSON.stringify(defaultDescription),
+          project_id: defaultProjectId,
+        },
+        {
+          category: "home",
+          key: "home_info_card_section_0",
+          value: JSON.stringify(defaultInfoCardSection),
+          project_id: defaultProjectId,
+        },
+        {
+          category: "home",
+          key: "home_button_group_0",
+          value: JSON.stringify(defaultButtonGroup),
+          project_id: defaultProjectId,
+        },
+        {
+          category: "home",
+          key: "section_order",
+          value: JSON.stringify(defaultSectionOrder),
+          project_id: defaultProjectId,
+        },
+      ];
+      
+      await supabase.from("site_settings").insert(defaultSettings);
+      console.log('useSettings: Default sections created');
+    } else {
+      setHeroSections(heroSectionsArray);
+      setInfoCardSections(infoCardSectionsArray);
+      setDescriptions(descriptionsArray);
+      setButtonGroups(buttonGroupsArray);
+    }
+    
     setLocationBottomButtons(locationButtons);
     setDownloadFiles(downloadFilesArray);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
