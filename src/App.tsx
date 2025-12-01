@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
+import ProjectHome from "./pages/ProjectHome";
 import Program from "./pages/Program";
 import Registration from "./pages/Registration";
 import RegistrationCheck from "./pages/RegistrationCheck";
@@ -65,7 +66,7 @@ const App = () => (
             } />
             <Route path="/:projectSlug" element={
               <ProtectedRoute>
-                <Index />
+                <ProjectHome />
               </ProtectedRoute>
             } />
             
