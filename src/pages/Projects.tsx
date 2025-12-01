@@ -249,7 +249,7 @@ const Projects = () => {
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <Users className="h-4 w-4" />
-                          <span>멤버</span>
+                          <span>프로젝트 멤버</span>
                         </div>
                         <span className="font-medium">{stats.memberCount}명</span>
                       </div>
