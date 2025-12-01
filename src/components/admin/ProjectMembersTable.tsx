@@ -62,7 +62,7 @@ const ProjectMembersTable = ({ members, onUpdateRole, onRemove, onInvite }: Proj
             </div>
             <Button onClick={() => setShowInviteDialog(true)}>
               <UserPlus className="mr-2 h-4 w-4" />
-              멤버 초대
+              프로젝트 멤버 초대
             </Button>
           </div>
         </CardHeader>
@@ -121,7 +121,7 @@ const ProjectMembersTable = ({ members, onUpdateRole, onRemove, onInvite }: Proj
               {members.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                    멤버가 없습니다
+                    프로젝트 멤버가 없습니다
                   </TableCell>
                 </TableRow>
               )}

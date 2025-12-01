@@ -53,9 +53,9 @@ export const ProjectMemberInviteDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>멤버 초대</DialogTitle>
+          <DialogTitle>프로젝트 멤버 초대</DialogTitle>
           <DialogDescription>
-            프로젝트에 새로운 멤버를 초대합니다. 이메일은 이미 가입된 사용자여야 합니다.
+            프로젝트에 새로운 프로젝트 멤버를 초대합니다. 이메일은 이미 가입된 사용자여야 합니다.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -82,7 +82,7 @@ export const ProjectMemberInviteDialog = ({
               </SelectContent>
             </Select>
             <p className="text-sm text-muted-foreground">
-              <strong>관리자:</strong> 설정 변경 및 멤버 관리 가능<br />
+              <strong>관리자:</strong> 설정 변경 및 프로젝트 멤버 관리 가능<br />
               <strong>편집자:</strong> 콘텐츠 편집 가능<br />
               <strong>뷰어:</strong> 읽기 전용
             </p>
