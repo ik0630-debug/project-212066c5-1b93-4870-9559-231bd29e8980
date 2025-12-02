@@ -309,7 +309,7 @@ const HomeSettings = ({
             </Button>
           )}
           {onDelete && (
-            <Button variant="outline" size="sm" onClick={onDelete}>
+            <Button variant="destructive" size="sm" onClick={onDelete}>
               <Trash2 className="w-4 h-4" />
             </Button>
           )}
