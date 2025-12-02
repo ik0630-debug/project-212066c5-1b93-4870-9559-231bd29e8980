@@ -34,8 +34,8 @@ export const useSettings = () => {
   const [registrationSectionOrder, setRegistrationSectionOrder] = useState<string[]>(["registration_form_fields"]);
   
   const [settings, setSettings] = useState<any>({
-    program_title: "",
-    program_description: "",
+    program_title: "프로그램",
+    program_description: "세부 프로그램을 소개합니다.",
     program_header_color: "221 83% 33%",
     program_enabled: "true",
     location_page_title: "",
