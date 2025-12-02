@@ -624,18 +624,20 @@ const ProgramSettings = ({
                   </div>
                 </SortableContext>
               </DndContext>
-              <div className="mt-6 pt-4 border-t">
-                <Label>버튼 정렬</Label>
-                <select
-                  className="w-full border rounded px-3 py-2"
-                  value={group.alignment || "center"}
-                  onChange={(e) => handleUpdateButtonGroup(sectionId, { alignment: e.target.value })}
-                >
-                  <option value="left">왼쪽</option>
-                  <option value="center">중앙</option>
-                  <option value="right">오른쪽</option>
-                </select>
-              </div>
+              {group.buttons && group.buttons.length > 0 && (
+                <div className="mt-6 pt-4 border-t">
+                  <Label>버튼 정렬</Label>
+                  <select
+                    className="w-full border rounded px-3 py-2"
+                    value={group.alignment || "center"}
+                    onChange={(e) => handleUpdateButtonGroup(sectionId, { alignment: e.target.value })}
+                  >
+                    <option value="left">왼쪽</option>
+                    <option value="center">중앙</option>
+                    <option value="right">오른쪽</option>
+                  </select>
+                </div>
+              )}
             </div>
           )}
         </div>
