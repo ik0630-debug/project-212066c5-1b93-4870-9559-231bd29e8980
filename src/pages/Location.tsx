@@ -36,6 +36,7 @@ const Location = () => {
   const [descriptionBgColor, setDescriptionBgColor] = useState("");
   const [downloadFiles, setDownloadFiles] = useState<any[]>([]);
   const [bottomButtons, setBottomButtons] = useState<any[]>([]);
+  const [buttonGroups, setButtonGroups] = useState<any[]>([]);
   const [transportations, setTransportations] = useState<any[]>([]);
   const { settings: pageSettings } = usePageSettings(projectId);
   const { settings, loading } = useCategorySettings(['location', 'general'], projectId);
@@ -163,8 +164,18 @@ const Location = () => {
       }
     }).filter(Boolean).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
 
+    const buttonGroupSettings = settings.filter(s => s.key.startsWith('location_button_group_'));
+    const groups = buttonGroupSettings.map(s => {
+      try {
+        return JSON.parse(s.value);
+      } catch {
+        return null;
+      }
+    }).filter(Boolean).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+
       setBottomButtons(buttons);
       setDownloadFiles(files);
+      setButtonGroups(groups);
       setTransportations(cards);
     } catch (error) {
       console.error("Error parsing location settings:", error);
@@ -332,6 +343,55 @@ const Location = () => {
         );
 
       default:
+        // Check if it's a button group section
+        if (sectionId.startsWith("button_group_")) {
+          const groupIndex = parseInt(sectionId.replace("button_group_", ""));
+          const group = buttonGroups[groupIndex];
+          if (!group || !group.buttons || group.buttons.length === 0) return null;
+
+          return (
+            <div key={sectionId} className="space-y-3">
+              {group.buttons.map((button: any, index: number) => {
+                const bgColor = button.bgColor || button.backgroundColor || "220 70% 50%";
+                const textColor = button.textColor || "0 0% 100%";
+                const alignment = button.alignment || "center";
+                const justifyClass =
+                  alignment === "left"
+                    ? "justify-start"
+                    : alignment === "right"
+                    ? "justify-end"
+                    : "justify-center";
+                
+                const handleClick = () => {
+                  if (button.linkType === "file") {
+                    window.open(button.link || button.fileUrl, '_blank', 'noopener,noreferrer');
+                  } else if (button.linkType === "external") {
+                    window.open(button.link, '_blank', 'noopener,noreferrer');
+                  } else if (button.linkType === "internal") {
+                    navigate(button.link || "#");
+                  }
+                };
+
+                return (
+                  <div key={`btn-${index}`} className={`flex ${justifyClass}`}>
+                    <Button
+                      size={button.size || "lg"}
+                      className={`shadow-sm ${button.fontSize || ''}`}
+                      style={{
+                        backgroundColor: `hsl(${bgColor})`,
+                        color: `hsl(${textColor})`,
+                        width: button.size === "full" ? "100%" : "auto",
+                      }}
+                      onClick={handleClick}
+                    >
+                      {button.text}
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        }
         return null;
     }
   };

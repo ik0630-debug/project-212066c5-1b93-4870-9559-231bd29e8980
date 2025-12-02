@@ -135,39 +135,53 @@ const ProjectHome = () => {
     if (group.enabled === "false") return null;
     if (!group.buttons || group.buttons.length === 0) return null;
 
-    const alignment = group.alignment || "center";
-    const justifyClass =
-      alignment === "left"
-        ? "justify-start"
-        : alignment === "right"
-        ? "justify-end"
-        : "justify-center";
-
     return (
       <section key={group.id} className="py-8 px-6 bg-gray-50">
-        <div className="max-w-3xl mx-auto">
-          <div className={`flex flex-wrap gap-3 ${justifyClass}`}>
-            {group.buttons.map((button: any) => {
-              const bgColor = button.bgColor || button.backgroundColor || "220 70% 50%";
-              const textColor = button.textColor || "0 0% 100%";
+        <div className="max-w-3xl mx-auto space-y-3">
+          {group.buttons.map((button: any, index: number) => {
+            const bgColor = button.bgColor || button.backgroundColor || "220 70% 50%";
+            const textColor = button.textColor || "0 0% 100%";
+            const alignment = button.alignment || "center";
+            const justifyClass =
+              alignment === "left"
+                ? "justify-start"
+                : alignment === "right"
+                ? "justify-end"
+                : "justify-center";
+            
+            const handleClick = () => {
+              if (button.linkType === "file") {
+                window.open(button.link || button.fileUrl, '_blank', 'noopener,noreferrer');
+              } else if (button.linkType === "external") {
+                window.open(button.link, '_blank', 'noopener,noreferrer');
+              }
+            };
 
-              return (
-                <Button
-                  key={button.id}
-                  asChild
-                  size={button.size || "lg"}
-                  className="shadow-sm"
-                  style={{
-                    backgroundColor: `hsl(${bgColor})`,
-                    color: `hsl(${textColor})`,
-                    fontSize: button.fontSize ? `${button.fontSize}px` : undefined,
-                  }}
-                >
-                  <Link to={button.link || "#"}>{button.text}</Link>
-                </Button>
-              );
-            })}
-          </div>
+            const ButtonContent = (
+              <Button
+                size={button.size || "lg"}
+                className={`shadow-sm ${button.fontSize || ''}`}
+                style={{
+                  backgroundColor: `hsl(${bgColor})`,
+                  color: `hsl(${textColor})`,
+                  width: button.size === "full" ? "100%" : "auto",
+                }}
+                onClick={button.linkType === "file" || button.linkType === "external" ? handleClick : undefined}
+              >
+                {button.text}
+              </Button>
+            );
+
+            return (
+              <div key={`${group.id}-btn-${index}`} className={`flex ${justifyClass}`}>
+                {button.linkType === "internal" ? (
+                  <Link to={button.link || "#"}>{ButtonContent}</Link>
+                ) : (
+                  ButtonContent
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
     );
