@@ -45,6 +45,8 @@ const SortableButton = ({
   };
 
   const linkType = buttonData.linkType || "internal";
+  const hasBasicInfo = buttonData.text && buttonData.linkType;
+  const hasLinkInfo = buttonData.link || buttonData.fileUrl;
 
   return (
     <div
@@ -61,7 +63,7 @@ const SortableButton = ({
           <GripVertical className="w-5 h-5 text-muted-foreground" />
         </button>
         <h4 className="font-medium text-lg flex-1">
-          {buttonData.text || "텍스트 없음"}
+          {buttonData.text || "새 버튼"}
         </h4>
         <Button onClick={() => onDelete(button.id)} size="sm" variant="destructive">
           <Trash2 className="w-4 h-4" />
@@ -106,7 +108,7 @@ const SortableButton = ({
         </Select>
       </div>
 
-      {linkType === "internal" && (
+      {buttonData.text && linkType === "internal" && (
         <div>
           <Label>페이지 경로</Label>
           <Input
@@ -122,7 +124,7 @@ const SortableButton = ({
         </div>
       )}
 
-      {linkType === "external" && (
+      {buttonData.text && linkType === "external" && (
         <div>
           <Label>외부 URL</Label>
           <Input
@@ -138,7 +140,7 @@ const SortableButton = ({
         </div>
       )}
 
-      {linkType === "file" && (
+      {buttonData.text && linkType === "file" && (
         <div className="space-y-4">
           <ImageUpload
             value={buttonData.fileUrl || buttonData.link || ""}
@@ -169,103 +171,107 @@ const SortableButton = ({
         </div>
       )}
 
-      <div>
-        <Label>버튼 스타일</Label>
-        <Select
-          value={buttonData.variant || "outline"}
-          onValueChange={(value) =>
-            onUpdate(button.id, {
-              ...buttonData,
-              variant: value,
-            })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-popover z-50">
-            <SelectItem value="default">기본</SelectItem>
-            <SelectItem value="outline">아웃라인</SelectItem>
-            <SelectItem value="secondary">보조</SelectItem>
-            <SelectItem value="ghost">고스트</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {hasBasicInfo && hasLinkInfo && (
+        <>
+          <div>
+            <Label>버튼 스타일</Label>
+            <Select
+              value={buttonData.variant || "outline"}
+              onValueChange={(value) =>
+                onUpdate(button.id, {
+                  ...buttonData,
+                  variant: value,
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                <SelectItem value="default">기본</SelectItem>
+                <SelectItem value="outline">아웃라인</SelectItem>
+                <SelectItem value="secondary">보조</SelectItem>
+                <SelectItem value="ghost">고스트</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label>버튼 크기</Label>
-          <Select
-            value={buttonData.size || "default"}
-            onValueChange={(value) =>
-              onUpdate(button.id, {
-                ...buttonData,
-                size: value,
-              })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover z-50">
-              <SelectItem value="sm">작게</SelectItem>
-              <SelectItem value="default">보통</SelectItem>
-              <SelectItem value="lg">크게</SelectItem>
-              <SelectItem value="full">화면 폭에 맞춤</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>버튼 크기</Label>
+              <Select
+                value={buttonData.size || "default"}
+                onValueChange={(value) =>
+                  onUpdate(button.id, {
+                    ...buttonData,
+                    size: value,
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  <SelectItem value="sm">작게</SelectItem>
+                  <SelectItem value="default">보통</SelectItem>
+                  <SelectItem value="lg">크게</SelectItem>
+                  <SelectItem value="full">화면 폭에 맞춤</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        <div>
-          <Label>폰트 크기</Label>
-          <Select
-            value={buttonData.fontSize || "text-sm"}
-            onValueChange={(value) =>
-              onUpdate(button.id, {
-                ...buttonData,
-                fontSize: value,
-              })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover z-50">
-              <SelectItem value="text-xs">아주 작게</SelectItem>
-              <SelectItem value="text-sm">작게</SelectItem>
-              <SelectItem value="text-base">보통</SelectItem>
-              <SelectItem value="text-lg">크게</SelectItem>
-              <SelectItem value="text-xl">아주 크게</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+            <div>
+              <Label>폰트 크기</Label>
+              <Select
+                value={buttonData.fontSize || "text-sm"}
+                onValueChange={(value) =>
+                  onUpdate(button.id, {
+                    ...buttonData,
+                    fontSize: value,
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  <SelectItem value="text-xs">아주 작게</SelectItem>
+                  <SelectItem value="text-sm">작게</SelectItem>
+                  <SelectItem value="text-base">보통</SelectItem>
+                  <SelectItem value="text-lg">크게</SelectItem>
+                  <SelectItem value="text-xl">아주 크게</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-      <div>
-        <ColorPicker
-          value={buttonData.bgColor || "221 83% 53%"}
-          onChange={(color) =>
-            onUpdate(button.id, {
-              ...buttonData,
-              bgColor: color,
-            })
-          }
-          label="배경 색상"
-        />
-      </div>
+          <div>
+            <ColorPicker
+              value={buttonData.bgColor || "221 83% 53%"}
+              onChange={(color) =>
+                onUpdate(button.id, {
+                  ...buttonData,
+                  bgColor: color,
+                })
+              }
+              label="배경 색상"
+            />
+          </div>
 
-      <div>
-        <ColorPicker
-          value={buttonData.textColor || "0 0% 100%"}
-          onChange={(color) =>
-            onUpdate(button.id, {
-              ...buttonData,
-              textColor: color,
-            })
-          }
-          label="텍스트 색상"
-        />
-      </div>
+          <div>
+            <ColorPicker
+              value={buttonData.textColor || "0 0% 100%"}
+              onChange={(color) =>
+                onUpdate(button.id, {
+                  ...buttonData,
+                  textColor: color,
+                })
+              }
+              label="텍스트 색상"
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };
