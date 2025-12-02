@@ -136,6 +136,7 @@ const LocationSettings = ({
 
   const getSectionTitle = (sectionId: string): string => {
     switch (sectionId) {
+      case "hero_image": return "헤더 이미지";
       case "description_buttons": return "안내 메시지 & 버튼";
       case "location_info": return "장소 정보";
       case "transport_info": return "교통 정보";
@@ -144,7 +145,7 @@ const LocationSettings = ({
     }
   };
 
-  const SectionControls = ({ title, index }: { title: string; index: number }) => (
+  const SectionControls = ({ title, index, sectionId }: { title: string; index: number; sectionId: string }) => (
     <div className="flex items-center justify-between mb-4">
       <h3 className="text-lg font-semibold">{title}</h3>
       <div className="flex gap-2">
@@ -154,16 +155,49 @@ const LocationSettings = ({
         <Button variant="outline" size="sm" onClick={() => handleMoveSectionDown(index)} disabled={index === sectionOrder.length - 1}>
           <ArrowDown className="w-4 h-4" />
         </Button>
+        <Button variant="destructive" size="sm" onClick={() => handleRemoveSection(sectionId)}>
+          삭제
+        </Button>
       </div>
     </div>
   );
 
   const renderSection = (sectionId: string, index: number) => {
     switch (sectionId) {
+      case "hero_image":
+        return (
+          <div key={sectionId} className="space-y-4">
+            <SectionControls title={getSectionTitle(sectionId)} index={index} sectionId={sectionId} />
+            <div className="space-y-4">
+              <div>
+                <ImageUpload
+                  value={settings.location_header_image || ""}
+                  onChange={(url) => onSettingChange("location_header_image", url)}
+                  label="배경 이미지"
+                />
+                <p className="text-sm text-muted-foreground mt-2">
+                  페이지 상단에 표시될 건물 사진을 업로드하세요
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="location_hero_overlay">오버레이 투명도 (%)</Label>
+                <Input
+                  id="location_hero_overlay"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={settings.location_hero_overlay || "0"}
+                  onChange={(e) => onSettingChange("location_hero_overlay", e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        );
+
       case "description_buttons":
         return (
           <div key={sectionId} className="space-y-4">
-            <SectionControls title={getSectionTitle(sectionId)} index={index} />
+            <SectionControls title={getSectionTitle(sectionId)} index={index} sectionId={sectionId} />
             <div className="grid gap-4">
               <div>
                 <Label htmlFor="location_description_title">안내 메시지 제목</Label>
@@ -264,7 +298,7 @@ const LocationSettings = ({
       case "location_info":
         return (
           <div key={sectionId} className="space-y-4">
-            <SectionControls title={getSectionTitle(sectionId)} index={index} />
+            <SectionControls title={getSectionTitle(sectionId)} index={index} sectionId={sectionId} />
             <div className="grid gap-4">
               <div>
                 <Label htmlFor="location_name">장소명</Label>
@@ -309,7 +343,7 @@ const LocationSettings = ({
       case "transport_info":
         return (
           <div key={sectionId} className="space-y-4">
-            <SectionControls title={getSectionTitle(sectionId)} index={index} />
+            <SectionControls title={getSectionTitle(sectionId)} index={index} sectionId={sectionId} />
             <div className="flex justify-end mb-4">
               <Button onClick={handleAddTransportCard} size="sm">
                 <Plus className="w-4 h-4 mr-2" />
@@ -344,7 +378,7 @@ const LocationSettings = ({
       case "contact_info":
         return (
           <div key={sectionId} className="space-y-4">
-            <SectionControls title={getSectionTitle(sectionId)} index={index} />
+            <SectionControls title={getSectionTitle(sectionId)} index={index} sectionId={sectionId} />
             <div className="grid gap-4">
               <div>
                 <Label htmlFor="location_phone">전화번호</Label>
@@ -371,8 +405,80 @@ const LocationSettings = ({
     }
   };
 
+  const handleAddSection = (sectionId: string) => {
+    if (!sectionOrder.includes(sectionId)) {
+      const newOrder = [...sectionOrder, sectionId];
+      onSectionOrderChange(newOrder);
+      onSaveSectionOrder(newOrder);
+    }
+  };
+
+  const handleRemoveSection = (sectionId: string) => {
+    const newOrder = sectionOrder.filter(id => id !== sectionId);
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
+  const isSectionAdded = (sectionId: string) => sectionOrder.includes(sectionId);
+
   return (
     <div className="space-y-8">
+      {/* Section Add Buttons */}
+      <div className="flex gap-2 flex-wrap">
+        <Button 
+          onClick={() => handleAddSection("hero_image")} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+          disabled={isSectionAdded("hero_image")}
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          헤더 이미지
+        </Button>
+        <Button 
+          onClick={() => handleAddSection("description_buttons")} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+          disabled={isSectionAdded("description_buttons")}
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          설명섹션
+        </Button>
+        <Button 
+          onClick={() => handleAddSection("location_info")} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+          disabled={isSectionAdded("location_info")}
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          장소정보
+        </Button>
+        <Button 
+          onClick={() => handleAddSection("contact_info")} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+          disabled={isSectionAdded("contact_info")}
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          연락처
+        </Button>
+        <Button 
+          onClick={() => handleAddSection("transport_info")} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+          disabled={isSectionAdded("transport_info")}
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          교통정보
+        </Button>
+      </div>
+
+      <Separator />
+
       {/* Page Information Section */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">페이지 정보</h3>
@@ -410,45 +516,6 @@ const LocationSettings = ({
             <ColorPicker
               value={settings.location_header_color || ""}
               onChange={(color) => onSettingChange("location_header_color", color)}
-            />
-          </div>
-        </div>
-      </div>
-
-      <Separator />
-
-      {/* Hero Image Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">헤더 이미지</h3>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="location_hero_enabled">사용</Label>
-            <Switch
-              id="location_hero_enabled"
-              checked={settings.location_hero_enabled === "true"}
-              onCheckedChange={(checked) => onSettingChange("location_hero_enabled", checked ? "true" : "false")}
-            />
-          </div>
-        </div>
-        <div className="space-y-4">
-          <div>
-            <ImageUpload
-              value={settings.location_header_image || ""}
-              onChange={(url) => onSettingChange("location_header_image", url)}
-              label="배경 이미지"
-            />
-            <p className="text-sm text-muted-foreground mt-2">
-              페이지 상단에 표시될 건물 사진을 업로드하세요
-            </p>
-          </div>
-          <div>
-            <Label>오버레이 투명도 (%)</Label>
-            <Input
-              type="number"
-              min="0"
-              max="100"
-              value={settings.location_hero_overlay_opacity || "0"}
-              onChange={(e) => onSettingChange("location_hero_overlay_opacity", e.target.value)}
             />
           </div>
         </div>
