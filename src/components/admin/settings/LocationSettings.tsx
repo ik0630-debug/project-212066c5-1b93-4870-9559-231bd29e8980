@@ -443,7 +443,7 @@ const LocationSettings = ({
           disabled={isSectionAdded("description_buttons")}
         >
           <Plus className="w-3 h-3 mr-1.5" />
-          설명섹션
+          설명 카드
         </Button>
         <Button 
           onClick={() => handleAddSection("location_info")} 
