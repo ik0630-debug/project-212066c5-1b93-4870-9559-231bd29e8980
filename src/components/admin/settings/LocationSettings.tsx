@@ -318,7 +318,7 @@ const LocationSettings = ({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Label>버튼</Label>
-                  <Button onClick={handleAddUnifiedButton} size="sm">
+                  <Button onClick={handleAddUnifiedButton} size="sm" variant="default">
                     <Plus className="w-4 h-4 mr-2" />
                     버튼 추가
                   </Button>
