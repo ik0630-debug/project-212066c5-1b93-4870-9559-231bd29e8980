@@ -136,7 +136,7 @@ const LocationSettings = ({
 
   const getSectionTitle = (sectionId: string): string => {
     switch (sectionId) {
-      case "hero_image": return "헤더 이미지";
+      case "hero_image": return "이미지";
       case "description_buttons": return "안내 메시지 & 버튼";
       case "location_info": return "장소 정보";
       case "transport_info": return "교통 정보";
@@ -173,7 +173,7 @@ const LocationSettings = ({
                 <ImageUpload
                   value={settings.location_header_image || ""}
                   onChange={(url) => onSettingChange("location_header_image", url)}
-                  label="배경 이미지"
+                  label="이미지"
                 />
                 <p className="text-sm text-muted-foreground mt-2">
                   페이지 상단에 표시될 건물 사진을 업로드하세요
@@ -433,7 +433,7 @@ const LocationSettings = ({
           disabled={isSectionAdded("hero_image")}
         >
           <Plus className="w-3 h-3 mr-1.5" />
-          헤더 이미지
+          이미지
         </Button>
         <Button 
           onClick={() => handleAddSection("description_buttons")} 
