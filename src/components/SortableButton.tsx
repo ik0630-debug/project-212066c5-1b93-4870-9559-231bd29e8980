@@ -68,42 +68,44 @@ const SortableButton = ({
         </Button>
       </div>
 
-      <div>
-        <Label>버튼 텍스트</Label>
-        <Input
-          value={buttonData.text || ""}
-          onChange={(e) =>
-            onUpdate(button.id, {
-              ...buttonData,
-              text: e.target.value,
-            })
-          }
-          placeholder="프로그램 보기"
-        />
-      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label>버튼 텍스트</Label>
+          <Input
+            value={buttonData.text || ""}
+            onChange={(e) =>
+              onUpdate(button.id, {
+                ...buttonData,
+                text: e.target.value,
+              })
+            }
+            placeholder="프로그램 보기"
+          />
+        </div>
 
-      <div>
-        <Label>링크 타입</Label>
-        <Select
-          value={linkType}
-          onValueChange={(value) =>
-            onUpdate(button.id, {
-              ...buttonData,
-              linkType: value,
-              link: "",
-              fileUrl: "",
-            })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-popover z-50">
-            <SelectItem value="internal">앱 내 페이지</SelectItem>
-            <SelectItem value="external">외부 URL</SelectItem>
-            <SelectItem value="file">파일 다운로드</SelectItem>
-          </SelectContent>
-        </Select>
+        <div>
+          <Label>링크 타입</Label>
+          <Select
+            value={linkType}
+            onValueChange={(value) =>
+              onUpdate(button.id, {
+                ...buttonData,
+                linkType: value,
+                link: "",
+                fileUrl: "",
+              })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-popover z-50">
+              <SelectItem value="internal">앱 내 페이지</SelectItem>
+              <SelectItem value="external">외부 URL</SelectItem>
+              <SelectItem value="file">파일 다운로드</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {linkType === "internal" && (
@@ -152,29 +154,6 @@ const SortableButton = ({
           accept="*"
         />
       )}
-
-      <div>
-        <Label>버튼 스타일</Label>
-        <Select
-          value={buttonData.variant || "outline"}
-          onValueChange={(value) =>
-            onUpdate(button.id, {
-              ...buttonData,
-              variant: value,
-            })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-popover z-50">
-            <SelectItem value="default">기본</SelectItem>
-            <SelectItem value="outline">아웃라인</SelectItem>
-            <SelectItem value="secondary">보조</SelectItem>
-            <SelectItem value="ghost">고스트</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
