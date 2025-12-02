@@ -523,18 +523,20 @@ const LocationSettings = ({
                     </div>
                   </SortableContext>
                 </DndContext>
-                <div className="mt-6 pt-4 border-t">
-                  <Label>버튼 정렬</Label>
-                  <select
-                    className="w-full p-2 border rounded-md"
-                    value={buttonGroup.alignment || "center"}
-                    onChange={(e) => onButtonGroupsChange(buttonGroups.map(g => g.id === sectionId ? { ...g, alignment: e.target.value } : g))}
-                  >
-                    <option value="left">왼쪽</option>
-                    <option value="center">가운데</option>
-                    <option value="right">오른쪽</option>
-                  </select>
-                </div>
+                {buttonGroup.buttons && buttonGroup.buttons.length > 0 && (
+                  <div className="mt-6 pt-4 border-t">
+                    <Label>버튼 정렬</Label>
+                    <select
+                      className="w-full p-2 border rounded-md"
+                      value={buttonGroup.alignment || "center"}
+                      onChange={(e) => onButtonGroupsChange(buttonGroups.map(g => g.id === sectionId ? { ...g, alignment: e.target.value } : g))}
+                    >
+                      <option value="left">왼쪽</option>
+                      <option value="center">가운데</option>
+                      <option value="right">오른쪽</option>
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
           );
