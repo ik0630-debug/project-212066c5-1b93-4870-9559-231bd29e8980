@@ -309,6 +309,20 @@ const ProgramSettings = ({
     }
   };
 
+  const handleAddProgramSchedule = () => {
+    if (!sectionOrder.includes("program_cards")) {
+      const newOrder = [...sectionOrder, "program_cards"];
+      onSectionOrderChange(newOrder);
+      onSaveSectionOrder(newOrder);
+    }
+  };
+
+  const handleRemoveProgramSchedule = () => {
+    const newOrder = sectionOrder.filter((id) => id !== "program_cards");
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
   const handleMoveSectionUp = (index: number) => {
     if (index > 0) {
       const newOrder = [...sectionOrder];
@@ -332,6 +346,7 @@ const ProgramSettings = ({
     if (sectionId.startsWith("program_info_card_section_")) return "정보 섹션";
     if (sectionId.startsWith("program_description_")) return "설명섹션";
     if (sectionId.startsWith("program_button_group_")) return "버튼";
+    if (sectionId === "program_cards") return "프로그램 일정";
     return sectionId;
   };
 
@@ -625,6 +640,57 @@ const ProgramSettings = ({
       );
     }
 
+    // Program Cards Section
+    if (sectionId === "program_cards") {
+      return (
+        <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
+          <SectionControls
+            title={getSectionTitle(sectionId)}
+            index={index}
+            sectionId={sectionId}
+            onDelete={handleRemoveProgramSchedule}
+          />
+          {!isCollapsed && (
+            <div className="space-y-4">
+              <div className="flex justify-end">
+                <Button onClick={handleAddProgramCard} size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  프로그램 추가
+                </Button>
+              </div>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEndProgramCards}
+              >
+                <SortableContext
+                  items={programCards.map((_, i) => i.toString())}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-4">
+                    {programCards.map((card, i) => (
+                      <SortableProgramCard
+                        key={i}
+                        id={i.toString()}
+                        card={card}
+                        index={i}
+                        total={programCards.length}
+                        onUpdate={(data) => handleUpdateProgramCard(i, data)}
+                        onDelete={() => handleDeleteProgramCard(i)}
+                        onDuplicate={() => handleDuplicateProgramCard(i)}
+                        onMoveUp={() => handleMoveUp(i)}
+                        onMoveDown={() => handleMoveDown(i)}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     return null;
   };
 
@@ -667,6 +733,16 @@ const ProgramSettings = ({
         >
           <Plus className="w-3 h-3 mr-1.5" />
           버튼 그룹
+        </Button>
+        <Button 
+          onClick={handleAddProgramSchedule} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+          disabled={sectionOrder.includes("program_cards")}
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          프로그램 일정
         </Button>
       </div>
 
