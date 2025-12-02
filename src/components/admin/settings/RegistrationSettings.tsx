@@ -202,7 +202,7 @@ const RegistrationSettings = ({
   };
 
   const getSectionTitle = (sectionId: string): string => {
-    if (sectionId === "hero_image") return "헤더 이미지";
+    if (sectionId === "hero_image") return "이미지";
     if (sectionId === "registration_form_fields") return "폼 필드";
     if (sectionId.startsWith("description_")) return "설명섹션";
     if (sectionId.startsWith("info_card_")) return "정보 카드";
@@ -298,7 +298,7 @@ const RegistrationSettings = ({
     return (
       <div key={sectionId} className="space-y-4">
         <SectionControls
-          title="헤더 이미지"
+          title="이미지"
           index={index}
           sectionId={sectionId}
           onDelete={handleRemoveHeroSection}
@@ -309,7 +309,7 @@ const RegistrationSettings = ({
             <ImageUpload
               value={registrationSettings.registration_hero_image || ""}
               onChange={(url) => handleChange("registration_hero_image", url)}
-              label="헤더 이미지"
+              label="이미지"
             />
             <SettingsField label="오버레이 투명도 (0-1)" htmlFor="registration_hero_overlay_opacity">
               <Input
@@ -660,7 +660,7 @@ const RegistrationSettings = ({
             disabled={sectionOrder.includes("hero_image")}
           >
             <Plus className="w-3 h-3 mr-1.5" />
-            헤더 이미지
+            이미지
           </Button>
           <Button 
             onClick={handleAddFormFields} 

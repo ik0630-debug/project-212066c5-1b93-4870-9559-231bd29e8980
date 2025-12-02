@@ -37,7 +37,7 @@ export const renderHeroSection = (props: RenderHeroSectionProps) => {
             <ImageUpload
               value={heroSection.imageUrl || ""}
               onChange={(url) => onUpdateHeroSection(sectionId, { imageUrl: url })}
-              label="배경 이미지"
+              label="이미지"
             />
             <p className="text-sm text-muted-foreground">
               이미지는 원본 비율로 표시되며, 최대 너비는 1000px입니다.
