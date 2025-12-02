@@ -724,6 +724,12 @@ const RegistrationSettings = ({
             onChange={(e) => handleChange("registration_page_description", e.target.value)}
           />
         </SettingsField>
+        <SettingsField label="헤더 배경색" htmlFor="registration_header_bg_color">
+          <ColorPicker
+            value={registrationSettings.registration_header_bg_color || "221 83% 33%"}
+            onChange={(color) => handleChange("registration_header_bg_color", color)}
+          />
+        </SettingsField>
       </SettingsSection>
 
       <Separator />

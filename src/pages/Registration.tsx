@@ -17,6 +17,7 @@ import { getNextEnabledPage } from "@/utils/pageNavigation";
 import { usePageSettings } from "@/hooks/usePageSettings";
 import { useProjectId } from "@/hooks/useProjectId";
 import { useOpenGraph } from "@/hooks/useOpenGraph";
+import { PageHeader } from "@/components/PageHeader";
 
 interface RegistrationField {
   id: string;
@@ -45,6 +46,7 @@ const Registration = () => {
     pageDescription: "아래 양식을 작성해주세요",
     successTitle: "신청이 완료되었습니다!",
     successDescription: "참가 확인 메일을 발송해드렸습니다.",
+    headerBgColor: "221 83% 33%",
   });
   const [fields, setFields] = useState<RegistrationField[]>([
     { id: "name", label: "성함", placeholder: "홍길동", type: "text", required: true },
@@ -119,6 +121,8 @@ const Registration = () => {
             newSettings.successTitle = value;
           } else if (key === "registration_success_description") {
             newSettings.successDescription = value;
+          } else if (key === "registration_header_bg_color") {
+            newSettings.headerBgColor = value;
           } else if (key === "registration_privacy_content") {
             setPrivacyContent(value);
           }
@@ -292,16 +296,11 @@ const Registration = () => {
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20 animate-fade-in">
       <div className="max-w-[800px] mx-auto">
         {/* Header */}
-        <header 
-          className="sticky top-0 z-40 bg-gradient-primary text-primary-foreground py-4 px-6 text-center"
-        >
-          <h1 className="text-2xl font-bold mb-1">{pageSettings.pageTitle}</h1>
-          {pageSettings.pageDescription && (
-            <p className="text-primary-foreground/90 text-sm whitespace-pre-line">
-              {pageSettings.pageDescription}
-            </p>
-          )}
-        </header>
+        <PageHeader 
+          title={pageSettings.pageTitle}
+          description={pageSettings.pageDescription}
+          backgroundColor={pageSettings.headerBgColor}
+        />
 
         {!isPageEnabled ? (
           <main className="px-6 py-8">
