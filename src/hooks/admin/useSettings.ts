@@ -59,7 +59,7 @@ export const useSettings = () => {
     registration_page_title: "참가 신청",
     registration_page_description: "아래 양식을 작성해주세요",
     registration_success_title: "신청이 완료되었습니다!",
-    registration_success_description: "참가 확인 메일을 발송해드렸습니다.",
+    registration_success_description: "신청해 주셔서 감사합니다.",
     registration_enabled: "true",
     registration_header_bg_color: "221 83% 33%",
   });
@@ -477,6 +477,7 @@ export const useSettings = () => {
     const defaultRegistrationSettings = {
       registration_page_title: "참가 신청",
       registration_page_description: "아래 양식을 작성해주세요",
+      registration_success_description: "신청해 주셔서 감사합니다.",
       registration_header_bg_color: "221 83% 33%",
     };
     
