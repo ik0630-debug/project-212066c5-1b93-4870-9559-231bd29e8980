@@ -462,8 +462,44 @@ export const useSettings = () => {
     setRegistrationDescriptions(registrationDescriptionsArray);
     setRegistrationButtonGroups(registrationButtonGroupsArray);
     
-    setSettings(settingsMap);
-    setRegistrationSettings(prev => ({ ...prev, ...registrationSettingsData }));
+    // Apply default values for empty strings
+    const defaultSettings = {
+      program_title: "프로그램",
+      program_description: "세부 프로그램을 소개합니다.",
+      program_header_color: "221 83% 33%",
+      location_page_title: "오시는 길",
+      location_page_description: "찾아 오시는 길을 확인하세요",
+      location_header_color: "221 83% 33%",
+    };
+    
+    const defaultRegistrationSettings = {
+      registration_page_title: "참가 신청",
+      registration_page_description: "아래 양식을 작성해주세요",
+      registration_header_bg_color: "221 83% 33%",
+    };
+    
+    // Merge with defaults, using defaults for empty values
+    const mergedSettings = { ...defaultSettings };
+    Object.keys(settingsMap).forEach(key => {
+      if (settingsMap[key] !== "" && settingsMap[key] !== null && settingsMap[key] !== undefined) {
+        mergedSettings[key] = settingsMap[key];
+      } else if (!(key in defaultSettings)) {
+        // For keys not in defaults, keep the value even if empty
+        mergedSettings[key] = settingsMap[key];
+      }
+    });
+    
+    const mergedRegistrationSettings = { ...defaultRegistrationSettings };
+    Object.keys(registrationSettingsData).forEach(key => {
+      if (registrationSettingsData[key] !== "" && registrationSettingsData[key] !== null && registrationSettingsData[key] !== undefined) {
+        mergedRegistrationSettings[key] = registrationSettingsData[key];
+      } else if (!(key in defaultRegistrationSettings)) {
+        mergedRegistrationSettings[key] = registrationSettingsData[key];
+      }
+    });
+    
+    setSettings(prev => ({ ...prev, ...mergedSettings }));
+    setRegistrationSettings(prev => ({ ...prev, ...mergedRegistrationSettings }));
   }, [defaultProjectId]);
 
   const getCategoryFromKey = (key: string): string => {
