@@ -263,7 +263,7 @@ const HomeSettings = ({
   const getSectionTitle = (sectionId: string): string => {
     if (sectionId.startsWith("hero_")) return "헤더 이미지";
     if (sectionId.startsWith("info_card_section_") || sectionId.startsWith("infocard_section_")) return "정보 섹션";
-    if (sectionId.startsWith("description_")) return "설명 섹션";
+    if (sectionId.startsWith("description_")) return "설명섹션";
     if (sectionId.startsWith("button_group_")) return "버튼";
     return sectionId;
   };
@@ -431,7 +431,7 @@ const HomeSettings = ({
           onClick={handleAddHeroSection} 
           variant="outline"
           size="sm"
-          className="h-8 text-xs"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
         >
           <Plus className="w-3 h-3 mr-1.5" />
           헤더 이미지
@@ -440,16 +440,16 @@ const HomeSettings = ({
           onClick={handleAddDescription} 
           variant="outline"
           size="sm"
-          className="h-8 text-xs"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
         >
           <Plus className="w-3 h-3 mr-1.5" />
-          설명 섹션
+          설명섹션
         </Button>
         <Button 
           onClick={handleAddInfoCardSection} 
           variant="outline"
           size="sm"
-          className="h-8 text-xs"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
         >
           <Plus className="w-3 h-3 mr-1.5" />
           정보 카드
@@ -458,7 +458,7 @@ const HomeSettings = ({
           onClick={handleAddButtonGroup} 
           variant="outline"
           size="sm"
-          className="h-8 text-xs"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
         >
           <Plus className="w-3 h-3 mr-1.5" />
           버튼 그룹

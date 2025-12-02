@@ -330,7 +330,7 @@ const ProgramSettings = ({
   const getSectionTitle = (sectionId: string): string => {
     if (sectionId.startsWith("program_hero_")) return "헤더 이미지";
     if (sectionId.startsWith("program_info_card_section_")) return "정보 섹션";
-    if (sectionId.startsWith("program_description_")) return "설명 섹션";
+    if (sectionId.startsWith("program_description_")) return "설명섹션";
     if (sectionId.startsWith("program_button_group_")) return "버튼";
     return sectionId;
   };
@@ -648,7 +648,7 @@ const ProgramSettings = ({
           className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
         >
           <Plus className="w-3 h-3 mr-1.5" />
-          설명 섹션
+          설명섹션
         </Button>
         <Button 
           onClick={handleAddInfoCardSection} 
