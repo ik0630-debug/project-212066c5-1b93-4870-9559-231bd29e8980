@@ -69,6 +69,73 @@ const RegistrationSettings = ({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
+
+  const toggleSection = (sectionId: string) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
+
+  const handleAddHeroSection = () => {
+    if (sectionOrder.includes("hero_image")) return;
+    const newOrder = ["hero_image", ...sectionOrder];
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
+  const handleRemoveHeroSection = () => {
+    const newOrder = sectionOrder.filter(id => id !== "hero_image");
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
+  const handleAddFormFields = () => {
+    if (sectionOrder.includes("registration_form_fields")) return;
+    const newOrder = [...sectionOrder, "registration_form_fields"];
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
+  const handleRemoveFormFields = () => {
+    const newOrder = sectionOrder.filter(id => id !== "registration_form_fields");
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
+  const handleAddDescription = () => {
+    const newDescription = {
+      title: "새 설명",
+      content: "내용을 입력하세요",
+      titleFontSize: 24,
+      contentFontSize: 16,
+      backgroundColor: "",
+    };
+    onDescriptionsChange([...descriptions, newDescription]);
+    const descId = `description_${descriptions.length}`;
+    const newOrder = [...sectionOrder, descId];
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
+  const handleAddInfoCardSection = () => {
+    const newSection = { cards: [{ icon: "Calendar", title: "제목", content: "내용", titleFontSize: 18, contentFontSize: 14, backgroundColor: "", iconColor: "" }] };
+    onInfoCardSectionsChange([...infoCardSections, newSection]);
+    const sectionId = `info_card_${infoCardSections.length}`;
+    const newOrder = [...sectionOrder, sectionId];
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
+  const handleAddButtonGroup = () => {
+    const newGroup = { buttons: [{ text: "버튼", link: "", variant: "default", size: "default", fontSize: 16, bgColor: "", textColor: "" }] };
+    onButtonGroupsChange([...buttonGroups, newGroup]);
+    const groupId = `button_group_${buttonGroups.length}`;
+    const newOrder = [...sectionOrder, groupId];
+    onSectionOrderChange(newOrder);
+    onSaveSectionOrder(newOrder);
+  };
+
   const handleChange = (key: string, value: string) => {
     onRegistrationSettingsChange({
       ...registrationSettings,
@@ -142,120 +209,60 @@ const RegistrationSettings = ({
 
       <Separator />
 
-      <SettingsSection 
-        title="폼 필드 설정"
-        action={
-          <Button onClick={addField} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            필드 추가
+      <SettingsSection title="참가신청 페이지 섹션 관리">
+        <div className="flex gap-2 mb-6 flex-wrap">
+          <Button 
+            onClick={handleAddHeroSection} 
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+            disabled={sectionOrder.includes("hero_image")}
+          >
+            <Plus className="w-3 h-3 mr-1.5" />
+            헤더 이미지
           </Button>
-        }
-      >
-        
-        <div className="grid gap-6">
-          {registrationFields.map((field, index) => (
-            <div key={field.id} className="space-y-3 p-4 border rounded-lg">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium">{field.label}</h4>
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={() => moveFieldUp(index)}
-                    variant="outline"
-                    size="sm"
-                    disabled={index === 0}
-                  >
-                    <ArrowUp className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    onClick={() => moveFieldDown(index)}
-                    variant="outline"
-                    size="sm"
-                    disabled={index === registrationFields.length - 1}
-                  >
-                    <ArrowDown className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    onClick={() => removeField(index)}
-                    variant="destructive"
-                    size="sm"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="grid gap-3">
-                <div>
-                  <Label>아이콘</Label>
-                  <IconPicker
-                    value={field.icon || "FileText"}
-                    onValueChange={(icon) => handleFieldChange(index, "icon", icon)}
-                  />
-                </div>
-                
-                <div>
-                  <Label>레이블</Label>
-                  <Input
-                    value={field.label || ""}
-                    onChange={(e) => handleFieldChange(index, "label", e.target.value)}
-                    placeholder="예: 이름, 이메일, 회사명"
-                  />
-                </div>
-                
-                <div>
-                  <Label>플레이스홀더</Label>
-                  <Input
-                    value={field.placeholder || ""}
-                    onChange={(e) => handleFieldChange(index, "placeholder", e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <Label>필드 타입</Label>
-                  <Select
-                    value={field.type}
-                    onValueChange={(value) => handleFieldChange(index, "type", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="text">짧은 텍스트</SelectItem>
-                      <SelectItem value="email">이메일</SelectItem>
-                      <SelectItem value="tel">전화번호</SelectItem>
-                      <SelectItem value="number">숫자</SelectItem>
-                      <SelectItem value="textarea">긴 텍스트</SelectItem>
-                      <SelectItem value="select">드롭다운 선택</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`required-${field.id}`}
-                    checked={field.required}
-                    onCheckedChange={(checked) => handleFieldChange(index, "required", checked)}
-                  />
-                  <Label htmlFor={`required-${field.id}`}>필수 항목</Label>
-                </div>
-
-                {field.type === "select" && (
-                  <div>
-                    <Label>선택 옵션 (쉼표로 구분)</Label>
-                    <Input
-                      value={(field.options || []).join(", ")}
-                      onChange={(e) => {
-                        const options = e.target.value.split(",").map(opt => opt.trim()).filter(opt => opt);
-                        handleFieldChange(index, "options", options);
-                      }}
-                      placeholder="옵션1, 옵션2, 옵션3"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+          <Button 
+            onClick={handleAddFormFields} 
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+            disabled={sectionOrder.includes("registration_form_fields")}
+          >
+            <Plus className="w-3 h-3 mr-1.5" />
+            폼 필드
+          </Button>
+          <Button 
+            onClick={handleAddDescription} 
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+          >
+            <Plus className="w-3 h-3 mr-1.5" />
+            설명섹션
+          </Button>
+          <Button 
+            onClick={handleAddInfoCardSection} 
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+          >
+            <Plus className="w-3 h-3 mr-1.5" />
+            정보 카드
+          </Button>
+          <Button 
+            onClick={handleAddButtonGroup} 
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+          >
+            <Plus className="w-3 h-3 mr-1.5" />
+            버튼 그룹
+          </Button>
         </div>
+
+        <p className="text-sm text-muted-foreground mb-4">
+          섹션을 추가하면 아래에 표시됩니다. 섹션들은 드래그하여 순서를 변경할 수 있습니다.
+        </p>
       </SettingsSection>
 
       <Separator />

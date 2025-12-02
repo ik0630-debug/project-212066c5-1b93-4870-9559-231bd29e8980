@@ -29,6 +29,11 @@ interface SettingsTabsProps {
   downloadFiles: any[];
   sectionOrder: string[];
   locationSectionOrder: string[];
+  registrationHeroSections: any[];
+  registrationInfoCardSections: any[];
+  registrationDescriptions: any[];
+  registrationButtonGroups: any[];
+  registrationSectionOrder: string[];
   onSettingChange: (key: string, value: string) => void;
   onRegistrationSettingsChange: (settings: any) => void;
   onRegistrationFieldsChange: (fields: any[]) => void;
@@ -48,8 +53,14 @@ interface SettingsTabsProps {
   onDownloadFilesChange: (files: any[]) => void;
   onSectionOrderChange: (order: string[]) => void;
   onLocationSectionOrderChange: (order: string[]) => void;
+  onRegistrationHeroSectionsChange: (sections: any[]) => void;
+  onRegistrationInfoCardSectionsChange: (sections: any[]) => void;
+  onRegistrationDescriptionsChange: (descriptions: any[]) => void;
+  onRegistrationButtonGroupsChange: (groups: any[]) => void;
+  onRegistrationSectionOrderChange: (order: string[]) => void;
   onSaveSectionOrder: (order: string[]) => void;
   onSaveLocationSectionOrder: (order: string[]) => void;
+  onSaveRegistrationSectionOrder: (order: string[]) => void;
   onSave: (options?: { silent?: boolean }) => void;
 }
 
@@ -75,6 +86,11 @@ const SettingsTabs = ({
   downloadFiles,
   sectionOrder,
   locationSectionOrder,
+  registrationHeroSections,
+  registrationInfoCardSections,
+  registrationDescriptions,
+  registrationButtonGroups,
+  registrationSectionOrder,
   onSettingChange,
   onRegistrationSettingsChange,
   onRegistrationFieldsChange,
@@ -94,8 +110,14 @@ const SettingsTabs = ({
   onDownloadFilesChange,
   onSectionOrderChange,
   onLocationSectionOrderChange,
+  onRegistrationHeroSectionsChange,
+  onRegistrationInfoCardSectionsChange,
+  onRegistrationDescriptionsChange,
+  onRegistrationButtonGroupsChange,
+  onRegistrationSectionOrderChange,
   onSaveSectionOrder,
   onSaveLocationSectionOrder,
+  onSaveRegistrationSectionOrder,
   onSave,
 }: SettingsTabsProps) => {
   const [previewKey, setPreviewKey] = useState(0);
@@ -153,8 +175,19 @@ const SettingsTabs = ({
           <RegistrationSettings
             registrationSettings={registrationSettings}
             registrationFields={registrationFields}
+            heroSections={registrationHeroSections}
+            infoCardSections={registrationInfoCardSections}
+            descriptions={registrationDescriptions}
+            buttonGroups={registrationButtonGroups}
+            sectionOrder={registrationSectionOrder}
             onRegistrationSettingsChange={onRegistrationSettingsChange}
             onRegistrationFieldsChange={onRegistrationFieldsChange}
+            onHeroSectionsChange={onRegistrationHeroSectionsChange}
+            onInfoCardSectionsChange={onRegistrationInfoCardSectionsChange}
+            onDescriptionsChange={onRegistrationDescriptionsChange}
+            onButtonGroupsChange={onRegistrationButtonGroupsChange}
+            onSectionOrderChange={onRegistrationSectionOrderChange}
+            onSaveSectionOrder={onSaveRegistrationSectionOrder}
           />
         );
       case 3:
