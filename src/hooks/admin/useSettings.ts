@@ -129,7 +129,9 @@ export const useSettings = () => {
       }
       if (key === "registration_section_order") {
         try {
-          setRegistrationSectionOrder(JSON.parse(value));
+          const parsed = JSON.parse(value);
+          // 빈 배열이면 기본값 사용
+          setRegistrationSectionOrder(parsed.length > 0 ? parsed : ["registration_form_fields"]);
         } catch {}
         return;
       }
