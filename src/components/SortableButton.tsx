@@ -108,7 +108,7 @@ const SortableButton = ({
         </Select>
       </div>
 
-      {buttonData.text && linkType === "internal" && (
+      {linkType === "internal" && (
         <div>
           <Label>페이지 경로</Label>
           <Input
@@ -124,7 +124,7 @@ const SortableButton = ({
         </div>
       )}
 
-      {buttonData.text && linkType === "external" && (
+      {linkType === "external" && (
         <div>
           <Label>외부 URL</Label>
           <Input
@@ -140,7 +140,7 @@ const SortableButton = ({
         </div>
       )}
 
-      {buttonData.text && linkType === "file" && (
+      {linkType === "file" && (
         <div className="space-y-4">
           <ImageUpload
             value={buttonData.fileUrl || buttonData.link || ""}
