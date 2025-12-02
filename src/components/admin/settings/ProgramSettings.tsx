@@ -11,7 +11,7 @@ import { ColorPicker } from "@/components/ColorPicker";
 import { SortableProgramCard } from "@/components/SortableProgramCard";
 import ImageUpload from "@/components/ImageUpload";
 import SortableInfoCard from "@/components/SortableInfoCard";
-import SortableBottomButton from "@/components/SortableBottomButton";
+import SortableButton from "@/components/SortableButton";
 import { Textarea } from "@/components/ui/textarea";
 
 interface ProgramSettingsProps {
@@ -596,7 +596,7 @@ const ProgramSettings = ({
               </div>
               <Button
                 onClick={() => {
-                  const newButton = { text: "", link: "", bgColor: "217 91% 60%", textColor: "0 0% 100%" };
+                  const newButton = { text: "", link: "", linkType: "internal", bgColor: "217 91% 60%", textColor: "0 0% 100%" };
                   handleUpdateButtonGroup(sectionId, { buttons: [...group.buttons, newButton] });
                 }}
                 size="sm"
@@ -615,7 +615,7 @@ const ProgramSettings = ({
                 >
                   <div className="space-y-4">
                     {group.buttons.map((button: any, btnIndex: number) => (
-                      <SortableBottomButton
+                      <SortableButton
                         key={btnIndex}
                         id={btnIndex.toString()}
                         button={button}

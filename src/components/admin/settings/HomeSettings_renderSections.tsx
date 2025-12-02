@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { ColorPicker } from "@/components/ColorPicker";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import SortableBottomButton from "@/components/SortableBottomButton";
+import SortableButton from "@/components/SortableButton";
 
 interface RenderSectionsProps {
   sectionId: string;
@@ -112,7 +112,7 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
   if (!buttonGroup) return null;
 
   const handleAddButton = () => {
-    const newButtons = [...(buttonGroup.buttons || []), { text: "", link: "", fontSize: "text-lg" }];
+    const newButtons = [...(buttonGroup.buttons || []), { text: "", link: "", linkType: "internal", fontSize: "text-lg" }];
     onUpdateButtonGroup(sectionId, { buttons: newButtons });
   };
 
@@ -169,7 +169,7 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
             >
               <div className="space-y-4">
                 {(buttonGroup.buttons || []).map((button, i) => (
-                  <SortableBottomButton
+                  <SortableButton
                     key={i}
                     id={i.toString()}
                     button={button}
