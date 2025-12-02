@@ -184,6 +184,16 @@ const Location = () => {
 
   const renderSection = (sectionId: string) => {
     switch (sectionId) {
+      case "hero_image":
+        return (
+          <HeroImage 
+            imageUrl={headerImage}
+            alt="Location header"
+            overlayOpacity={heroOverlayOpacity}
+            enabled={isPageEnabled && heroEnabled}
+          />
+        );
+
       case "description_buttons":
         return (
           <div className="space-y-6">
@@ -348,17 +358,10 @@ const Location = () => {
         />
       </div>
 
-      <HeroImage 
-        imageUrl={headerImage}
-        alt="Location header"
-        overlayOpacity={heroOverlayOpacity}
-        enabled={isPageEnabled && heroEnabled}
-      />
-
       <div className="max-w-[800px] mx-auto">
-        <main className="px-6 py-8 space-y-8">
+        <main className="space-y-8">
         {!isPageEnabled ? (
-          <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center space-y-4">
+          <div className="bg-card rounded-lg p-8 shadow-elegant border border-border text-center space-y-4 mx-6 mt-8">
             <h2 className="text-xl font-bold text-foreground">
               오시는 길 페이지가 일시적으로 비활성화되었습니다
             </h2>
@@ -369,7 +372,9 @@ const Location = () => {
         ) : (
           <>
             {sectionOrder.map((sectionId) => (
-              <div key={sectionId}>{renderSection(sectionId)}</div>
+              <div key={sectionId} className={sectionId === "hero_image" ? "" : "px-6"}>
+                {renderSection(sectionId)}
+              </div>
             ))}
           </>
         )}
