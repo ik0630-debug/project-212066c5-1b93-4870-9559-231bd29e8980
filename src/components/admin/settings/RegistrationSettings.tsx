@@ -205,7 +205,7 @@ const RegistrationSettings = ({
     if (sectionId === "hero_image") return "이미지";
     if (sectionId === "registration_form_fields") return "폼 필드";
     if (sectionId.startsWith("description_")) return "설명 카드";
-    if (sectionId.startsWith("info_card_")) return "정보 카드";
+    if (sectionId.startsWith("info_card_")) return "아이콘 카드";
     if (sectionId.startsWith("button_group_")) return "버튼";
     return sectionId;
   };
@@ -688,7 +688,7 @@ const RegistrationSettings = ({
             className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
           >
             <Plus className="w-3 h-3 mr-1.5" />
-            정보 카드
+            아이콘 카드
           </Button>
           <Button 
             onClick={handleAddButtonGroup} 

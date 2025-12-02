@@ -343,7 +343,7 @@ const ProgramSettings = ({
 
   const getSectionTitle = (sectionId: string): string => {
     if (sectionId.startsWith("program_hero_")) return "이미지";
-    if (sectionId.startsWith("program_info_card_section_")) return "정보 섹션";
+    if (sectionId.startsWith("program_info_card_section_")) return "아이콘 카드";
     if (sectionId.startsWith("program_description_")) return "설명 카드";
     if (sectionId.startsWith("program_button_group_")) return "버튼";
     if (sectionId === "program_cards") return "프로그램 일정";
@@ -723,7 +723,7 @@ const ProgramSettings = ({
           className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
         >
           <Plus className="w-3 h-3 mr-1.5" />
-          정보 카드
+          아이콘 카드
         </Button>
         <Button 
           onClick={handleAddButtonGroup} 
