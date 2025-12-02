@@ -164,7 +164,7 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
             </SortableContext>
           </DndContext>
           <div className="flex justify-end mt-4">
-            <Button onClick={handleAddButton} size="sm" variant="outline">
+            <Button onClick={handleAddButton} size="sm">
               <Plus className="w-4 h-4 mr-2" />
               버튼 추가
             </Button>

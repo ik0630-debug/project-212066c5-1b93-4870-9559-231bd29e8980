@@ -619,7 +619,6 @@ const ProgramSettings = ({
                     handleUpdateButtonGroup(sectionId, { buttons: [...group.buttons, newButton] });
                   }}
                   size="sm"
-                  variant="outline"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   버튼 추가
