@@ -297,6 +297,12 @@ const HomeSettings = ({
           <h3 className="text-lg font-semibold">{title}</h3>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => handleMoveSectionUp(index)} disabled={index === 0}>
+            <ArrowUp className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => handleMoveSectionDown(index)} disabled={index === sectionOrder.length - 1}>
+            <ArrowDown className="w-4 h-4" />
+          </Button>
           {onCopy && (
             <Button variant="outline" size="sm" onClick={onCopy}>
               <Copy className="w-4 h-4" />
@@ -307,12 +313,6 @@ const HomeSettings = ({
               <Trash2 className="w-4 h-4" />
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => handleMoveSectionUp(index)} disabled={index === 0}>
-            <ArrowUp className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => handleMoveSectionDown(index)} disabled={index === sectionOrder.length - 1}>
-            <ArrowDown className="w-4 h-4" />
-          </Button>
         </div>
       </div>
     );
