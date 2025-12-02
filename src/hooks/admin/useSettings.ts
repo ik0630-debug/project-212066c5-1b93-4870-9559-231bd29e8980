@@ -35,7 +35,7 @@ export const useSettings = () => {
   
   const [settings, setSettings] = useState<any>({
     program_title: "프로그램",
-    program_description: "세부 프로그램을 소개합니다.",
+    program_description: "세부 행사 일정을 소개합니다",
     program_header_color: "221 83% 33%",
     program_enabled: "true",
     location_page_title: "오시는 길",
@@ -465,7 +465,7 @@ export const useSettings = () => {
     // Apply default values for empty strings
     const defaultSettings = {
       program_title: "프로그램",
-      program_description: "세부 프로그램을 소개합니다.",
+      program_description: "세부 행사 일정을 소개합니다",
       program_header_color: "221 83% 33%",
       location_page_title: "오시는 길",
       location_page_description: "찾아 오시는 길을 확인하세요",
