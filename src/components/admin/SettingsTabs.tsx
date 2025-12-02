@@ -19,6 +19,11 @@ interface SettingsTabsProps {
   descriptions: any[];
   buttonGroups: any[];
   programCards: any[];
+  programHeroSections: any[];
+  programInfoCardSections: any[];
+  programDescriptions: any[];
+  programButtonGroups: any[];
+  programSectionOrder: string[];
   transportCards: any[];
   locationBottomButtons: any[];
   downloadFiles: any[];
@@ -32,6 +37,12 @@ interface SettingsTabsProps {
   onDescriptionsChange: (descriptions: any[]) => void;
   onButtonGroupsChange: (groups: any[]) => void;
   onProgramCardsChange: (cards: any[]) => void;
+  onProgramHeroSectionsChange: (sections: any[]) => void;
+  onProgramInfoCardSectionsChange: (sections: any[]) => void;
+  onProgramDescriptionsChange: (descriptions: any[]) => void;
+  onProgramButtonGroupsChange: (groups: any[]) => void;
+  onProgramSectionOrderChange: (order: string[]) => void;
+  onSaveProgramSectionOrder: (order: string[]) => void;
   onTransportCardsChange: (cards: any[]) => void;
   onLocationBottomButtonsChange: (buttons: any[]) => void;
   onDownloadFilesChange: (files: any[]) => void;
@@ -54,6 +65,11 @@ const SettingsTabs = ({
   descriptions,
   buttonGroups,
   programCards,
+  programHeroSections,
+  programInfoCardSections,
+  programDescriptions,
+  programButtonGroups,
+  programSectionOrder,
   transportCards,
   locationBottomButtons,
   downloadFiles,
@@ -67,6 +83,12 @@ const SettingsTabs = ({
   onDescriptionsChange,
   onButtonGroupsChange,
   onProgramCardsChange,
+  onProgramHeroSectionsChange,
+  onProgramInfoCardSectionsChange,
+  onProgramDescriptionsChange,
+  onProgramButtonGroupsChange,
+  onProgramSectionOrderChange,
+  onSaveProgramSectionOrder,
   onTransportCardsChange,
   onLocationBottomButtonsChange,
   onDownloadFilesChange,
@@ -111,8 +133,19 @@ const SettingsTabs = ({
           <ProgramSettings
             settings={settings}
             programCards={programCards}
+            heroSections={programHeroSections}
+            infoCardSections={programInfoCardSections}
+            descriptions={programDescriptions}
+            buttonGroups={programButtonGroups}
+            sectionOrder={programSectionOrder}
             onSettingChange={onSettingChange}
             onProgramCardsChange={onProgramCardsChange}
+            onHeroSectionsChange={onProgramHeroSectionsChange}
+            onInfoCardSectionsChange={onProgramInfoCardSectionsChange}
+            onDescriptionsChange={onProgramDescriptionsChange}
+            onButtonGroupsChange={onProgramButtonGroupsChange}
+            onSectionOrderChange={onProgramSectionOrderChange}
+            onSaveSectionOrder={onSaveProgramSectionOrder}
           />
         );
       case 2:
