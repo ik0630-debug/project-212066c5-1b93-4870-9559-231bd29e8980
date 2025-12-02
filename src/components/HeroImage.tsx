@@ -27,7 +27,7 @@ export const HeroImage = ({
         />
       ) : (
         <div className="w-full h-48 bg-muted/30 flex items-center justify-center border-2 border-dashed border-border">
-          <p className="text-muted-foreground text-sm">Hero Image Area</p>
+          <p className="text-muted-foreground text-sm">Image Area</p>
         </div>
       )}
     </div>
