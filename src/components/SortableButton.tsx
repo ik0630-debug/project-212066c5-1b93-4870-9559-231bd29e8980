@@ -139,18 +139,34 @@ const SortableButton = ({
       )}
 
       {linkType === "file" && (
-        <ImageUpload
-          value={buttonData.fileUrl || buttonData.link || ""}
-          onChange={(url) =>
-            onUpdate(button.id, {
-              ...buttonData,
-              fileUrl: url,
-              link: url,
-            })
-          }
-          label="파일 업로드"
-          accept="*"
-        />
+        <div className="space-y-4">
+          <ImageUpload
+            value={buttonData.fileUrl || buttonData.link || ""}
+            onChange={(url) =>
+              onUpdate(button.id, {
+                ...buttonData,
+                fileUrl: url,
+                link: url,
+              })
+            }
+            label="파일 업로드"
+            accept="*"
+          />
+          <div>
+            <Label>또는 파일 URL 직접 입력</Label>
+            <Input
+              value={buttonData.link || buttonData.fileUrl || ""}
+              onChange={(e) =>
+                onUpdate(button.id, {
+                  ...buttonData,
+                  fileUrl: e.target.value,
+                  link: e.target.value,
+                })
+              }
+              placeholder="https://example.com/file.pdf"
+            />
+          </div>
+        </div>
       )}
 
       <div>
