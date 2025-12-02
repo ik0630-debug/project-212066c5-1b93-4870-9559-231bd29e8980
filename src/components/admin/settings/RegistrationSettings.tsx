@@ -651,33 +651,7 @@ const RegistrationSettings = ({
 
   return (
     <div className="space-y-8">
-      <SettingsSection title="페이지 정보">
-        <SettingsToggle
-          label="페이지 활성화"
-          description="비활성화하면 사용자가 참가 신청 페이지에 접근할 수 없습니다"
-          checked={registrationSettings.registration_enabled === "true"}
-          onCheckedChange={(checked) => handleChange("registration_enabled", checked ? "true" : "false")}
-        />
-        <SettingsField label="페이지 제목" htmlFor="registration_page_title">
-          <Input
-            id="registration_page_title"
-            value={registrationSettings.registration_page_title || ""}
-            onChange={(e) => handleChange("registration_page_title", e.target.value)}
-          />
-        </SettingsField>
-        <SettingsField label="페이지 설명" htmlFor="registration_page_description">
-          <Input
-            id="registration_page_description"
-            value={registrationSettings.registration_page_description || ""}
-            onChange={(e) => handleChange("registration_page_description", e.target.value)}
-          />
-        </SettingsField>
-      </SettingsSection>
-
-      <Separator />
-
-      <SettingsSection title="참가신청 페이지 섹션 관리">
-        <div className="flex gap-2 mb-6 flex-wrap">
+      <div className="flex gap-2 mb-6 flex-wrap">
           <Button 
             onClick={handleAddHeroSection} 
             variant="outline"
@@ -726,6 +700,30 @@ const RegistrationSettings = ({
             버튼
           </Button>
         </div>
+
+      <Separator />
+
+      <SettingsSection title="페이지 정보">
+        <SettingsToggle
+          label="페이지 활성화"
+          description="비활성화하면 사용자가 참가 신청 페이지에 접근할 수 없습니다"
+          checked={registrationSettings.registration_enabled === "true"}
+          onCheckedChange={(checked) => handleChange("registration_enabled", checked ? "true" : "false")}
+        />
+        <SettingsField label="페이지 제목" htmlFor="registration_page_title">
+          <Input
+            id="registration_page_title"
+            value={registrationSettings.registration_page_title || ""}
+            onChange={(e) => handleChange("registration_page_title", e.target.value)}
+          />
+        </SettingsField>
+        <SettingsField label="페이지 설명" htmlFor="registration_page_description">
+          <Input
+            id="registration_page_description"
+            value={registrationSettings.registration_page_description || ""}
+            onChange={(e) => handleChange("registration_page_description", e.target.value)}
+          />
+        </SettingsField>
       </SettingsSection>
 
       <Separator />
