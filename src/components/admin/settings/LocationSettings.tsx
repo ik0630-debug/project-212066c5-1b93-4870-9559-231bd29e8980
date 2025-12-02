@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableTransportCard from "@/components/SortableTransportCard";
@@ -155,8 +155,8 @@ const LocationSettings = ({
         <Button variant="outline" size="sm" onClick={() => handleMoveSectionDown(index)} disabled={index === sectionOrder.length - 1}>
           <ArrowDown className="w-4 h-4" />
         </Button>
-        <Button variant="destructive" size="sm" onClick={() => handleRemoveSection(sectionId)}>
-          삭제
+        <Button variant="outline" size="sm" onClick={() => handleRemoveSection(sectionId)}>
+          <Trash2 className="w-4 h-4" />
         </Button>
       </div>
     </div>
