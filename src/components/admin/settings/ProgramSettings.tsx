@@ -582,18 +582,28 @@ const ProgramSettings = ({
           />
           {!isCollapsed && (
             <div className="space-y-4">
-              <div className="flex justify-end mb-4">
-                <Button
-                  onClick={() => {
-                    const newButton = { text: "", link: "", linkType: "internal", bgColor: "217 91% 60%", textColor: "0 0% 100%" };
-                    handleUpdateButtonGroup(sectionId, { buttons: [...group.buttons, newButton] });
-                  }}
-                  size="sm"
+              <div>
+                <Label>정렬</Label>
+                <select
+                  className="w-full border rounded px-3 py-2"
+                  value={group.alignment || "center"}
+                  onChange={(e) => handleUpdateButtonGroup(sectionId, { alignment: e.target.value })}
                 >
-                  <Plus className="w-4 h-4 mr-2" />
-                  버튼 추가
-                </Button>
+                  <option value="left">왼쪽</option>
+                  <option value="center">중앙</option>
+                  <option value="right">오른쪽</option>
+                </select>
               </div>
+              <Button
+                onClick={() => {
+                  const newButton = { text: "", link: "", linkType: "internal", bgColor: "217 91% 60%", textColor: "0 0% 100%" };
+                  handleUpdateButtonGroup(sectionId, { buttons: [...group.buttons, newButton] });
+                }}
+                size="sm"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                버튼 추가
+              </Button>
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -624,20 +634,6 @@ const ProgramSettings = ({
                   </div>
                 </SortableContext>
               </DndContext>
-              {group.buttons && group.buttons.length > 0 && (
-                <div className="mt-6 pt-4 border-t">
-                  <Label>버튼 정렬</Label>
-                  <select
-                    className="w-full border rounded px-3 py-2"
-                    value={group.alignment || "center"}
-                    onChange={(e) => handleUpdateButtonGroup(sectionId, { alignment: e.target.value })}
-                  >
-                    <option value="left">왼쪽</option>
-                    <option value="center">중앙</option>
-                    <option value="right">오른쪽</option>
-                  </select>
-                </div>
-              )}
             </div>
           )}
         </div>
