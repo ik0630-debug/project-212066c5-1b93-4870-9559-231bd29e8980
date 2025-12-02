@@ -36,12 +36,12 @@ export const useSettings = () => {
   const [settings, setSettings] = useState<any>({
     program_title: "",
     program_description: "",
-    program_header_color: "220 70% 25%",
+    program_header_color: "221 83% 33%",
     program_enabled: "true",
     location_page_title: "",
     location_page_description: "",
     location_header_image: "",
-    location_header_color: "220 70% 25%",
+    location_header_color: "221 83% 33%",
     location_enabled: "true",
     location_name: "",
     location_address: "",
@@ -61,6 +61,7 @@ export const useSettings = () => {
     registration_success_title: "신청이 완료되었습니다!",
     registration_success_description: "참가 확인 메일을 발송해드렸습니다.",
     registration_enabled: "true",
+    registration_header_bg_color: "221 83% 33%",
   });
 
   const [registrationFields, setRegistrationFields] = useState([
@@ -100,6 +101,10 @@ export const useSettings = () => {
     const loadedLocationBottomButtons: any = {};
     const loadedDownloadFiles: any = {};
     const loadedLocationButtonGroups: any = {};
+    const loadedRegistrationHeroSections: any = {};
+    const loadedRegistrationInfoCardSections: any = {};
+    const loadedRegistrationDescriptions: any = {};
+    const loadedRegistrationButtonGroups: any = {};
     const registrationSettingsData: any = {};
 
     data?.forEach(({ key, value, category }) => {
@@ -119,6 +124,12 @@ export const useSettings = () => {
       if (key === "location_section_order") {
         try {
           setLocationSectionOrder(JSON.parse(value));
+        } catch {}
+        return;
+      }
+      if (key === "registration_section_order") {
+        try {
+          setRegistrationSectionOrder(JSON.parse(value));
         } catch {}
         return;
       }
@@ -226,6 +237,30 @@ export const useSettings = () => {
             } catch (e) {
               console.error("Failed to parse registration fields", e);
             }
+          } else if (key.startsWith("registration_hero_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedRegistrationHeroSections[index] = parsed;
+            } catch {}
+          } else if (key.startsWith("registration_info_card_section_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedRegistrationInfoCardSections[index] = parsed;
+            } catch {}
+          } else if (key.startsWith("registration_description_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedRegistrationDescriptions[index] = parsed;
+            } catch {}
+          } else if (key.startsWith("registration_button_group_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedRegistrationButtonGroups[index] = parsed;
+            } catch {}
           } else {
             registrationSettingsData[key] = value;
           }
@@ -246,6 +281,10 @@ export const useSettings = () => {
     const locationButtons = Object.values(loadedLocationBottomButtons).filter((btn: any) => btn.text);
     const downloadFilesArray = Object.values(loadedDownloadFiles).filter((file: any) => file.name && file.url);
     const locationButtonGroupsArray = Object.values(loadedLocationButtonGroups).filter((group: any) => group.id);
+    const registrationHeroSectionsArray = Object.values(loadedRegistrationHeroSections).filter((hero: any) => hero.id);
+    const registrationInfoCardSectionsArray = Object.values(loadedRegistrationInfoCardSections).filter((section: any) => section.id);
+    const registrationDescriptionsArray = Object.values(loadedRegistrationDescriptions).filter((desc: any) => desc.id);
+    const registrationButtonGroupsArray = Object.values(loadedRegistrationButtonGroups).filter((group: any) => group.id);
     
     console.log('useSettings: Loaded hero sections:', heroSectionsArray.length);
     console.log('useSettings: Loaded info card sections:', infoCardSectionsArray.length);
@@ -258,6 +297,10 @@ export const useSettings = () => {
     console.log('useSettings: Loaded location bottom buttons:', locationButtons.length);
     console.log('useSettings: Loaded download files:', downloadFilesArray.length);
     console.log('useSettings: Loaded location button groups:', locationButtonGroupsArray.length);
+    console.log('useSettings: Loaded registration hero sections:', registrationHeroSectionsArray.length);
+    console.log('useSettings: Loaded registration info card sections:', registrationInfoCardSectionsArray.length);
+    console.log('useSettings: Loaded registration descriptions:', registrationDescriptionsArray.length);
+    console.log('useSettings: Loaded registration button groups:', registrationButtonGroupsArray.length);
     
     // 홈 섹션이 모두 비어있으면 기본 섹션들 생성
     const isHomeSectionsEmpty = heroSectionsArray.length === 0 && 
@@ -414,6 +457,11 @@ export const useSettings = () => {
     console.log('useSettings: Loaded transport cards:', loadedTransportCardsArray.length, loadedTransportCardsArray);
     setTransportCards(loadedTransportCardsArray);
     
+    setRegistrationHeroSections(registrationHeroSectionsArray);
+    setRegistrationInfoCardSections(registrationInfoCardSectionsArray);
+    setRegistrationDescriptions(registrationDescriptionsArray);
+    setRegistrationButtonGroups(registrationButtonGroupsArray);
+    
     setSettings(settingsMap);
     setRegistrationSettings(prev => ({ ...prev, ...registrationSettingsData }));
   }, [defaultProjectId]);
@@ -545,6 +593,34 @@ export const useSettings = () => {
           value: JSON.stringify({ ...group, order: index }),
           project_id: defaultProjectId,
         })),
+        // Save registration hero sections
+        ...registrationHeroSections.map((hero, index) => ({
+          category: "registration",
+          key: `registration_hero_${index}`,
+          value: JSON.stringify({ ...hero, order: index }),
+          project_id: defaultProjectId,
+        })),
+        // Save registration info card sections
+        ...registrationInfoCardSections.map((section, index) => ({
+          category: "registration",
+          key: `registration_info_card_section_${index}`,
+          value: JSON.stringify({ ...section, order: index }),
+          project_id: defaultProjectId,
+        })),
+        // Save registration descriptions
+        ...registrationDescriptions.map((desc, index) => ({
+          category: "registration",
+          key: `registration_description_${index}`,
+          value: JSON.stringify({ ...desc, order: index }),
+          project_id: defaultProjectId,
+        })),
+        // Save registration button groups
+        ...registrationButtonGroups.map((group, index) => ({
+          category: "registration",
+          key: `registration_button_group_${index}`,
+          value: JSON.stringify({ ...group, order: index }),
+          project_id: defaultProjectId,
+        })),
         // Save section orders
         {
           category: "home",
@@ -562,6 +638,12 @@ export const useSettings = () => {
           category: "location",
           key: "location_section_order",
           value: JSON.stringify(locationSectionOrder),
+          project_id: defaultProjectId,
+        },
+        {
+          category: "registration",
+          key: "registration_section_order",
+          value: JSON.stringify(registrationSectionOrder),
           project_id: defaultProjectId,
         },
       ];
