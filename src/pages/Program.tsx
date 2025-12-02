@@ -292,6 +292,11 @@ const Program = () => {
   };
 
   const renderSection = (sectionId: string) => {
+    // Program Cards Section
+    if (sectionId === "program_cards") {
+      return renderProgramCards();
+    }
+
     // Hero sections
     const heroSection = programSettings.heroSections.find((s) => s.id === sectionId);
     if (heroSection) return renderHeroSection(heroSection);
@@ -365,9 +370,6 @@ const Program = () => {
             </div>
           </div>
         )}
-
-        {/* Program Cards Section - Always render if there are cards */}
-        {renderProgramCards()}
 
         {/* Mobile Navigation */}
         <MobileNavigation />
