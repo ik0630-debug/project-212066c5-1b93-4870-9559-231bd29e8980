@@ -11,7 +11,7 @@ import { ColorPicker } from "@/components/ColorPicker";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableInfoCard from "@/components/SortableInfoCard";
-import SortableBottomButton from "@/components/SortableBottomButton";
+import SortableButton from "@/components/SortableButton";
 import { renderDescriptionSection, renderButtonGroupSection } from "./HomeSettings_renderSections";
 import { renderHeroSection } from "./HomeSettings_renderHeroSection";
 import { renderInfoCardSection } from "./HomeSettings_renderInfoCardSection";

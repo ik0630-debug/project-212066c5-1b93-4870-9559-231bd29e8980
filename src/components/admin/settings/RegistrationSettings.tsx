@@ -11,7 +11,7 @@ import IconPicker from "@/components/IconPicker";
 import ImageUpload from "@/components/ImageUpload";
 import { ColorPicker } from "@/components/ColorPicker";
 import SortableInfoCard from "@/components/SortableInfoCard";
-import SortableBottomButton from "@/components/SortableBottomButton";
+import SortableButton from "@/components/SortableButton";
 import { SettingsField } from "./SettingsField";
 import { SettingsSection } from "./SettingsSection";
 import { SettingsToggle } from "./SettingsToggle";

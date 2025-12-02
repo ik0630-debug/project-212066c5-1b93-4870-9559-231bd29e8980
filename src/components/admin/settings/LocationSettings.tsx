@@ -8,8 +8,7 @@ import { Plus, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableTransportCard from "@/components/SortableTransportCard";
-import SortableBottomButton from "@/components/SortableBottomButton";
-import SortableDownloadFile from "@/components/SortableDownloadFile";
+import SortableButton from "@/components/SortableButton";
 import { ColorPicker } from "@/components/ColorPicker";
 import ImageUpload from "@/components/ImageUpload";
 
@@ -70,7 +69,7 @@ const LocationSettings = ({
   };
 
   const handleAddBottomButton = () => {
-    onBottomButtonsChange([...bottomButtons, { text: "새 버튼", link: "/", variant: "outline", size: "default", fontSize: "text-sm" }]);
+    onBottomButtonsChange([...bottomButtons, { text: "새 버튼", link: "/", linkType: "internal", variant: "outline", size: "default", fontSize: "text-sm" }]);
   };
 
   const handleUpdateBottomButton = (id: string, data: any) => {
@@ -90,6 +89,90 @@ const LocationSettings = ({
       const oldIndex = bottomButtons.findIndex((_, i) => i.toString() === active.id);
       const newIndex = bottomButtons.findIndex((_, i) => i.toString() === over.id);
       onBottomButtonsChange(arrayMove(bottomButtons, oldIndex, newIndex));
+    }
+  };
+
+  // Merge bottomButtons and downloadFiles into unified buttons array
+  const unifiedButtons = [
+    ...bottomButtons.map((btn: any) => ({
+      ...btn,
+      linkType: btn.linkType || (btn.link?.startsWith('http') ? 'external' : 'internal'),
+    })),
+    ...downloadFiles.map((file: any) => ({
+      text: file.name,
+      link: file.url,
+      fileUrl: file.url,
+      linkType: 'file',
+      variant: 'outline',
+      size: 'default',
+      fontSize: 'text-sm',
+    })),
+  ];
+
+  const handleAddUnifiedButton = () => {
+    const newButton = { text: "새 버튼", link: "/", linkType: "internal", variant: "outline", size: "default", fontSize: "text-sm" };
+    onBottomButtonsChange([...bottomButtons, newButton]);
+  };
+
+  const handleUpdateUnifiedButton = (index: number, data: any) => {
+    const totalBottomButtons = bottomButtons.length;
+    
+    if (index < totalBottomButtons) {
+      // Update in bottomButtons
+      const newButtons = [...bottomButtons];
+      newButtons[index] = { ...newButtons[index], ...data };
+      onBottomButtonsChange(newButtons);
+    } else {
+      // Update in downloadFiles (convert to button)
+      const fileIndex = index - totalBottomButtons;
+      const newDownloadFiles = [...downloadFiles];
+      newDownloadFiles.splice(fileIndex, 1);
+      onDownloadFilesChange(newDownloadFiles);
+      
+      // Add as button
+      const newButton = {
+        text: data.text,
+        link: data.linkType === 'file' ? (data.fileUrl || data.link) : data.link,
+        fileUrl: data.fileUrl,
+        linkType: data.linkType,
+        variant: data.variant || 'outline',
+        size: data.size || 'default',
+        fontSize: data.fontSize || 'text-sm',
+        bgColor: data.bgColor,
+        textColor: data.textColor,
+      };
+      onBottomButtonsChange([...bottomButtons, newButton]);
+    }
+  };
+
+  const handleDeleteUnifiedButton = (index: number) => {
+    const totalBottomButtons = bottomButtons.length;
+    
+    if (index < totalBottomButtons) {
+      // Delete from bottomButtons
+      onBottomButtonsChange(bottomButtons.filter((_, i) => i !== index));
+    } else {
+      // Delete from downloadFiles
+      const fileIndex = index - totalBottomButtons;
+      onDownloadFilesChange(downloadFiles.filter((_, i) => i !== fileIndex));
+    }
+  };
+
+  const handleDragEndUnifiedButtons = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = parseInt(active.id as string);
+      const newIndex = parseInt(over.id as string);
+      const newButtons = arrayMove(unifiedButtons, oldIndex, newIndex);
+      
+      // Split back into bottomButtons and downloadFiles
+      const newBottomButtons = newButtons.filter((btn: any) => btn.linkType !== 'file' || !btn.fileUrl || btn.text !== btn.link);
+      const newDownloadFiles = newButtons
+        .filter((btn: any) => btn.linkType === 'file' && btn.fileUrl)
+        .map((btn: any) => ({ name: btn.text, url: btn.fileUrl || btn.link }));
+      
+      onBottomButtonsChange(newBottomButtons);
+      onDownloadFilesChange(newDownloadFiles);
     }
   };
 
@@ -228,69 +311,39 @@ const LocationSettings = ({
               <Separator />
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label>다운로드 파일</Label>
-                  <Button onClick={handleAddDownloadFile} size="sm">
+                  <Label>버튼</Label>
+                  <Button onClick={handleAddUnifiedButton} size="sm">
                     <Plus className="w-4 h-4 mr-2" />
-                    파일 추가
+                    버튼 추가
                   </Button>
                 </div>
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
-                  onDragEnd={handleDragEndDownloadFiles}
+                  onDragEnd={handleDragEndUnifiedButtons}
                 >
                   <SortableContext
-                    items={downloadFiles.map((_, i) => i.toString())}
+                    items={unifiedButtons.map((_, i) => i.toString())}
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-4">
-                      {downloadFiles.map((file, i) => (
-                        <SortableDownloadFile
+                      {unifiedButtons.map((button: any, i: number) => (
+                        <SortableButton
                           key={i}
                           id={i.toString()}
-                          file={file}
-                          onUpdate={(data) => handleUpdateDownloadFile(i, data)}
-                          onDelete={() => handleDeleteDownloadFile(i)}
+                          button={{ id: i.toString() }}
+                          buttonData={button}
+                          onUpdate={(id, data) => handleUpdateUnifiedButton(parseInt(id), data)}
+                          onDelete={(id) => handleDeleteUnifiedButton(parseInt(id))}
                         />
                       ))}
                     </div>
                   </SortableContext>
                 </DndContext>
                 <p className="text-sm text-muted-foreground">
-                  사용자가 다운로드할 수 있는 파일을 업로드하세요 (PDF, 이미지 등)
+                  버튼을 추가하고 링크 타입을 선택하세요 (앱 내 페이지, 외부 URL, 파일 다운로드)
                 </p>
               </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <Label>버튼</Label>
-                <Button onClick={handleAddBottomButton} size="sm">
-                  <Plus className="w-4 h-4 mr-2" />
-                  버튼 추가
-                </Button>
-              </div>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEndBottomButtons}
-              >
-                <SortableContext
-                  items={bottomButtons.map((_, i) => i.toString())}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {bottomButtons.map((button, i) => (
-                      <SortableBottomButton
-                        key={i}
-                        id={i.toString()}
-                        button={{ id: i.toString() }}
-                        buttonData={button}
-                        onUpdate={(id, data) => handleUpdateBottomButton(id, data)}
-                        onDelete={(id) => handleDeleteBottomButton(parseInt(id))}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
             </div>
           </div>
         );
