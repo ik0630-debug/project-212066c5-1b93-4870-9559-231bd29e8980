@@ -214,7 +214,15 @@ const SettingsTabs = ({
   return (
     <div className="grid grid-cols-[2fr_1fr] gap-6">
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold">사이트 설정</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">페이지 설정</h2>
+          <Button onClick={() => {
+            onSave();
+            setTimeout(() => setPreviewKey(prev => prev + 1), 500);
+          }} className="bg-gradient-accent text-accent-foreground">
+            저장
+          </Button>
+        </div>
 
         <Tabs value={activeTab.toString()} onValueChange={(v) => onTabChange(parseInt(v))}>
           <TabsList className="grid w-full grid-cols-4">
@@ -225,15 +233,6 @@ const SettingsTabs = ({
               </TabsTrigger>
             ))}
           </TabsList>
-
-          <div className="flex justify-end mt-4">
-            <Button onClick={() => {
-              onSave();
-              setTimeout(() => setPreviewKey(prev => prev + 1), 500);
-            }} className="bg-gradient-accent text-accent-foreground">
-              저장
-            </Button>
-          </div>
 
           <div className="mt-6">{renderContent()}</div>
         </Tabs>
