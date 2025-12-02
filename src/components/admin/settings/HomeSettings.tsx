@@ -461,7 +461,7 @@ const HomeSettings = ({
           className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
         >
           <Plus className="w-3 h-3 mr-1.5" />
-          버튼 그룹
+          버튼
         </Button>
       </div>
 
