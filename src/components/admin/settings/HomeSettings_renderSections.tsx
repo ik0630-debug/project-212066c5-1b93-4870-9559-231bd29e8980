@@ -140,7 +140,7 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
       
       {!isCollapsed && (
         <div className="space-y-4">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end">
             <Button onClick={handleAddButton} size="sm">
               <Plus className="w-4 h-4 mr-2" />
               버튼 추가
@@ -169,18 +169,6 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
               </div>
             </SortableContext>
           </DndContext>
-          <div className="mt-4">
-            <Label>버튼 정렬</Label>
-            <select
-              className="w-full p-2 border rounded-md"
-              value={buttonGroup.alignment || "center"}
-              onChange={(e) => onUpdateButtonGroup(sectionId, { alignment: e.target.value })}
-            >
-              <option value="left">왼쪽</option>
-              <option value="center">가운데</option>
-              <option value="right">오른쪽</option>
-            </select>
-          </div>
         </div>
       )}
     </div>

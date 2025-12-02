@@ -205,6 +205,28 @@ const SortableButton = ({
       </div>
 
       <div>
+        <Label>버튼 정렬</Label>
+        <Select
+          value={buttonData.alignment || "center"}
+          onValueChange={(value) =>
+            onUpdate(button.id, {
+              ...buttonData,
+              alignment: value,
+            })
+          }
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="bg-popover z-50">
+            <SelectItem value="left">왼쪽</SelectItem>
+            <SelectItem value="center">가운데</SelectItem>
+            <SelectItem value="right">오른쪽</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
         <ColorPicker
           value={buttonData.bgColor || "221 83% 53%"}
           onChange={(color) =>
