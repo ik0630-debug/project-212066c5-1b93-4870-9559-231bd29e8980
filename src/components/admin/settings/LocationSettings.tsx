@@ -155,7 +155,7 @@ const LocationSettings = ({
         <Button variant="outline" size="sm" onClick={() => handleMoveSectionDown(index)} disabled={index === sectionOrder.length - 1}>
           <ArrowDown className="w-4 h-4" />
         </Button>
-        <Button variant="outline" size="sm" onClick={() => handleRemoveSection(sectionId)}>
+        <Button variant="destructive" size="sm" onClick={() => handleRemoveSection(sectionId)}>
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
