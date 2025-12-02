@@ -47,11 +47,11 @@ const AdminTabs = ({
   projectRole,
 }: AdminTabsProps) => {
   const allTabs = [
+    { icon: Wrench, label: "참가자 QR", value: "config" as const, requireAdmin: true },
     { icon: FileText, label: "신청 관리", value: "registrations" as const, requireAdmin: false },
     { icon: Users, label: "사용자 관리", value: "users" as const, requireAdmin: true },
     { icon: UserCog, label: "프로젝트 멤버 관리", value: "members" as const, requireAdmin: true },
     { icon: Settings, label: "페이지 설정", value: "page-settings" as const, requireAdmin: true },
-    { icon: Wrench, label: "설정", value: "config" as const, requireAdmin: true },
   ];
 
   // Filter tabs based on role
