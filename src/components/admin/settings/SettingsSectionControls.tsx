@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowUp, ArrowDown, Copy, Trash2 } from "lucide-react";
 
-interface SectionControlsProps {
+interface SettingsSectionControlsProps {
   title: string;
   index: number;
   sectionId: string;
@@ -14,7 +14,7 @@ interface SectionControlsProps {
   onDelete?: () => void;
 }
 
-export const ProgramSectionControls = ({
+export const SettingsSectionControls = ({
   title,
   index,
   sectionId,
@@ -25,7 +25,7 @@ export const ProgramSectionControls = ({
   onMoveDown,
   onCopy,
   onDelete,
-}: SectionControlsProps) => {
+}: SettingsSectionControlsProps) => {
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-3">

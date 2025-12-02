@@ -10,7 +10,7 @@ import { SortableProgramCard } from "@/components/SortableProgramCard";
 import ImageUpload from "@/components/ImageUpload";
 import SortableInfoCard from "@/components/SortableInfoCard";
 import SortableButton from "@/components/SortableButton";
-import { ProgramSectionControls } from "./ProgramSectionControls";
+import { SettingsSectionControls } from "./SettingsSectionControls";
 
 export const getSectionTitle = (sectionId: string): string => {
   if (sectionId.startsWith("program_hero_")) return "이미지";
@@ -110,7 +110,7 @@ export const renderProgramSection = (props: RenderSectionProps) => {
 
     return (
       <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-        <ProgramSectionControls
+        <SettingsSectionControls
           title={getSectionTitle(sectionId)}
           index={index}
           sectionId={sectionId}
@@ -154,7 +154,7 @@ export const renderProgramSection = (props: RenderSectionProps) => {
 
     return (
       <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-        <ProgramSectionControls
+        <SettingsSectionControls
           title={getSectionTitle(sectionId)}
           index={index}
           sectionId={sectionId}
@@ -221,7 +221,7 @@ export const renderProgramSection = (props: RenderSectionProps) => {
 
     return (
       <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-        <ProgramSectionControls
+        <SettingsSectionControls
           title={getSectionTitle(sectionId)}
           index={index}
           sectionId={sectionId}
@@ -288,7 +288,7 @@ export const renderProgramSection = (props: RenderSectionProps) => {
 
     return (
       <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-        <ProgramSectionControls
+        <SettingsSectionControls
           title={getSectionTitle(sectionId)}
           index={index}
           sectionId={sectionId}
@@ -354,7 +354,7 @@ export const renderProgramSection = (props: RenderSectionProps) => {
   if (sectionId === "program_cards") {
     return (
       <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-        <ProgramSectionControls
+        <SettingsSectionControls
           title={getSectionTitle(sectionId)}
           index={index}
           sectionId={sectionId}
