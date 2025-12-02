@@ -17,11 +17,13 @@ interface LocationSettingsProps {
   transportCards: any[];
   bottomButtons: any[];
   downloadFiles: any[];
+  buttonGroups: any[];
   sectionOrder: string[];
   onSettingChange: (key: string, value: string) => void;
   onTransportCardsChange: (cards: any[]) => void;
   onBottomButtonsChange: (buttons: any[]) => void;
   onDownloadFilesChange: (files: any[]) => void;
+  onButtonGroupsChange: (groups: any[]) => void;
   onSectionOrderChange: (order: string[]) => void;
   onSaveSectionOrder: (order: string[]) => void;
 }
@@ -31,11 +33,13 @@ const LocationSettings = ({
   transportCards,
   bottomButtons,
   downloadFiles,
+  buttonGroups,
   sectionOrder,
   onSettingChange,
   onTransportCardsChange,
   onBottomButtonsChange,
   onDownloadFilesChange,
+  onButtonGroupsChange,
   onSectionOrderChange,
   onSaveSectionOrder,
 }: LocationSettingsProps) => {
@@ -224,7 +228,9 @@ const LocationSettings = ({
       case "location_info": return "장소 정보";
       case "transport_info": return "교통 정보";
       case "contact_info": return "연락처";
-      default: return sectionId;
+      default:
+        if (sectionId.startsWith("button_group_")) return "버튼";
+        return sectionId;
     }
   };
 
@@ -454,6 +460,85 @@ const LocationSettings = ({
         );
 
       default:
+        if (sectionId.startsWith("button_group_")) {
+          const buttonGroup = buttonGroups.find((g) => g.id === sectionId);
+          if (!buttonGroup) return null;
+
+          const handleAddButton = () => {
+            const newButtons = [...(buttonGroup.buttons || []), { text: "", link: "", linkType: "internal", fontSize: "text-lg" }];
+            onButtonGroupsChange(buttonGroups.map(g => g.id === sectionId ? { ...g, buttons: newButtons } : g));
+          };
+
+          const handleUpdateButton = (buttonIndex: number, data: any) => {
+            const newButtons = [...buttonGroup.buttons];
+            newButtons[buttonIndex] = { ...newButtons[buttonIndex], ...data };
+            onButtonGroupsChange(buttonGroups.map(g => g.id === sectionId ? { ...g, buttons: newButtons } : g));
+          };
+
+          const handleDeleteButton = (buttonIndex: number) => {
+            const newButtons = buttonGroup.buttons.filter((_: any, i: number) => i !== buttonIndex);
+            onButtonGroupsChange(buttonGroups.map(g => g.id === sectionId ? { ...g, buttons: newButtons } : g));
+          };
+
+          const handleDragEndButtons = (event: DragEndEvent) => {
+            const { active, over } = event;
+            if (over && active.id !== over.id) {
+              const oldIndex = parseInt(active.id as string);
+              const newIndex = parseInt(over.id as string);
+              const newButtons = arrayMove(buttonGroup.buttons, oldIndex, newIndex);
+              onButtonGroupsChange(buttonGroups.map(g => g.id === sectionId ? { ...g, buttons: newButtons } : g));
+            }
+          };
+
+          return (
+            <div key={sectionId} className="space-y-4">
+              <SectionControls title={getSectionTitle(sectionId)} index={index} sectionId={sectionId} />
+              <div className="space-y-4">
+                <div className="mb-4">
+                  <Label>버튼 정렬</Label>
+                  <select
+                    className="w-full p-2 border rounded-md"
+                    value={buttonGroup.alignment || "center"}
+                    onChange={(e) => onButtonGroupsChange(buttonGroups.map(g => g.id === sectionId ? { ...g, alignment: e.target.value } : g))}
+                  >
+                    <option value="left">왼쪽</option>
+                    <option value="center">가운데</option>
+                    <option value="right">오른쪽</option>
+                  </select>
+                </div>
+                <div className="flex justify-end mb-4">
+                  <Button onClick={handleAddButton} size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    버튼 추가
+                  </Button>
+                </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEndButtons}
+                >
+                  <SortableContext
+                    items={(buttonGroup.buttons || []).map((_: any, i: number) => i.toString())}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-4">
+                      {(buttonGroup.buttons || []).map((button: any, i: number) => (
+                        <SortableButton
+                          key={i}
+                          id={i.toString()}
+                          button={{ id: i.toString() }}
+                          buttonData={button}
+                          onUpdate={(id, data) => handleUpdateButton(parseInt(id), data)}
+                          onDelete={(id) => handleDeleteButton(parseInt(id))}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </div>
+            </div>
+          );
+        }
         return null;
     }
   };
@@ -473,6 +558,18 @@ const LocationSettings = ({
   };
 
   const isSectionAdded = (sectionId: string) => sectionOrder.includes(sectionId);
+
+  const handleAddButtonGroup = () => {
+    const newId = `button_group_${Date.now()}`;
+    const newButtonGroup = {
+      id: newId,
+      alignment: "center",
+      buttons: [{ text: "새 버튼", link: "/", linkType: "internal", variant: "outline", size: "default", fontSize: "text-sm" }],
+      order: buttonGroups.length,
+    };
+    onButtonGroupsChange([...buttonGroups, newButtonGroup]);
+    handleAddSection(newId);
+  };
 
   return (
     <div className="space-y-8">
@@ -527,6 +624,15 @@ const LocationSettings = ({
         >
           <Plus className="w-3 h-3 mr-1.5" />
           교통정보
+        </Button>
+        <Button 
+          onClick={handleAddButtonGroup} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          버튼
         </Button>
       </div>
 
