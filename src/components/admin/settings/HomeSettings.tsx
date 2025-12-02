@@ -262,7 +262,7 @@ const HomeSettings = ({
 
   const getSectionTitle = (sectionId: string): string => {
     if (sectionId.startsWith("hero_")) return "이미지";
-    if (sectionId.startsWith("info_card_section_") || sectionId.startsWith("infocard_section_")) return "정보 섹션";
+    if (sectionId.startsWith("info_card_section_") || sectionId.startsWith("infocard_section_")) return "아이콘 카드";
     if (sectionId.startsWith("description_")) return "설명 카드";
     if (sectionId.startsWith("button_group_")) return "버튼";
     return sectionId;
@@ -452,7 +452,7 @@ const HomeSettings = ({
           className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
         >
           <Plus className="w-3 h-3 mr-1.5" />
-          정보 카드
+          아이콘 카드
         </Button>
         <Button 
           onClick={handleAddButtonGroup} 
