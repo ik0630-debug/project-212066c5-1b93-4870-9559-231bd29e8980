@@ -4,15 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Copy, ArrowUp, ArrowDown, Trash2, Plus } from "lucide-react";
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { Plus } from "lucide-react";
 import { ColorPicker } from "@/components/ColorPicker";
-import { SortableProgramCard } from "@/components/SortableProgramCard";
-import ImageUpload from "@/components/ImageUpload";
-import SortableInfoCard from "@/components/SortableInfoCard";
-import SortableButton from "@/components/SortableButton";
-import { Textarea } from "@/components/ui/textarea";
+import { useProgramSettingsHandlers } from "@/hooks/admin/useProgramSettingsHandlers";
+import { renderProgramSection } from "./ProgramSettings_renderSections";
 
 interface ProgramSettingsProps {
   settings: any;
@@ -51,11 +46,6 @@ const ProgramSettings = ({
 }: ProgramSettingsProps) => {
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
   
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
-
   const toggleSection = (sectionId: string) => {
     setCollapsedSections(prev => ({
       ...prev,
@@ -63,633 +53,28 @@ const ProgramSettings = ({
     }));
   };
 
-  const handleAddProgramCard = () => {
-    onProgramCardsChange([...programCards, { time: "", title: "", description: "", icon: "Clock" }]);
-  };
-
-  const handleDeleteProgramCard = (index: number) => {
-    onProgramCardsChange(programCards.filter((_, i) => i !== index));
-  };
-
-  const handleDuplicateProgramCard = (index: number) => {
-    const cardToDuplicate = { ...programCards[index] };
-    const newCards = [...programCards];
-    newCards.splice(index + 1, 0, cardToDuplicate);
-    onProgramCardsChange(newCards);
-  };
-
-  const handleUpdateProgramCard = (index: number, updates: any) => {
-    const newCards = [...programCards];
-    newCards[index] = { ...newCards[index], ...updates };
-    onProgramCardsChange(newCards);
-  };
-
-  const handleMoveUp = (index: number) => {
-    if (index === 0) return;
-    const newCards = arrayMove(programCards, index, index - 1);
-    onProgramCardsChange(newCards);
-  };
-
-  const handleMoveDown = (index: number) => {
-    if (index === programCards.length - 1) return;
-    const newCards = arrayMove(programCards, index, index + 1);
-    onProgramCardsChange(newCards);
-  };
-
-  const handleDragEndProgramCards = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = programCards.findIndex((_, i) => i.toString() === active.id);
-      const newIndex = programCards.findIndex((_, i) => i.toString() === over.id);
-      onProgramCardsChange(arrayMove(programCards, oldIndex, newIndex));
-    }
-  };
-
-  // Hero Section handlers
-  const handleAddHeroSection = () => {
-    const newId = `program_hero_${Date.now()}`;
-    const newHero = {
-      id: newId,
-      enabled: "true",
-      imageUrl: "",
-      overlayOpacity: "0",
-      order: heroSections.length,
-    };
-    onHeroSectionsChange([...heroSections, newHero]);
-    onSectionOrderChange([...sectionOrder, newId]);
-    onSaveSectionOrder([...sectionOrder, newId]);
-  };
-
-  const handleUpdateHeroSection = (id: string, data: any) => {
-    const newHeroSections = heroSections.map((hero) =>
-      hero.id === id ? { ...hero, ...data } : hero
-    );
-    onHeroSectionsChange(newHeroSections);
-  };
-
-  const handleDeleteHeroSection = (id: string) => {
-    onHeroSectionsChange(heroSections.filter((hero) => hero.id !== id));
-    const newOrder = sectionOrder.filter((sectionId) => sectionId !== id);
-    onSectionOrderChange(newOrder);
-    onSaveSectionOrder(newOrder);
-  };
-
-  const handleCopyHeroSection = (id: string) => {
-    const heroToCopy = heroSections.find((hero) => hero.id === id);
-    if (heroToCopy) {
-      const newId = `program_hero_${Date.now()}`;
-      const newHero = { ...heroToCopy, id: newId, order: heroSections.length };
-      onHeroSectionsChange([...heroSections, newHero]);
-      
-      const indexInOrder = sectionOrder.indexOf(id);
-      const newOrder = [...sectionOrder];
-      newOrder.splice(indexInOrder + 1, 0, newId);
-      onSectionOrderChange(newOrder);
-      onSaveSectionOrder(newOrder);
-    }
-  };
-
-  // Description handlers
-  const handleAddDescription = () => {
-    const newId = `program_description_${Date.now()}`;
-    const newDesc = {
-      id: newId,
-      enabled: "true",
-      title: "",
-      content: "",
-      titleFontSize: "18",
-      contentFontSize: "16",
-      bgColor: "0 0% 100%",
-      order: descriptions.length,
-    };
-    onDescriptionsChange([...descriptions, newDesc]);
-    onSectionOrderChange([...sectionOrder, newId]);
-    onSaveSectionOrder([...sectionOrder, newId]);
-  };
-
-  const handleUpdateDescription = (id: string, data: any) => {
-    const newDescriptions = descriptions.map((desc) =>
-      desc.id === id ? { ...desc, ...data } : desc
-    );
-    onDescriptionsChange(newDescriptions);
-  };
-
-  const handleDeleteDescription = (id: string) => {
-    onDescriptionsChange(descriptions.filter((desc) => desc.id !== id));
-    const newOrder = sectionOrder.filter((sectionId) => sectionId !== id);
-    onSectionOrderChange(newOrder);
-    onSaveSectionOrder(newOrder);
-  };
-
-  const handleCopyDescription = (id: string) => {
-    const descToCopy = descriptions.find((desc) => desc.id === id);
-    if (descToCopy) {
-      const newId = `program_description_${Date.now()}`;
-      const newDesc = { ...descToCopy, id: newId, order: descriptions.length };
-      onDescriptionsChange([...descriptions, newDesc]);
-      
-      const indexInOrder = sectionOrder.indexOf(id);
-      const newOrder = [...sectionOrder];
-      newOrder.splice(indexInOrder + 1, 0, newId);
-      onSectionOrderChange(newOrder);
-      onSaveSectionOrder(newOrder);
-    }
-  };
-
-  // Info Card Section handlers
-  const handleAddInfoCardSection = () => {
-    const newId = `program_info_card_section_${Date.now()}`;
-    const newSection = {
-      id: newId,
-      enabled: "true",
-      cards: [],
-      order: infoCardSections.length,
-    };
-    onInfoCardSectionsChange([...infoCardSections, newSection]);
-    onSectionOrderChange([...sectionOrder, newId]);
-    onSaveSectionOrder([...sectionOrder, newId]);
-  };
-
-  const handleUpdateInfoCardSection = (id: string, data: any) => {
-    const newSections = infoCardSections.map((section) =>
-      section.id === id ? { ...section, ...data } : section
-    );
-    onInfoCardSectionsChange(newSections);
-  };
-
-  const handleDeleteInfoCardSection = (id: string) => {
-    onInfoCardSectionsChange(infoCardSections.filter((section) => section.id !== id));
-    const newOrder = sectionOrder.filter((sectionId) => sectionId !== id);
-    onSectionOrderChange(newOrder);
-    onSaveSectionOrder(newOrder);
-  };
-
-  const handleCopyInfoCardSection = (id: string) => {
-    const sectionToCopy = infoCardSections.find((section) => section.id === id);
-    if (sectionToCopy) {
-      const newId = `program_info_card_section_${Date.now()}`;
-      const newSection = { ...sectionToCopy, id: newId, order: infoCardSections.length };
-      onInfoCardSectionsChange([...infoCardSections, newSection]);
-      
-      const indexInOrder = sectionOrder.indexOf(id);
-      const newOrder = [...sectionOrder];
-      newOrder.splice(indexInOrder + 1, 0, newId);
-      onSectionOrderChange(newOrder);
-      onSaveSectionOrder(newOrder);
-    }
-  };
-
-  // Button Group handlers
-  const handleAddButtonGroup = () => {
-    const newId = `program_button_group_${Date.now()}`;
-    const newGroup = {
-      id: newId,
-      enabled: "true",
-      alignment: "center",
-      buttons: [{ text: "새 버튼", link: "", linkType: "internal", size: "default", fontSize: "text-sm" }],
-      order: buttonGroups.length,
-    };
-    onButtonGroupsChange([...buttonGroups, newGroup]);
-    onSectionOrderChange([...sectionOrder, newId]);
-    onSaveSectionOrder([...sectionOrder, newId]);
-  };
-
-  const handleUpdateButtonGroup = (id: string, data: any) => {
-    const newGroups = buttonGroups.map((group) =>
-      group.id === id ? { ...group, ...data } : group
-    );
-    onButtonGroupsChange(newGroups);
-  };
-
-  const handleDeleteButtonGroup = (id: string) => {
-    onButtonGroupsChange(buttonGroups.filter((group) => group.id !== id));
-    const newOrder = sectionOrder.filter((sectionId) => sectionId !== id);
-    onSectionOrderChange(newOrder);
-    onSaveSectionOrder(newOrder);
-  };
-
-  const handleCopyButtonGroup = (id: string) => {
-    const groupToCopy = buttonGroups.find((group) => group.id === id);
-    if (groupToCopy) {
-      const newId = `program_button_group_${Date.now()}`;
-      const newGroup = { ...groupToCopy, id: newId, order: buttonGroups.length };
-      onButtonGroupsChange([...buttonGroups, newGroup]);
-      
-      const indexInOrder = sectionOrder.indexOf(id);
-      const newOrder = [...sectionOrder];
-      newOrder.splice(indexInOrder + 1, 0, newId);
-      onSectionOrderChange(newOrder);
-      onSaveSectionOrder(newOrder);
-    }
-  };
-
-  const handleDragEndInfoCardCards = (sectionId: string, event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const section = infoCardSections.find((s) => s.id === sectionId);
-      if (section) {
-        const oldIndex = parseInt(active.id as string);
-        const newIndex = parseInt(over.id as string);
-        const newCards = arrayMove(section.cards, oldIndex, newIndex);
-        handleUpdateInfoCardSection(sectionId, { cards: newCards });
-      }
-    }
-  };
-
-  const handleDragEndButtonGroup = (groupId: string, event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const group = buttonGroups.find((g) => g.id === groupId);
-      if (group) {
-        const oldIndex = parseInt(active.id as string);
-        const newIndex = parseInt(over.id as string);
-        const newButtons = arrayMove(group.buttons, oldIndex, newIndex);
-        handleUpdateButtonGroup(groupId, { buttons: newButtons });
-      }
-    }
-  };
-
-  const handleAddProgramSchedule = () => {
-    if (!sectionOrder.includes("program_cards")) {
-      const newOrder = [...sectionOrder, "program_cards"];
-      onSectionOrderChange(newOrder);
-      onSaveSectionOrder(newOrder);
-    }
-  };
-
-  const handleRemoveProgramSchedule = () => {
-    const newOrder = sectionOrder.filter((id) => id !== "program_cards");
-    onSectionOrderChange(newOrder);
-    onSaveSectionOrder(newOrder);
-  };
-
-  const handleMoveSectionUp = (index: number) => {
-    if (index > 0) {
-      const newOrder = [...sectionOrder];
-      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-      onSectionOrderChange(newOrder);
-      onSaveSectionOrder(newOrder);
-    }
-  };
-
-  const handleMoveSectionDown = (index: number) => {
-    if (index < sectionOrder.length - 1) {
-      const newOrder = [...sectionOrder];
-      [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
-      onSectionOrderChange(newOrder);
-      onSaveSectionOrder(newOrder);
-    }
-  };
-
-  const getSectionTitle = (sectionId: string): string => {
-    if (sectionId.startsWith("program_hero_")) return "이미지";
-    if (sectionId.startsWith("program_info_card_section_")) return "아이콘 카드";
-    if (sectionId.startsWith("program_description_")) return "설명 카드";
-    if (sectionId.startsWith("program_button_group_")) return "버튼";
-    if (sectionId === "program_cards") return "프로그램 일정";
-    return sectionId;
-  };
-
-  const SectionControls = ({ 
-    title, 
-    index, 
-    sectionId, 
-    onCopy, 
-    onDelete 
-  }: { 
-    title: string; 
-    index: number; 
-    sectionId: string;
-    onCopy?: () => void; 
-    onDelete?: () => void;
-  }) => {
-    const isCollapsed = collapsedSections[sectionId];
-    
-    return (
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => toggleSection(sectionId)}
-            className="hover:bg-secondary p-1 h-auto"
-          >
-            <span className="text-xl">{isCollapsed ? '〉' : '∨'}</span>
-          </Button>
-          <h3 className="text-lg font-semibold">{title}</h3>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => handleMoveSectionUp(index)} disabled={index === 0}>
-            <ArrowUp className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => handleMoveSectionDown(index)} disabled={index === sectionOrder.length - 1}>
-            <ArrowDown className="w-4 h-4" />
-          </Button>
-          {onCopy && (
-            <Button variant="outline" size="sm" onClick={onCopy}>
-              <Copy className="w-4 h-4" />
-            </Button>
-          )}
-          {onDelete && (
-            <Button variant="destructive" size="sm" onClick={onDelete}>
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderSection = (sectionId: string, index: number) => {
-    const isCollapsed = collapsedSections[sectionId];
-    
-    // Hero Section
-    if (sectionId.startsWith("program_hero_")) {
-      const hero = heroSections.find((h) => h.id === sectionId);
-      if (!hero) return null;
-
-      return (
-        <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-          <SectionControls
-            title={getSectionTitle(sectionId)}
-            index={index}
-            sectionId={sectionId}
-            onCopy={() => handleCopyHeroSection(sectionId)}
-            onDelete={() => handleDeleteHeroSection(sectionId)}
-          />
-          {!isCollapsed && (
-            <div className="space-y-4">
-              <div>
-                <ImageUpload
-                  label="이미지"
-                  value={hero.imageUrl || ""}
-                  onChange={(value) => handleUpdateHeroSection(sectionId, { imageUrl: value })}
-                />
-              </div>
-              <div>
-                <Label>오버레이 투명도 (%)</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={hero.overlayOpacity || "0"}
-                  onChange={(e) => handleUpdateHeroSection(sectionId, { overlayOpacity: e.target.value })}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // Description Section
-    if (sectionId.startsWith("program_description_")) {
-      const desc = descriptions.find((d) => d.id === sectionId);
-      if (!desc) return null;
-
-      return (
-        <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-          <SectionControls
-            title={getSectionTitle(sectionId)}
-            index={index}
-            sectionId={sectionId}
-            onCopy={() => handleCopyDescription(sectionId)}
-            onDelete={() => handleDeleteDescription(sectionId)}
-          />
-          {!isCollapsed && (
-            <div className="space-y-4">
-              <div>
-                <Label>제목</Label>
-                <Input
-                  value={desc.title || ""}
-                  onChange={(e) => handleUpdateDescription(sectionId, { title: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label>내용</Label>
-                <Textarea
-                  value={desc.content || ""}
-                  onChange={(e) => handleUpdateDescription(sectionId, { content: e.target.value })}
-                  rows={4}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>제목 폰트 크기 (px)</Label>
-                  <Input
-                    type="number"
-                    value={desc.titleFontSize || "18"}
-                    onChange={(e) => handleUpdateDescription(sectionId, { titleFontSize: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label>내용 폰트 크기 (px)</Label>
-                  <Input
-                    type="number"
-                    value={desc.contentFontSize || "16"}
-                    onChange={(e) => handleUpdateDescription(sectionId, { contentFontSize: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label>배경색</Label>
-                <ColorPicker
-                  value={desc.bgColor || "0 0% 100%"}
-                  onChange={(color) => handleUpdateDescription(sectionId, { bgColor: color })}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // Info Card Section
-    if (sectionId.startsWith("program_info_card_section_")) {
-      const section = infoCardSections.find((s) => s.id === sectionId);
-      if (!section) return null;
-
-      return (
-        <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-          <SectionControls
-            title={getSectionTitle(sectionId)}
-            index={index}
-            sectionId={sectionId}
-            onCopy={() => handleCopyInfoCardSection(sectionId)}
-            onDelete={() => handleDeleteInfoCardSection(sectionId)}
-          />
-          {!isCollapsed && (
-            <div className="space-y-4">
-              <Button
-                onClick={() => {
-                  const newCard = { icon: "Info", iconColor: "217 91% 60%", title: "", description: "" };
-                  handleUpdateInfoCardSection(sectionId, { cards: [...section.cards, newCard] });
-                }}
-                size="sm"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                카드 추가
-              </Button>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(event) => handleDragEndInfoCardCards(sectionId, event)}
-              >
-                <SortableContext
-                  items={section.cards.map((_, i) => i.toString())}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {section.cards.map((card: any, cardIndex: number) => (
-                      <SortableInfoCard
-                        key={cardIndex}
-                        id={cardIndex.toString()}
-                        card={card}
-                        cardData={card}
-                        onUpdate={(updates) => {
-                          const newCards = [...section.cards];
-                          newCards[cardIndex] = { ...newCards[cardIndex], ...updates };
-                          handleUpdateInfoCardSection(sectionId, { cards: newCards });
-                        }}
-                        onDelete={() => {
-                          const newCards = section.cards.filter((_: any, i: number) => i !== cardIndex);
-                          handleUpdateInfoCardSection(sectionId, { cards: newCards });
-                        }}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // Button Group Section
-    if (sectionId.startsWith("program_button_group_")) {
-      const group = buttonGroups.find((g) => g.id === sectionId);
-      if (!group) return null;
-
-      return (
-        <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-          <SectionControls
-            title={getSectionTitle(sectionId)}
-            index={index}
-            sectionId={sectionId}
-            onCopy={() => handleCopyButtonGroup(sectionId)}
-            onDelete={() => handleDeleteButtonGroup(sectionId)}
-          />
-          {!isCollapsed && (
-            <div className="space-y-4">
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(event) => handleDragEndButtonGroup(sectionId, event)}
-              >
-                <SortableContext
-                  items={group.buttons.map((_, i) => i.toString())}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {group.buttons.map((button: any, btnIndex: number) => (
-                      <SortableButton
-                        key={btnIndex}
-                        id={btnIndex.toString()}
-                        button={button}
-                        buttonData={button}
-                        onUpdate={(id, updates) => {
-                          const newButtons = [...group.buttons];
-                          newButtons[btnIndex] = { ...newButtons[btnIndex], ...updates };
-                          handleUpdateButtonGroup(sectionId, { buttons: newButtons });
-                        }}
-                        onDelete={(id) => {
-                          const newButtons = group.buttons.filter((_: any, i: number) => i !== btnIndex);
-                          handleUpdateButtonGroup(sectionId, { buttons: newButtons });
-                        }}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-              <div className="flex justify-end mt-4">
-                <Button
-                  onClick={() => {
-                    const newButton = { text: "", link: "", linkType: "internal", bgColor: "217 91% 60%", textColor: "0 0% 100%" };
-                    handleUpdateButtonGroup(sectionId, { buttons: [...group.buttons, newButton] });
-                  }}
-                  size="sm"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  버튼 추가
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // Program Cards Section
-    if (sectionId === "program_cards") {
-      return (
-        <div key={sectionId} className="space-y-4 p-4 border rounded-lg">
-          <SectionControls
-            title={getSectionTitle(sectionId)}
-            index={index}
-            sectionId={sectionId}
-            onDelete={handleRemoveProgramSchedule}
-          />
-          {!isCollapsed && (
-            <div className="space-y-4">
-              <div className="flex justify-end">
-                <Button onClick={handleAddProgramCard} size="sm">
-                  <Plus className="w-4 h-4 mr-2" />
-                  프로그램 추가
-                </Button>
-              </div>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEndProgramCards}
-              >
-                <SortableContext
-                  items={programCards.map((_, i) => i.toString())}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-4">
-                    {programCards.map((card, i) => (
-                      <SortableProgramCard
-                        key={i}
-                        id={i.toString()}
-                        card={card}
-                        index={i}
-                        total={programCards.length}
-                        onUpdate={(data) => handleUpdateProgramCard(i, data)}
-                        onDelete={() => handleDeleteProgramCard(i)}
-                        onDuplicate={() => handleDuplicateProgramCard(i)}
-                        onMoveUp={() => handleMoveUp(i)}
-                        onMoveDown={() => handleMoveDown(i)}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    return null;
-  };
+  const handlers = useProgramSettingsHandlers({
+    programCards,
+    heroSections,
+    infoCardSections,
+    descriptions,
+    buttonGroups,
+    sectionOrder,
+    onProgramCardsChange,
+    onHeroSectionsChange,
+    onInfoCardSectionsChange,
+    onDescriptionsChange,
+    onButtonGroupsChange,
+    onSectionOrderChange,
+    onSaveSectionOrder,
+  });
 
   return (
     <div className="space-y-8">
       {/* Section Add Buttons */}
       <div className="flex gap-2 flex-wrap">
         <Button 
-          onClick={handleAddHeroSection} 
+          onClick={handlers.handleAddHeroSection} 
           variant="outline"
           size="sm"
           className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
@@ -698,7 +83,7 @@ const ProgramSettings = ({
           이미지
         </Button>
         <Button 
-          onClick={handleAddDescription} 
+          onClick={handlers.handleAddDescription} 
           variant="outline"
           size="sm"
           className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
@@ -707,7 +92,7 @@ const ProgramSettings = ({
           설명 카드
         </Button>
         <Button 
-          onClick={handleAddInfoCardSection} 
+          onClick={handlers.handleAddInfoCardSection} 
           variant="outline"
           size="sm"
           className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
@@ -716,7 +101,7 @@ const ProgramSettings = ({
           아이콘 카드
         </Button>
         <Button 
-          onClick={handleAddButtonGroup} 
+          onClick={handlers.handleAddButtonGroup} 
           variant="outline"
           size="sm"
           className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
@@ -725,7 +110,7 @@ const ProgramSettings = ({
           버튼
         </Button>
         <Button 
-          onClick={handleAddProgramSchedule} 
+          onClick={handlers.handleAddProgramSchedule} 
           variant="outline"
           size="sm"
           className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
@@ -789,50 +174,22 @@ const ProgramSettings = ({
       ) : (
         sectionOrder.map((sectionId, index) => (
           <div key={sectionId} className="mb-8">
-            {renderSection(sectionId, index)}
+            {renderProgramSection({
+              sectionId,
+              index,
+              sectionOrder,
+              collapsedSections,
+              programCards,
+              heroSections,
+              infoCardSections,
+              descriptions,
+              buttonGroups,
+              toggleSection,
+              ...handlers,
+            })}
           </div>
         ))
       )}
-
-      <Separator />
-
-      {/* Program Cards Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">프로그램 일정</h3>
-          <Button onClick={handleAddProgramCard} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            일정 추가
-          </Button>
-        </div>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEndProgramCards}
-        >
-          <SortableContext
-            items={programCards.map((_, i) => i.toString())}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-4">
-              {programCards.map((card, i) => (
-                <SortableProgramCard
-                  key={i}
-                  id={i.toString()}
-                  card={card}
-                  index={i}
-                  total={programCards.length}
-                  onUpdate={(updates) => handleUpdateProgramCard(i, updates)}
-                  onDelete={() => handleDeleteProgramCard(i)}
-                  onDuplicate={() => handleDuplicateProgramCard(i)}
-                  onMoveUp={() => handleMoveUp(i)}
-                  onMoveDown={() => handleMoveDown(i)}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-      </div>
     </div>
   );
 };
