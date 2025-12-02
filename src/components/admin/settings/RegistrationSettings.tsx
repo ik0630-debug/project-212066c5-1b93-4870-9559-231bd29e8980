@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -5,11 +6,17 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, ChevronUp, ChevronDown, Copy } from "lucide-react";
 import IconPicker from "@/components/IconPicker";
+import ImageUpload from "@/components/ImageUpload";
+import { ColorPicker } from "@/components/ColorPicker";
+import SortableInfoCard from "@/components/SortableInfoCard";
+import SortableBottomButton from "@/components/SortableBottomButton";
 import { SettingsField } from "./SettingsField";
 import { SettingsSection } from "./SettingsSection";
 import { SettingsToggle } from "./SettingsToggle";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 interface RegistrationField {
   id: string;
@@ -24,16 +31,44 @@ interface RegistrationField {
 interface RegistrationSettingsProps {
   registrationSettings: any;
   registrationFields: RegistrationField[];
+  heroSections: any[];
+  infoCardSections: any[];
+  descriptions: any[];
+  buttonGroups: any[];
+  sectionOrder: string[];
   onRegistrationSettingsChange: (settings: any) => void;
   onRegistrationFieldsChange: (fields: RegistrationField[]) => void;
+  onHeroSectionsChange: (sections: any[]) => void;
+  onInfoCardSectionsChange: (sections: any[]) => void;
+  onDescriptionsChange: (descriptions: any[]) => void;
+  onButtonGroupsChange: (groups: any[]) => void;
+  onSectionOrderChange: (order: string[]) => void;
+  onSaveSectionOrder: (order: string[]) => void;
 }
 
 const RegistrationSettings = ({
   registrationSettings,
   registrationFields,
+  heroSections,
+  infoCardSections,
+  descriptions,
+  buttonGroups,
+  sectionOrder,
   onRegistrationSettingsChange,
   onRegistrationFieldsChange,
+  onHeroSectionsChange,
+  onInfoCardSectionsChange,
+  onDescriptionsChange,
+  onButtonGroupsChange,
+  onSectionOrderChange,
+  onSaveSectionOrder,
 }: RegistrationSettingsProps) => {
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
   const handleChange = (key: string, value: string) => {
     onRegistrationSettingsChange({
       ...registrationSettings,

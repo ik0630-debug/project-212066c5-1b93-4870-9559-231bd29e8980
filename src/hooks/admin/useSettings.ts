@@ -26,6 +26,11 @@ export const useSettings = () => {
     "transport_info",
     "contact_info",
   ]);
+  const [registrationHeroSections, setRegistrationHeroSections] = useState<any[]>([]);
+  const [registrationInfoCardSections, setRegistrationInfoCardSections] = useState<any[]>([]);
+  const [registrationDescriptions, setRegistrationDescriptions] = useState<any[]>([]);
+  const [registrationButtonGroups, setRegistrationButtonGroups] = useState<any[]>([]);
+  const [registrationSectionOrder, setRegistrationSectionOrder] = useState<string[]>(["registration_form_fields"]);
   
   const [settings, setSettings] = useState<any>({
     program_title: "",
