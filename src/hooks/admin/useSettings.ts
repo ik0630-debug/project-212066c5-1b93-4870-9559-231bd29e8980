@@ -63,11 +63,12 @@ export const useSettings = () => {
   });
 
   const [registrationFields, setRegistrationFields] = useState([
-    { id: "name", label: "성함", placeholder: "홍길동", type: "text", required: true },
-    { id: "email", label: "이메일", placeholder: "example@company.com", type: "email", required: true },
-    { id: "phone", label: "연락처", placeholder: "010-0000-0000", type: "tel", required: true },
-    { id: "company", label: "소속 회사", placeholder: "회사명", type: "text", required: false },
-    { id: "message", label: "특이사항", placeholder: "특별히 전달하실 말씀이 있으시면 작성해주세요", type: "textarea", required: false },
+    { id: "name", label: "이름", placeholder: "홍길동", type: "text", required: true, icon: "User" },
+    { id: "company", label: "소속", placeholder: "소속 기관명", type: "text", required: true, icon: "Building" },
+    { id: "department", label: "부서", placeholder: "부서명", type: "text", required: false, icon: "Briefcase" },
+    { id: "position", label: "직함", placeholder: "직위/직급", type: "text", required: true, icon: "Award" },
+    { id: "phone", label: "휴대전화", placeholder: "010-0000-0000", type: "tel", required: true, icon: "Smartphone" },
+    { id: "email", label: "이메일", placeholder: "example@company.com", type: "email", required: true, icon: "Mail" },
   ]);
 
   const loadSettings = useCallback(async () => {
