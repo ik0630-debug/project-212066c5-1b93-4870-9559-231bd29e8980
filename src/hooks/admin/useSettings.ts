@@ -625,6 +625,24 @@ export const useSettings = () => {
     }
   };
 
+  const saveRegistrationSectionOrder = async (order: string[]) => {
+    try {
+      if (!defaultProjectId) return;
+      
+      await supabase.from("site_settings").delete()
+        .eq("key", "registration_section_order")
+        .eq("project_id", defaultProjectId);
+      await supabase.from("site_settings").insert({
+        category: "registration",
+        key: "registration_section_order",
+        value: JSON.stringify(order),
+        project_id: defaultProjectId,
+      });
+    } catch (error) {
+      console.error("Error saving registration section order:", error);
+    }
+  };
+
   return {
     // State
     settings,
@@ -645,6 +663,11 @@ export const useSettings = () => {
     downloadFiles,
     sectionOrder,
     locationSectionOrder,
+    registrationHeroSections,
+    registrationInfoCardSections,
+    registrationDescriptions,
+    registrationButtonGroups,
+    registrationSectionOrder,
     defaultProjectId,
     
     // Setters
@@ -666,6 +689,11 @@ export const useSettings = () => {
     setDownloadFiles,
     setSectionOrder,
     setLocationSectionOrder,
+    setRegistrationHeroSections,
+    setRegistrationInfoCardSections,
+    setRegistrationDescriptions,
+    setRegistrationButtonGroups,
+    setRegistrationSectionOrder,
     setDefaultProjectId,
     
     // Functions
@@ -675,5 +703,6 @@ export const useSettings = () => {
     saveSectionOrder,
     saveProgramSectionOrder,
     saveLocationSectionOrder,
+    saveRegistrationSectionOrder,
   };
 };
