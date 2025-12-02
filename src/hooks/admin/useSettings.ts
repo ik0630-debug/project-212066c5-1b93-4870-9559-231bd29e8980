@@ -19,6 +19,7 @@ export const useSettings = () => {
   const [transportCards, setTransportCards] = useState<any[]>([]);
   const [locationBottomButtons, setLocationBottomButtons] = useState<any[]>([]);
   const [downloadFiles, setDownloadFiles] = useState<any[]>([]);
+  const [locationButtonGroups, setLocationButtonGroups] = useState<any[]>([]);
   const [sectionOrder, setSectionOrder] = useState<string[]>([]);
   const [locationSectionOrder, setLocationSectionOrder] = useState<string[]>([
     "description_buttons",
@@ -98,6 +99,7 @@ export const useSettings = () => {
     const loadedTransportCards: any = {};
     const loadedLocationBottomButtons: any = {};
     const loadedDownloadFiles: any = {};
+    const loadedLocationButtonGroups: any = {};
     const registrationSettingsData: any = {};
 
     data?.forEach(({ key, value, category }) => {
@@ -207,6 +209,12 @@ export const useSettings = () => {
               const index = parsed.order || 0;
               loadedDownloadFiles[index] = parsed;
             } catch {}
+          } else if (key.startsWith("location_button_group_")) {
+            try {
+              const parsed = JSON.parse(value);
+              const index = parsed.order || 0;
+              loadedLocationButtonGroups[index] = parsed;
+            } catch {}
           } else {
             settingsMap[key] = value;
           }
@@ -237,6 +245,7 @@ export const useSettings = () => {
     const programButtonGroupsArray = Object.values(loadedProgramButtonGroups).filter((group: any) => group.id);
     const locationButtons = Object.values(loadedLocationBottomButtons).filter((btn: any) => btn.text);
     const downloadFilesArray = Object.values(loadedDownloadFiles).filter((file: any) => file.name && file.url);
+    const locationButtonGroupsArray = Object.values(loadedLocationButtonGroups).filter((group: any) => group.id);
     
     console.log('useSettings: Loaded hero sections:', heroSectionsArray.length);
     console.log('useSettings: Loaded info card sections:', infoCardSectionsArray.length);
@@ -248,6 +257,7 @@ export const useSettings = () => {
     console.log('useSettings: Loaded program button groups:', programButtonGroupsArray.length);
     console.log('useSettings: Loaded location bottom buttons:', locationButtons.length);
     console.log('useSettings: Loaded download files:', downloadFilesArray.length);
+    console.log('useSettings: Loaded location button groups:', locationButtonGroupsArray.length);
     
     // 홈 섹션이 모두 비어있으면 기본 섹션들 생성
     const isHomeSectionsEmpty = heroSectionsArray.length === 0 && 
@@ -397,6 +407,7 @@ export const useSettings = () => {
     setProgramButtonGroups(programButtonGroupsArray);
     setLocationBottomButtons(locationButtons);
     setDownloadFiles(downloadFilesArray);
+    setLocationButtonGroups(locationButtonGroupsArray);
     setProgramCards(Object.values(loadedProgramCards).filter((card: any) => card.title));
     
     const loadedTransportCardsArray = Object.values(loadedTransportCards).filter((card: any) => card && card.title);
@@ -525,6 +536,13 @@ export const useSettings = () => {
           category: "location",
           key: `location_download_file_${index}`,
           value: JSON.stringify({ ...file, order: index }),
+          project_id: defaultProjectId,
+        })),
+        // Save location button groups
+        ...locationButtonGroups.map((group, index) => ({
+          category: "location",
+          key: `location_button_group_${index}`,
+          value: JSON.stringify({ ...group, order: index }),
           project_id: defaultProjectId,
         })),
         // Save section orders
@@ -662,6 +680,7 @@ export const useSettings = () => {
     transportCards,
     locationBottomButtons,
     downloadFiles,
+    locationButtonGroups,
     sectionOrder,
     locationSectionOrder,
     registrationHeroSections,
@@ -688,6 +707,7 @@ export const useSettings = () => {
     setTransportCards,
     setLocationBottomButtons,
     setDownloadFiles,
+    setLocationButtonGroups,
     setSectionOrder,
     setLocationSectionOrder,
     setRegistrationHeroSections,
