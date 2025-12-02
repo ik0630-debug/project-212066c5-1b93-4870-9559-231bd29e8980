@@ -140,12 +140,6 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
       
       {!isCollapsed && (
         <div className="space-y-4">
-          <div className="flex justify-end">
-            <Button onClick={handleAddButton} size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              버튼 추가
-            </Button>
-          </div>
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -169,6 +163,12 @@ export const renderButtonGroupSection = (props: RenderSectionsProps) => {
               </div>
             </SortableContext>
           </DndContext>
+          <div className="flex justify-end mt-4">
+            <Button onClick={handleAddButton} size="sm" variant="outline">
+              <Plus className="w-4 h-4 mr-2" />
+              버튼 추가
+            </Button>
+          </div>
         </div>
       )}
     </div>

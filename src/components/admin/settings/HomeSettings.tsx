@@ -205,7 +205,7 @@ const HomeSettings = ({
       id: newId,
       enabled: "true",
       alignment: "center",
-      buttons: [],
+      buttons: [{ text: "새 버튼", link: "", linkType: "internal", size: "default", fontSize: "text-sm" }],
       order: buttonGroups.length,
     };
     onButtonGroupsChange([...buttonGroups, newGroup]);
