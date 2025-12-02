@@ -630,6 +630,48 @@ const ProgramSettings = ({
 
   return (
     <div className="space-y-8">
+      {/* Section Add Buttons */}
+      <div className="flex gap-2 flex-wrap">
+        <Button 
+          onClick={handleAddHeroSection} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          헤더 이미지
+        </Button>
+        <Button 
+          onClick={handleAddDescription} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          설명 섹션
+        </Button>
+        <Button 
+          onClick={handleAddInfoCardSection} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          정보 카드
+        </Button>
+        <Button 
+          onClick={handleAddButtonGroup} 
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-primary text-primary hover:bg-primary/10"
+        >
+          <Plus className="w-3 h-3 mr-1.5" />
+          버튼 그룹
+        </Button>
+      </div>
+
+      <Separator />
+
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">페이지 정보</h3>
         <div className="grid gap-4">
@@ -672,46 +714,6 @@ const ProgramSettings = ({
       </div>
 
       <Separator />
-
-      {/* Section Add Buttons */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        <Button 
-          onClick={handleAddHeroSection} 
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs"
-        >
-          <Plus className="w-3 h-3 mr-1.5" />
-          헤더 이미지
-        </Button>
-        <Button 
-          onClick={handleAddDescription} 
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs"
-        >
-          <Plus className="w-3 h-3 mr-1.5" />
-          설명 섹션
-        </Button>
-        <Button 
-          onClick={handleAddInfoCardSection} 
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs"
-        >
-          <Plus className="w-3 h-3 mr-1.5" />
-          정보 카드
-        </Button>
-        <Button 
-          onClick={handleAddButtonGroup} 
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs"
-        >
-          <Plus className="w-3 h-3 mr-1.5" />
-          버튼 그룹
-        </Button>
-      </div>
 
       {/* Render Sections */}
       {sectionOrder.length === 0 ? (
