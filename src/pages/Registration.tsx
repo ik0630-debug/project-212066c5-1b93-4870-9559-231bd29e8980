@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, Building, Upload } from "lucide-react";
 import { z } from "zod";
@@ -47,7 +48,10 @@ const Registration = () => {
     successTitle: "신청이 완료되었습니다!",
     successDescription: "참가 확인 메일을 발송해드렸습니다.",
     headerBgColor: "221 83% 33%",
+    isClosed: false,
+    closedMessage: "참가신청이 마감되었습니다. 참가신청 확인이 가능합니다.",
   });
+  const [showClosedDialog, setShowClosedDialog] = useState(false);
   const [fields, setFields] = useState<RegistrationField[]>([
     { id: "name", label: "성함", placeholder: "홍길동", type: "text", required: true },
     { id: "email", label: "이메일", placeholder: "example@company.com", type: "email", required: true },
@@ -125,9 +129,17 @@ const Registration = () => {
             newSettings.headerBgColor = value;
           } else if (key === "registration_privacy_content") {
             setPrivacyContent(value);
+          } else if (key === "registration_closed") {
+            newSettings.isClosed = value === "true";
+          } else if (key === "registration_closed_message") {
+            newSettings.closedMessage = value;
           }
         });
         setPageSettings(newSettings);
+        // 마감 상태면 팝업 표시
+        if (newSettings.isClosed) {
+          setShowClosedDialog(true);
+        }
       }
       } finally {
         setLoading(false);
@@ -292,8 +304,26 @@ const Registration = () => {
     return <div className="min-h-screen bg-background flex items-center justify-center">로딩 중...</div>;
   }
 
+  const isClosed = pageSettings.isClosed;
+
   return (
     <div {...swipeHandlers} className="min-h-screen bg-background pb-20 animate-fade-in">
+      {/* 마감 팝업 */}
+      <AlertDialog open={showClosedDialog} onOpenChange={setShowClosedDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>참가신청 마감 안내</AlertDialogTitle>
+            <AlertDialogDescription className="whitespace-pre-line">
+              {pageSettings.closedMessage}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowClosedDialog(false)}>
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="max-w-[800px] mx-auto">
         {/* Header */}
         <PageHeader 
@@ -317,7 +347,7 @@ const Registration = () => {
           <main className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
           {fields.map((field) => (
-            <div key={field.id} className="bg-white rounded-lg p-5 shadow-sm border-0">
+            <div key={field.id} className={`bg-white rounded-lg p-5 shadow-sm border-0 ${isClosed ? 'opacity-60' : ''}`}>
               <Label 
                 htmlFor={field.id} 
                 className="text-base font-semibold mb-3 block flex items-center gap-2"
@@ -339,11 +369,13 @@ const Registration = () => {
                   required={field.required}
                   rows={4}
                   className="resize-none border-gray-200"
+                  disabled={isClosed}
                 />
               ) : field.type === "select" ? (
                 <Select
                   value={formData[field.id] || ""}
                   onValueChange={(value) => setFormData({ ...formData, [field.id]: value })}
+                  disabled={isClosed}
                 >
                   <SelectTrigger className="h-12 border-gray-200">
                     <SelectValue placeholder={field.placeholder} />
@@ -367,19 +399,21 @@ const Registration = () => {
                   required={field.required}
                   className="h-12 border-gray-200"
                   maxLength={field.type === "tel" ? 13 : undefined}
+                  disabled={isClosed}
                 />
               )}
             </div>
           ))}
 
           {/* 개인정보 동의 체크박스 */}
-          <div className="bg-white rounded-lg p-5 shadow-sm border-0">
+          <div className={`bg-white rounded-lg p-5 shadow-sm border-0 ${isClosed ? 'opacity-60' : ''}`}>
             <div className="flex items-start gap-3">
               <Checkbox
                 id="privacy-agreement"
                 checked={agreedToPrivacy}
                 onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)}
                 className="mt-1"
+                disabled={isClosed}
               />
               <div className="flex-1">
                 <Label htmlFor="privacy-agreement" className="cursor-pointer text-sm font-semibold">
@@ -409,10 +443,10 @@ const Registration = () => {
           <div className="space-y-3">
             <Button
               type="submit"
-              disabled={!agreedToPrivacy || isSubmitting}
+              disabled={!agreedToPrivacy || isSubmitting || isClosed}
               className="w-full h-14 text-base font-semibold shadow-sm"
             >
-              {isSubmitting ? "신청 중..." : "참가 신청하기"}
+              {isClosed ? "참가신청 마감" : isSubmitting ? "신청 중..." : "참가 신청하기"}
             </Button>
             
             <Button

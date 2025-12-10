@@ -149,6 +149,24 @@ const RegistrationSettings = ({
           checked={registrationSettings.registration_enabled === "true"}
           onCheckedChange={(checked) => handleChange("registration_enabled", checked ? "true" : "false")}
         />
+        <SettingsToggle
+          label="참가신청 마감"
+          description="마감 시 신청 폼이 비활성화되고 마감 메시지가 표시됩니다"
+          checked={registrationSettings.registration_closed === "true"}
+          onCheckedChange={(checked) => handleChange("registration_closed", checked ? "true" : "false")}
+        />
+        {registrationSettings.registration_closed === "true" && (
+          <SettingsField label="마감 메시지" htmlFor="registration_closed_message">
+            <Textarea
+              id="registration_closed_message"
+              value={registrationSettings.registration_closed_message || ""}
+              onChange={(e) => handleChange("registration_closed_message", e.target.value)}
+              placeholder="참가신청이 마감되었습니다."
+              rows={3}
+              className="resize-none"
+            />
+          </SettingsField>
+        )}
         <SettingsField label="페이지 제목" htmlFor="registration_page_title">
           <Input
             id="registration_page_title"

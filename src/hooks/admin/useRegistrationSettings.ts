@@ -16,6 +16,8 @@ export const useRegistrationSettings = () => {
     registration_success_description: "신청해 주셔서 감사합니다.",
     registration_enabled: "true",
     registration_header_bg_color: "221 83% 33%",
+    registration_closed: "false",
+    registration_closed_message: "참가신청이 마감되었습니다. 참가신청 확인이 가능합니다.",
   });
 
   const [registrationFields, setRegistrationFields] = useState([
@@ -92,6 +94,8 @@ export const useRegistrationSettings = () => {
       registration_page_description: "아래 양식을 작성해주세요",
       registration_success_description: "신청해 주셔서 감사합니다.",
       registration_header_bg_color: "221 83% 33%",
+      registration_closed: "false",
+      registration_closed_message: "참가신청이 마감되었습니다. 참가신청 확인이 가능합니다.",
     };
 
     const mergedRegistrationSettings = mergeWithDefaults(registrationSettingsData, defaultRegistrationSettings);
