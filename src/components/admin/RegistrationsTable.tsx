@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Trash2, FileDown } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useToast } from "@/hooks/use-toast";
+import DuplicateManagement from "./DuplicateManagement";
 
 interface RegistrationField {
   id: string;
@@ -91,10 +92,17 @@ const RegistrationsTable = ({ registrations, registrationFormFields, onDelete }:
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">참가 신청 목록</h2>
-        <Button onClick={handleExportToExcel} variant="outline" size="sm">
-          <FileDown className="w-4 h-4 mr-2" />
-          엑셀 내보내기
-        </Button>
+        <div className="flex items-center gap-2">
+          <DuplicateManagement
+            registrations={registrations}
+            registrationFormFields={registrationFormFields}
+            onDelete={onDelete}
+          />
+          <Button onClick={handleExportToExcel} variant="outline" size="sm">
+            <FileDown className="w-4 h-4 mr-2" />
+            엑셀 내보내기
+          </Button>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
